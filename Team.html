@@ -187,12 +187,21 @@
 </div>
 
 <script src="sidebar.js"></script>
+<script src="logic.js"></script>
 <script>
   fetch('icons.html').then(r=>r.text()).then(t=>document.getElementById('icons').innerHTML=t).then(init).catch(init);
 
   function init(){
     document.getElementById('sidebar-slot').outerHTML = renderSidebar('team');
     document.getElementById('topbar-slot').outerHTML = renderTopbar('Team','Six designers across production. Balance load, surface overdue risk.');
+    
+    // Search handler
+    const sInput = document.querySelector('.search input');
+    sInput.addEventListener('input', debounce((e) => {
+      FilterState.search = e.target.value;
+      renderGrid();
+    }));
+
     renderGrid();
   }
 

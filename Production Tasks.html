@@ -300,6 +300,7 @@
 </div>
 
 <script src="sidebar.js"></script>
+<script src="logic.js"></script>
 <script>
   // Load icons
   fetch('icons.html').then(r=>r.text()).then(t=>document.getElementById('icons').innerHTML=t).then(init).catch(init);
@@ -307,11 +308,31 @@
   function init(){
     document.getElementById('sidebar-slot').outerHTML = renderSidebar('tasks');
     document.getElementById('topbar-slot').outerHTML = renderTopbar('Welcome back, Sooraj','Stay on top of due dates and priorities.');
+    
+    // Search handler
+    const sInput = document.querySelector('.search input');
+    sInput.addEventListener('input', debounce((e) => {
+      FilterState.search = e.target.value;
+      renderRows();
+    }));
+
+    // Filter pill handlers (Mock implementation for demo)
+    document.querySelectorAll('.pill-filter').forEach(pill => {
+      pill.addEventListener('click', () => {
+        const type = pill.textContent.split(' ')[0].trim().toLowerCase();
+        // Toggle active state for demo visualization
+        pill.classList.toggle('active');
+        // In a real app, this would open a dropdown to select the value
+        alert('Filtering by ' + type + '... (Dropdown would appear here)');
+      });
+    });
+
     renderRows();
   }
 
   function renderRows(){
-    const rows = TASKS.map(t => {
+    const tasks = getFilteredTasks();
+    const rows = tasks.map(t => {
       const dateCls = t.status === 'completed' ? '' : 'overdue';
       const statusHtml = t.status === 'completed'
         ? `<span class="status completed"><svg class="icon"><use href="#i-check"/></svg> Completed</span>`
@@ -345,7 +366,13 @@
         </tr>
       `;
     }).join('');
-    document.getElementById('tbody').innerHTML = rows;
+    
+    document.getElementById('tbody').innerHTML = rows || `<tr><td colspan="7" style="text-align:center; padding:40px; color:var(--muted)">No tasks match your search.</td></tr>`;
+    // Update count in UI
+    const countDisplay = document.querySelector('.t-count');
+    if(countDisplay) {
+        countDisplay.innerHTML = `<b>${tasks.length}</b> tasks filtered · <b>${tasks.filter(x=>x.status==='overdue').length}</b> overdue`;
+    }
   }
 </script>
 </body>

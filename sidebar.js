@@ -94,6 +94,25 @@ window.OWNERS = [
   { id:"MK", name:"Moiz Kiyani",    role:"Design Lead",       email:"moiz@aktivacity.studio" },
 ];
 
+// Load Supabase if available
+if (typeof supabase === 'undefined' && typeof window.supabase !== 'undefined') {
+  // supabase is defined by db.js, which should be included before sidebar.js
+}
+
+/**
+ * Global Auth Gate: Redirects to Login.html if no session is found.
+ * Only runs if Supabase is configured.
+ */
+async function checkAuth() {
+  if (typeof supabase !== 'undefined' && supabase) {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session && !window.location.pathname.includes('Login.html')) {
+        window.location.href = 'Login.html';
+    }
+  }
+}
+checkAuth();
+
 window.KIND_ICON = {
   web:'i-globe', portfolio:'i-image', banner:'i-megaphone', ads:'i-image', social:'i-megaphone'
 };

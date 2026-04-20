@@ -202,9 +202,44 @@
   </div>
 </div>
 
+<!-- Supabase CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="db.js"></script>
 <script>
-  // Simple icon loading for the brand mark
-  // (Not using external icons.html here to keep login ultra-fast)
+  async function handleLogin(e) {
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const btn = e.target.querySelector('button');
+    
+    btn.textContent = 'Signing in...';
+    btn.disabled = true;
+
+    // Fallback if Supabase is not yet configured
+    if (!supabase) {
+      console.log('Supabase not configured, using mockup login.');
+      setTimeout(() => {
+        window.location.href = 'Dashboard.html';
+      }, 800);
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+      });
+
+      if (error) throw error;
+      
+      console.log('Login successful:', data);
+      window.location.href = 'Dashboard.html';
+    } catch (error) {
+      alert('Login failed: ' + error.message);
+      btn.textContent = 'Sign in to workspace';
+      btn.disabled = false;
+    }
+  }
 </script>
 </body>
 </html>
