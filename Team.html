@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Aktivacity — Team</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+  .toolbar{display:flex; align-items:center; gap:10px; margin-bottom:20px; flex-wrap:wrap}
+  .toolbar .search{position:relative; flex:1; min-width:240px; max-width:420px}
+  .toolbar .search input{
+    width:100%; border:1px solid var(--border); background:#fff;
+    border-radius:10px; padding:10px 12px 10px 38px;
+    font-size:14px; color:var(--text); font-family:inherit;
+    box-shadow:var(--shadow-sm); outline:none;
+  }
+  .toolbar .search .s-icon{position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--muted-2)}
+  .toolbar .seg{display:inline-flex; padding:3px; border-radius:10px; background:#F1F5F9; border:1px solid var(--border); font-size:13px; font-weight:500; color:var(--muted)}
+  .toolbar .seg button{border:0; background:transparent; padding:6px 12px; border-radius:7px; color:inherit; font:inherit; cursor:pointer}
+  .toolbar .seg button.on{background:#fff; color:var(--text); box-shadow:var(--shadow-sm)}
+
+  .team-summary{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:20px;
+  }
+  .mini-kpi{background:#fff; border:1px solid var(--border); border-radius:14px; padding:16px 18px; box-shadow:var(--shadow-sm)}
+  .mini-kpi .lbl{font-size:12px; color:var(--muted); font-weight:500}
+  .mini-kpi .val{font-family:'Space Grotesk',sans-serif; font-size:28px; font-weight:700; letter-spacing:-0.02em; margin-top:4px; font-variant-numeric:tabular-nums}
+  .mini-kpi .cap{font-size:11px; color:var(--muted); margin-top:6px}
+
+  .grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+
+  .person-card{
+    background:#fff; border:1px solid var(--border); border-radius:14px;
+    box-shadow:var(--shadow-sm); overflow:hidden;
+    display:flex; flex-direction:column;
+  }
+  .pc-top{
+    padding:20px; display:flex; align-items:center; gap:14px;
+    border-bottom:1px solid var(--border);
+    position:relative;
+  }
+  .pc-top .avatar{width:56px; height:56px; font-size:18px; flex-basis:56px}
+  .pc-top .name{font-family:'Space Grotesk',sans-serif; font-size:17px; font-weight:700; letter-spacing:-0.01em; line-height:1.2}
+  .pc-top .role{font-size:12px; color:var(--muted); margin-top:2px}
+  .pc-top .email{font-size:11px; color:var(--muted-2); margin-top:4px; display:flex; align-items:center; gap:4px}
+  .pc-top .more{position:absolute; top:14px; right:14px; background:none; border:0; color:var(--muted-2); cursor:pointer; padding:4px; border-radius:6px}
+  .pc-top .more:hover{color:var(--text); background:#F1F5F9}
+
+  .pc-status{
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:11px; font-weight:600; color:var(--muted);
+    padding:3px 8px; border-radius:999px;
+    background:#F1F5F9;
+    position:absolute; top:14px; right:46px;
+  }
+  .pc-status.red{background:var(--danger-50); color:var(--danger)}
+  .pc-status.green{background:var(--success-50); color:var(--success)}
+  .pc-status .sw{width:6px; height:6px; border-radius:50%; background:currentColor}
+
+  .pc-stats{
+    display:grid; grid-template-columns:repeat(3,1fr);
+    border-bottom:1px solid var(--border);
+  }
+  .pc-stats .cell{
+    padding:14px 16px;
+    border-left:1px solid var(--border);
+    display:flex; flex-direction:column; gap:2px;
+  }
+  .pc-stats .cell:first-child{border-left:0}
+  .pc-stats .num{font-family:'Space Grotesk',sans-serif; font-size:22px; font-weight:700; letter-spacing:-0.02em; font-variant-numeric:tabular-nums}
+  .pc-stats .num.red{color:var(--danger)}
+  .pc-stats .num.green{color:var(--success)}
+  .pc-stats .lbl{font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; font-weight:600}
+
+  .pc-load{
+    padding:16px 18px 14px;
+    border-bottom:1px solid var(--border);
+  }
+  .pc-load .lhead{display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-bottom:8px}
+  .pc-load .lhead b{color:var(--text); font-weight:600}
+  .wbar{height:10px; background:#F1F5F9; border-radius:6px; overflow:hidden; display:flex}
+  .wbar .seg{height:100%}
+  .wbar .seg.red{background:var(--danger)}
+  .wbar .seg.green{background:var(--success)}
+  .wbar .seg.amber{background:var(--warning)}
+
+  .pc-recent{padding:14px 18px 16px}
+  .pc-recent h4{font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-weight:600; margin:0 0 8px}
+  .pc-recent .tsk{display:flex; align-items:center; gap:8px; padding:6px 0; font-size:12.5px; color:var(--text)}
+  .pc-recent .tsk .dot{width:6px; height:6px; border-radius:50%; flex:0 0 6px}
+  .pc-recent .tsk .dot.red{background:var(--danger)}
+  .pc-recent .tsk .dot.green{background:var(--success)}
+  .pc-recent .tsk .title{flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .pc-recent .tsk .date{font-size:11px; color:var(--muted); font-variant-numeric:tabular-nums; white-space:nowrap}
+
+  .pc-foot{
+    margin-top:auto;
+    padding:12px 14px;
+    display:flex; gap:8px; border-top:1px solid var(--border);
+    background:#FBFCFD;
+  }
+  .pc-foot .btn{flex:1; justify-content:center; padding:8px 10px; font-size:13px}
+
+  /* Invite card */
+  .invite-card{
+    background:
+      radial-gradient(120% 100% at 50% 0%, rgba(79,70,229,.06), transparent 60%),
+      #fff;
+    border:1.5px dashed var(--border-strong);
+    border-radius:14px;
+    padding:28px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center;
+    min-height:360px;
+    gap:10px;
+  }
+  .invite-card .ic{
+    width:48px; height:48px; border-radius:12px;
+    background:var(--primary-50); color:var(--primary);
+    display:grid; place-items:center;
+  }
+  .invite-card h3{font-family:'Space Grotesk',sans-serif; font-size:16px; margin:6px 0 0; letter-spacing:-0.01em}
+  .invite-card p{margin:0; font-size:13px; color:var(--muted); max-width:220px}
+
+  @media (max-width: 1100px){ .grid{grid-template-columns:repeat(2,1fr)} .team-summary{grid-template-columns:repeat(2,1fr)} }
+  @media (max-width: 640px){ .grid{grid-template-columns:1fr} .team-summary{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<div id="icons"></div>
+
+<div class="app">
+  <div id="sidebar-slot"></div>
+  <main class="main">
+    <div id="topbar-slot"></div>
+    <div class="content">
+
+      <div class="toolbar">
+        <div class="search">
+          <svg class="s-icon" width="16" height="16"><use href="#i-search"/></svg>
+          <input placeholder="Search people, roles, skills…"/>
+        </div>
+        <div class="seg"><button class="on">All</button><button>Designers</button><button>Leads</button></div>
+        <div style="margin-left:auto; display:flex; gap:8px">
+          <button class="btn btn-ghost"><svg class="icon"><use href="#i-filter"/></svg> Filter</button>
+          <a class="btn btn-primary" href="Settings.html"><svg class="icon"><use href="#i-plus"/></svg> Invite member</a>
+        </div>
+      </div>
+
+      <div class="team-summary">
+        <div class="mini-kpi">
+          <div class="lbl">Team size</div>
+          <div class="val">6</div>
+          <div class="cap">All active, Design dept.</div>
+        </div>
+        <div class="mini-kpi">
+          <div class="lbl">Avg. open tasks / person</div>
+          <div class="val">1.5</div>
+          <div class="cap">9 overdue spread across 6 people</div>
+        </div>
+        <div class="mini-kpi">
+          <div class="lbl">Highest load</div>
+          <div class="val" style="color:var(--danger)">Zainab · 2</div>
+          <div class="cap">Both currently overdue</div>
+        </div>
+        <div class="mini-kpi">
+          <div class="lbl">Completed this week</div>
+          <div class="val" style="color:var(--success)">3</div>
+          <div class="cap">Moiz · Inam · Sibghat</div>
+        </div>
+      </div>
+
+      <div class="section-head">
+        <div>
+          <h2 class="display">Roster</h2>
+          <p>Workload and overdue visibility per person. Click a card to open their profile.</p>
+        </div>
+        <div class="seg"><button class="on">Cards</button><button>Table</button></div>
+      </div>
+
+      <div class="grid" id="grid"></div>
+    </div>
+  </main>
+</div>
+
+<script src="sidebar.js"></script>
+<script>
+  fetch('icons.html').then(r=>r.text()).then(t=>document.getElementById('icons').innerHTML=t).then(init).catch(init);
+
+  function init(){
+    document.getElementById('sidebar-slot').outerHTML = renderSidebar('team');
+    document.getElementById('topbar-slot').outerHTML = renderTopbar('Team','Six designers across production. Balance load, surface overdue risk.');
+    renderGrid();
+  }
+
+  function personCard(o){
+    const their = TASKS.filter(t => t.oi === o.id);
+    const overdue = their.filter(t => t.status==='overdue').length;
+    const completed = their.filter(t => t.status==='completed').length;
+    const total = their.length;
+    const maxLoad = 3;
+    const loadPct = Math.min(100, (total/maxLoad)*100);
+    const overPct = total ? (overdue/total)*loadPct : 0;
+    const compPct = total ? (completed/total)*loadPct : 0;
+    const statusCls = overdue>0 ? 'red' : (total===0?'green':'');
+    const statusTxt = overdue>0 ? `${overdue} overdue` : (total===0?'Available':'On track');
+    const recent = their.slice(0,3).map(t => `
+      <div class="tsk">
+        <span class="dot ${t.status==='overdue'?'red':'green'}"></span>
+        <span class="title">${t.title}</span>
+        <span class="date">17 Apr</span>
+      </div>
+    `).join('');
+    return `
+      <article class="person-card">
+        <div class="pc-top">
+          <div class="avatar" style="background:${OWNER_COLORS[o.id]}">${o.id}</div>
+          <div style="flex:1; min-width:0">
+            <div class="name">${o.name}</div>
+            <div class="role">${o.role}</div>
+            <div class="email"><svg width="11" height="11"><use href="#i-mail"/></svg> ${o.email}</div>
+          </div>
+          <span class="pc-status ${statusCls}"><span class="sw"></span> ${statusTxt}</span>
+          <button class="more"><svg width="16" height="16"><use href="#i-more"/></svg></button>
+        </div>
+        <div class="pc-stats">
+          <div class="cell"><span class="num">${total}</span><span class="lbl">Assigned</span></div>
+          <div class="cell"><span class="num red">${overdue}</span><span class="lbl">Overdue</span></div>
+          <div class="cell"><span class="num green">${completed}</span><span class="lbl">Done</span></div>
+        </div>
+        <div class="pc-load">
+          <div class="lhead"><span>Current load</span><span><b>${total}</b> of ${maxLoad} slots</span></div>
+          <div class="wbar">
+            ${overdue?`<div class="seg red" style="width:${overPct}%"></div>`:''}
+            ${completed?`<div class="seg green" style="width:${compPct}%"></div>`:''}
+          </div>
+        </div>
+        <div class="pc-recent">
+          <h4>Current tasks</h4>
+          ${recent || '<div style="font-size:12.5px; color:var(--muted-2); padding:4px 0">Nothing assigned.</div>'}
+        </div>
+        <div class="pc-foot">
+          <button class="btn btn-ghost btn-sm"><svg class="icon"><use href="#i-mail"/></svg> Message</button>
+          <button class="btn btn-ghost btn-sm"><svg class="icon"><use href="#i-plus"/></svg> Assign task</button>
+        </div>
+      </article>
+    `;
+  }
+
+  function renderGrid(){
+    const cards = OWNERS.map(personCard).join('');
+    const invite = `
+      <div class="invite-card">
+        <div class="ic"><svg width="22" height="22"><use href="#i-plus"/></svg></div>
+        <h3>Invite a new member</h3>
+        <p>Send an invite link to add designers, writers, or freelancers to Aktivacity.</p>
+        <button class="btn btn-primary btn-sm" style="margin-top:8px">
+          <svg class="icon"><use href="#i-mail"/></svg> Send invite
+        </button>
+      </div>
+    `;
+    document.getElementById('grid').innerHTML = cards + invite;
+  }
+</script>
+</body>
+</html>

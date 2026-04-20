@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Aktivacity — New Task</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+  .form-container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+  .form-header {
+    background: linear-gradient(180deg, #F8FAFC, #FFFFFF);
+    padding: 24px 32px;
+    border-bottom: 1px solid var(--border);
+  }
+  .form-header h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+  .form-header p {
+    color: var(--muted);
+    font-size: 14px;
+    margin: 4px 0 0;
+  }
+  .form-body {
+    padding: 32px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .form-group.full {
+    grid-column: span 2;
+  }
+  .form-group label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 700;
+    color: var(--muted);
+  }
+  .form-group input, .form-group select, .form-group textarea {
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #FBFCFD;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--text);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: var(--ring);
+    background: #fff;
+  }
+  .form-group textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
+  .form-footer {
+    padding: 24px 32px;
+    background: #F8FAFC;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+  }
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 500;
+    margin-bottom: 16px;
+    cursor: pointer;
+  }
+  .back-btn:hover { color: var(--text); }
+  @media (max-width: 640px) {
+    .form-body { grid-template-columns: 1fr; }
+    .form-group.full { grid-column: span 1; }
+  }
+</style>
+</head>
+<body>
+<div id="icons"></div>
+
+<div class="app">
+  <div id="sidebar-slot"></div>
+  <main class="main">
+    <div id="topbar-slot"></div>
+    <div class="content">
+      <a href="Production Tasks.html" class="back-btn">
+        <svg width="14" height="14"><use href="#i-chev-left"/></svg> Back to Tasks
+      </a>
+
+      <div class="form-container">
+        <header class="form-header">
+          <h2>Create New Task</h2>
+          <p>Fill in the details below to add a new task to the production pipeline.</p>
+        </header>
+        <form class="form-body">
+          <div class="form-group full">
+            <label for="task-title">Task Title</label>
+            <input type="text" id="task-title" placeholder="e.g. Website Hero Section Redesign" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="assignee">Assignee</label>
+            <select id="assignee" required>
+              <option value="">Select individual...</option>
+              <option value="SH">Soheera Ahmed</option>
+              <option value="SB">Sibghat Nawaz</option>
+              <option value="TM">Timothy Chen</option>
+              <option value="IN">Inam Khan</option>
+              <option value="ZA">Zainab Qureshi</option>
+              <option value="MK">Moiz Kiyani</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="priority">Priority</label>
+            <select id="priority">
+              <option value="low">Low</option>
+              <option value="medium" selected>Medium</option>
+              <option value="high">High</option>
+              <option value="critical">Critical</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="due-date">Due Date</label>
+            <input type="date" id="due-date" required>
+          </div>
+
+          <div class="form-group">
+            <label for="project">Project / Client</label>
+            <input type="text" id="project" placeholder="e.g. Synary, Aqua Venom...">
+          </div>
+
+          <div class="form-group full">
+            <label for="description">Description</label>
+            <textarea id="description" placeholder="Briefly describe the task objectives and deliverables..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="category">Category</label>
+            <select id="category">
+              <option value="web">Web Design</option>
+              <option value="portfolio">Portfolio</option>
+              <option value="banner">Banner</option>
+              <option value="ads">Ads</option>
+              <option value="social">Social Media</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="attachments">Attachments</label>
+            <input type="file" id="attachments" multiple>
+          </div>
+        </form>
+        <footer class="form-footer">
+          <a href="Production Tasks.html" class="btn btn-ghost">Cancel</a>
+          <button type="submit" class="btn btn-primary" onclick="alert('Task created successfully! (Mockup only)'); window.location.href='Production Tasks.html'">Create Task</button>
+        </footer>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="sidebar.js"></script>
+<script>
+  fetch('icons.html').then(r=>r.text()).then(t=>document.getElementById('icons').innerHTML=t).then(init).catch(init);
+
+  function init(){
+    document.getElementById('sidebar-slot').outerHTML = renderSidebar('tasks');
+    document.getElementById('topbar-slot').outerHTML = renderTopbar('New Task', 'Initialize a new production item.');
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Aktivacity — Notifications</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+  .inbox-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .inbox-tabs {
+    display: flex;
+    padding: 0 24px;
+    border-bottom: 1px solid var(--border);
+    background: #FBFCFD;
+  }
+  .inbox-tab {
+    padding: 16px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+  }
+  .inbox-tab.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+  }
+  .inbox-item {
+    display: flex;
+    gap: 16px;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .inbox-item:hover {
+    background: #F8FAFC;
+  }
+  .inbox-item.unread {
+    background: var(--primary-50);
+  }
+  .inbox-item.unread:hover {
+    background: #EEF2FF;
+  }
+  .inbox-item .avatar {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+  }
+  .inbox-item .content-body {
+    flex: 1;
+  }
+  .inbox-item .title {
+    font-size: 14px;
+    margin: 0;
+    line-height: 1.4;
+  }
+  .inbox-item .title b { font-weight: 700; color: var(--text); }
+  .inbox-item .desc {
+    color: var(--muted);
+    font-size: 13px;
+    margin: 4px 0 0;
+  }
+  .inbox-item .time {
+    font-size: 12px;
+    color: var(--muted-2);
+    white-space: nowrap;
+    margin-left: 12px;
+  }
+  .dot-unread {
+    width: 8px;
+    height: 8px;
+    background: var(--primary);
+    border-radius: 50%;
+    margin-left: auto;
+  }
+</style>
+</head>
+<body>
+<div id="icons"></div>
+
+<div class="app">
+  <div id="sidebar-slot"></div>
+  <main class="main">
+    <div id="topbar-slot"></div>
+    <div class="content">
+      <div class="inbox-card">
+        <div class="inbox-tabs">
+          <div class="inbox-tab active">All Notifications</div>
+          <div class="inbox-tab">Unread</div>
+          <div class="inbox-tab">Mentions</div>
+          <div class="inbox-tab">System</div>
+        </div>
+        
+        <div id="notification-list">
+          <!-- Items will be rendered here -->
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="sidebar.js"></script>
+<script>
+  fetch('icons.html').then(r=>r.text()).then(t=>document.getElementById('icons').innerHTML=t).then(init).catch(init);
+
+  const NOTIFS = [
+    { user: 'SB', name: 'Sibghat Nawaz', text: 'mentioned you in <b>Social Media Content (AQUA VENOM)</b>', desc: '"Should we use the motion graphic version for this or just a static carousel?"', time: '12m ago', unread: true },
+    { user: 'ZA', name: 'Zainab Qureshi', text: 'approved the moodboard for <b>Synary Website Redesign</b>', desc: '"Warmer variant looks much better. Proceeding with indigo accent."', time: '2h ago', unread: true },
+    { user: 'SO', name: 'System', text: '<b>9 tasks</b> were marked as <b>Overdue</b> after the weekend deadline', desc: 'Please review the production timeline.', time: '4h ago', unread: false },
+    { user: 'TM', name: 'Timothy Chen', text: 'uploaded 3 new assets to <b>AD Creative Images</b>', desc: 'Final render exports for feedback.', time: 'Yesterday', unread: false },
+    { user: 'MK', name: 'Moiz Kiyani', text: 'marked <b>Portfolio Design</b> as <b>Completed</b>', desc: 'Design lead handoff successful.', time: '2 days ago', unread: false }
+  ];
+
+  function init(){
+    document.getElementById('sidebar-slot').outerHTML = renderSidebar('dashboard');
+    document.getElementById('topbar-slot').outerHTML = renderTopbar('Notifications', 'Stay updated with studio activity and comments.');
+    renderNotifs();
+  }
+
+  function renderNotifs() {
+    const html = NOTIFS.map(n => `
+      <div class="inbox-item ${n.unread ? 'unread' : ''}">
+        <div class="avatar" style="background:${OWNER_COLORS[n.user] || '#eee'}">${n.user}</div>
+        <div class="content-body">
+          <p class="title"><b>${n.name}</b> ${n.text}</p>
+          <p class="desc">${n.desc}</p>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px">
+          <span class="time">${n.time}</span>
+          ${n.unread ? '<div class="dot-unread"></div>' : ''}
+        </div>
+      </div>
+    `).join('');
+    document.getElementById('notification-list').innerHTML = html;
+  }
+</script>
+</body>
+</html>

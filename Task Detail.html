@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Aktivacity — Task Detail</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+  .crumbs{display:flex; align-items:center; gap:6px; font-size:12px; color:var(--muted); margin-bottom:14px}
+  .crumbs a{color:var(--muted)}
+  .crumbs a:hover{color:var(--text); text-decoration:underline}
+  .crumbs .sep{color:var(--muted-2)}
+
+  .detail-head{
+    background:#fff; border:1px solid var(--border); border-radius:16px;
+    box-shadow:var(--shadow-sm);
+    padding:22px 24px;
+    margin-bottom:20px;
+    position:relative;
+  }
+  .detail-head.overdue{
+    background:linear-gradient(180deg,#FFFFFF 0%,#FFF7F7 100%);
+    border-color:#FECACA;
+  }
+  .dh-top{display:flex; align-items:flex-start; gap:14px; flex-wrap:wrap}
+  .dh-ic{
+    width:44px; height:44px; border-radius:12px;
+    background:var(--primary-50); color:var(--primary);
+    display:grid; place-items:center; flex:0 0 44px;
+  }
+  .dh-title{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:26px; font-weight:700; letter-spacing:-0.02em; margin:0;
+    line-height:1.2;
+  }
+  .dh-sub{font-size:12px; color:var(--muted); margin-top:4px; display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+  .dh-sub .id{
+    font-family:'Space Grotesk',sans-serif; font-weight:600;
+    background:#F1F5F9; color:var(--muted); padding:2px 8px; border-radius:6px; font-size:11px;
+  }
+  .dh-actions{display:flex; gap:8px; margin-left:auto; flex-wrap:wrap}
+
+  .dh-meta{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:0;
+    border-top:1px solid var(--border);
+    margin-top:20px; padding-top:16px;
+  }
+  .dh-meta .cell{padding:0 16px; border-left:1px solid var(--border); min-width:0}
+  .dh-meta .cell:first-child{border-left:0; padding-left:0}
+  .dh-meta .cell .k{font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-weight:600; margin-bottom:6px}
+  .dh-meta .cell .v{font-size:13.5px; font-weight:600; display:flex; align-items:center; gap:8px}
+  .dh-meta .cell .v small{font-weight:500; color:var(--muted); font-size:11px; display:block}
+
+  .layout{display:grid; grid-template-columns:1fr 340px; gap:20px}
+
+  .desc{
+    background:#fff; border:1px solid var(--border); border-radius:14px;
+    box-shadow:var(--shadow-sm); padding:20px 22px;
+  }
+  .desc h3{font-family:'Space Grotesk',sans-serif; font-size:15px; margin:0 0 10px; letter-spacing:-0.01em}
+  .desc p{font-size:14px; line-height:1.65; color:#334155; margin:0 0 12px}
+  .desc .bulleted{padding-left:18px; margin:0 0 8px}
+  .desc .bulleted li{font-size:14px; line-height:1.7; color:#334155}
+
+  .subtasks{
+    background:#fff; border:1px solid var(--border); border-radius:14px;
+    box-shadow:var(--shadow-sm); margin-top:16px;
+  }
+  .subtasks .head{padding:16px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center}
+  .subtasks .head h3{font-family:'Space Grotesk',sans-serif; font-size:15px; margin:0; letter-spacing:-0.01em}
+  .subtasks .head .prog{font-size:12px; color:var(--muted)}
+  .subtasks .prog-bar{height:4px; background:#F1F5F9; width:100%; border-radius:2px; overflow:hidden}
+  .subtasks .prog-bar div{height:100%; background:var(--primary); width:40%}
+  .subtasks ul{list-style:none; margin:0; padding:0}
+  .subtasks li{display:flex; align-items:center; gap:12px; padding:12px 20px; border-top:1px solid var(--border)}
+  .subtasks li:first-child{border-top:0}
+  .subtasks .chk{
+    width:18px; height:18px; border:1.5px solid var(--border-strong); border-radius:5px;
+    flex:0 0 18px; display:grid; place-items:center; color:transparent;
+  }
+  .subtasks li.done .chk{background:var(--success); border-color:var(--success); color:#fff}
+  .subtasks li.done .tt{color:var(--muted-2); text-decoration:line-through}
+  .subtasks .tt{flex:1; font-size:13.5px}
+  .subtasks .m{font-size:11px; color:var(--muted); display:flex; align-items:center; gap:6px}
+  .subtasks .m .avatar{width:18px; height:18px; font-size:9px; flex-basis:18px}
+
+  .attach{
+    background:#fff; border:1px solid var(--border); border-radius:14px;
+    box-shadow:var(--shadow-sm); margin-top:16px; padding:18px 20px;
+  }
+  .attach h3{font-family:'Space Grotesk',sans-serif; font-size:15px; margin:0 0 12px; letter-spacing:-0.01em}
+  .attach .files{display:grid; grid-template-columns:repeat(auto-fill, minmax(170px,1fr)); gap:10px}
+  .file{
+    display:flex; align-items:center; gap:10px;
+    padding:10px 12px; border:1px solid var(--border); border-radius:10px;
+    background:#FBFCFD;
+  }
+  .file .ic{
+    width:34px; height:34px; border-radius:8px; flex:0 0 34px;
+    background:linear-gradient(135deg,#EEF2FF,#E0E7FF); color:var(--primary);
+    display:grid; place-items:center;
+  }
+  .file .n{font-size:12.5px; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .file .s{font-size:11px; color:var(--muted)}
+
+  .comments{
+    background:#fff; border:1px solid var(--border); border-radius:14px;
+    box-shadow:var(--shadow-sm); margin-top:16px;
+  }
+  .comments .head{padding:16px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center}
+  .comments .head h3{font-family:'Space Grotesk',sans-serif; font-size:15px; margin:0; letter-spacing:-0.01em}
+  .comments .list{padding:6px 20px}
+  .c-item{display:flex; gap:12px; padding:14px 0; border-top:1px solid var(--border)}
+  .c-item:first-child{border-top:0}
+  .c-item .avatar{width:32px; height:32px; font-size:12px; flex-basis:32px}
+  .c-item .body{flex:1}
+  .c-item .meta{font-size:12px; color:var(--muted); margin-bottom:4px}
+  .c-item .meta b{color:var(--text); font-weight:600}
+  .c-item p{margin:0; font-size:13.5px; line-height:1.55; color:#334155}
+  .c-write{
+    padding:14px 20px; border-top:1px solid var(--border);
+    display:flex; gap:12px; align-items:flex-start;
+  }
+  .c-write .avatar{width:32px; height:32px; font-size:12px; flex-basis:32px}
+  .c-write .box{flex:1; border:1px solid var(--border); border-radius:10px; background:#FBFCFD; padding:10px 12px}
+  .c-write textarea{width:100%; border:0; outline:none; background:transparent; resize:none; font-family:inherit; font-size:13.5px; color:var(--text); min-height:40px}
+  .c-write .row{display:flex; justify-content:space-between; align-items:center; margin-top:6px}
+  .c-write .row .tools{display:flex; gap:4px; color:var(--muted)}
+  .c-write .row .tools button{border:0; background:transparent; padding:4px; color:inherit; cursor:pointer; border-radius:6px}
+  .c-write .row .tools button:hover{background:#F1F5F9; color:var(--text)}
+
+  /* Sidebar */
+  .side{display:flex; flex-direction:column; gap:16px}
+  .field{
+    background:#fff; border:1px solid var(--border); border-radius:14px;
+    box-shadow:var(--shadow-sm); padding:14px 16px;
+  }
+  .field .lbl{font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-weight:600; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center}
+  .field .lbl .tiny{color:var(--muted-2); font-weight:500; text-transform:none; letter-spacing:0; font-size:11px}
+  .field .val{display:flex; align-items:center; gap:10px; font-size:13.5px; font-weight:500}
+  .field .val .avatar{width:26px; height:26px; font-size:10px; flex-basis:26px}
+  .select{
+    display:flex; align-items:center; justify-content:space-between;
+    border:1px solid var(--border); border-radius:8px;
+    padding:8px 10px; font-size:13px; background:#FBFCFD; cursor:pointer;
+  }
+  .select:hover{border-color:var(--border-strong)}
+  .side .card-btn{
+    display:flex; align-items:center; gap:8px;
+    background:#F8FAFC; border:1px solid var(--border);
+    padding:9px 10px; border-radius:8px; font-size:13px;
+    cursor:pointer;
+  }
+  .side .card-btn:hover{background:#F1F5F9}
+
+  .side-actions{display:flex; flex-direction:column; gap:8px}
+  .side-actions .btn{justify-content:center; width:100%}
+
+  /* Activity */
+  .act ul{list-style:none; margin:0; padding:0}
+  .act li{position:relative; padding:8px 0 8px 22px; font-size:12.5px; color:var(--muted); line-height:1.5}
+  .act li::before{
+    content:""; position:absolute; left:6px; top:14px; width:6px; height:6px; border-radius:50%;
+    background:#CBD5E1;
+  }
+  .act li:not(:last-child)::after{content:""; position:absolute; left:8.5px; top:20px; bottom:-8px; width:1px; background:var(--border)}
+  .act li b{color:var(--text); font-weight:600}
+  .act li small{display:block; font-size:11px; color:var(--muted-2)}
+
+  @media (max-width: 1100px){
+    .layout{grid-template-columns:1fr}
+    .dh-meta{grid-template-columns:repeat(2,1fr); gap:14px 0}
+    .dh-meta .cell{border-left:0; padding:0; border-top:1px solid var(--border); padding-top:10px}
+    .dh-meta .cell:first-child, .dh-meta .cell:nth-child(2){border-top:0; padding-top:0}
+    .dh-meta .cell:nth-child(2n){padding-left:14px; border-left:1px solid var(--border)}
+  }
+</style>
+</head>
+<body>
+<div id="icons"></div>
+
+<div class="app">
+  <div id="sidebar-slot"></div>
+  <main class="main">
+    <div id="topbar-slot"></div>
+
+    <div class="content">
+      <div class="crumbs">
+        <a href="Production Tasks.html">Production Tasks</a>
+        <span class="sep">/</span>
+        <span style="color:var(--text); font-weight:500" id="crumb-title">Task</span>
+      </div>
+
+      <!-- Header -->
+      <section class="detail-head overdue" id="dhead">
+        <div class="dh-top">
+          <div class="dh-ic"><svg width="22" height="22"><use href="#i-globe" id="headIcon"/></svg></div>
+          <div style="min-width:0; flex:1">
+            <h1 class="dh-title" id="headTitle">Official Synary Website Redesign</h1>
+            <div class="dh-sub">
+              <span class="id" id="headId">TSK-001</span>
+              <span class="dept-pill"><span class="sq"></span> Design</span>
+              <span>Created <b style="color:var(--text)">17 Apr 2026</b> by Sooraj</span>
+            </div>
+          </div>
+          <div class="dh-actions">
+            <button class="btn btn-ghost btn-sm"><svg class="icon"><use href="#i-link"/></svg> Copy link</button>
+            <button class="btn btn-ghost btn-sm"><svg class="icon"><use href="#i-archive"/></svg> Archive</button>
+            <button class="btn btn-primary btn-sm"><svg class="icon"><use href="#i-edit"/></svg> Edit</button>
+          </div>
+        </div>
+
+        <div class="dh-meta">
+          <div class="cell">
+            <div class="k">Status</div>
+            <div class="v" id="headStatus"></div>
+          </div>
+          <div class="cell">
+            <div class="k">Priority</div>
+            <div class="v" id="headPrio"></div>
+          </div>
+          <div class="cell">
+            <div class="k">Assignee</div>
+            <div class="v" id="headAssignee"></div>
+          </div>
+          <div class="cell">
+            <div class="k">Due</div>
+            <div class="v" style="color:var(--danger)"><svg width="14" height="14" style="color:var(--danger)"><use href="#i-calendar"/></svg> 17 Apr 2026 <small>3 days overdue</small></div>
+          </div>
+        </div>
+      </section>
+
+      <div class="layout">
+        <!-- Primary column -->
+        <div>
+          <!-- Description -->
+          <section class="desc">
+            <h3>Description</h3>
+            <p>Full redesign of the Synary marketing site. Goals: clearer positioning above the fold, tighter information hierarchy on the Product page, and a faster path to booking a demo. Match the refreshed brand palette approved last sprint.</p>
+            <p style="font-weight:600; color:var(--text); margin-top:16px">Deliverables</p>
+            <ul class="bulleted">
+              <li>Home, Product, Pricing, About pages — desktop + mobile.</li>
+              <li>Updated component library in Figma (buttons, forms, cards).</li>
+              <li>Two hero concepts for stakeholder review.</li>
+            </ul>
+          </section>
+
+          <!-- Subtasks -->
+          <section class="subtasks">
+            <div class="head">
+              <div>
+                <h3>Subtasks</h3>
+                <div class="prog">2 of 5 complete</div>
+              </div>
+              <button class="btn btn-ghost btn-sm"><svg class="icon"><use href="#i-plus"/></svg> Add subtask</button>
+            </div>
+            <div class="prog-bar"><div></div></div>
+            <ul>
+              <li class="done">
+                <div class="chk"><svg width="12" height="12"><use href="#i-check"/></svg></div>
+                <span class="tt">Audit current site, document IA problems</span>
+                <span class="m"><span class="avatar" style="background:linear-gradient(135deg,#F472B6,#DB2777)">SH</span> 14 Apr</span>
+              </li>
+              <li class="done">
+                <div class="chk"><svg width="12" height="12"><use href="#i-check"/></svg></div>
+                <span class="tt">Moodboard & brand alignment</span>
+                <span class="m"><span class="avatar" style="background:linear-gradient(135deg,#A78BFA,#6D28D9)">ZA</span> 15 Apr</span>
+              </li>
+              <li>
+                <div class="chk"></div>
+                <span class="tt">Hero concepts (2 variations)</span>
+                <span class="m" style="color:var(--danger)"><span class="avatar" style="background:linear-gradient(135deg,#F472B6,#DB2777)">SH</span> Due 17 Apr</span>
+              </li>
+              <li>
+                <div class="chk"></div>
+                <span class="tt">Product page wires → hi-fi</span>
+                <span class="m" style="color:var(--danger)"><span class="avatar" style="background:linear-gradient(135deg,#F472B6,#DB2777)">SH</span> Due 17 Apr</span>
+              </li>
+              <li>
+                <div class="chk"></div>
+                <span class="tt">Component library handoff</span>
+                <span class="m"><span class="avatar" style="background:linear-gradient(135deg,#A78BFA,#6D28D9)">ZA</span> 22 Apr</span>
+              </li>
+            </ul>
+          </section>
+
+          <!-- Attachments -->
+          <section class="attach">
+            <h3>Attachments <span style="font-size:12px; color:var(--muted); font-weight:500">· 3</span></h3>
+            <div class="files">
+              <div class="file">
+                <div class="ic"><svg width="16" height="16"><use href="#i-file"/></svg></div>
+                <div style="min-width:0">
+                  <div class="n">Synary-brief.pdf</div>
+                  <div class="s">2.4 MB · 17 Apr</div>
+                </div>
+              </div>
+              <div class="file">
+                <div class="ic" style="background:linear-gradient(135deg,#DCFCE7,#BBF7D0); color:#16A34A"><svg width="16" height="16"><use href="#i-image"/></svg></div>
+                <div style="min-width:0">
+                  <div class="n">hero-concept-01.png</div>
+                  <div class="s">1.1 MB · yesterday</div>
+                </div>
+              </div>
+              <div class="file">
+                <div class="ic" style="background:linear-gradient(135deg,#FEF3C7,#FDE68A); color:#B45309"><svg width="16" height="16"><use href="#i-image"/></svg></div>
+                <div style="min-width:0">
+                  <div class="n">moodboard-v2.jpg</div>
+                  <div class="s">3.8 MB · 15 Apr</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Comments -->
+          <section class="comments">
+            <div class="head">
+              <h3>Comments <span style="font-size:12px; color:var(--muted); font-weight:500">· 4</span></h3>
+              <div class="seg" style="display:inline-flex; padding:3px; border-radius:10px; background:#F1F5F9; border:1px solid var(--border); font-size:12px; color:var(--muted)">
+                <button style="border:0; background:#fff; padding:5px 10px; border-radius:7px; color:var(--text); box-shadow:var(--shadow-sm); font:inherit; cursor:pointer">Newest</button>
+                <button style="border:0; background:transparent; padding:5px 10px; border-radius:7px; font:inherit; cursor:pointer; color:var(--muted)">Oldest</button>
+              </div>
+            </div>
+            <div class="list">
+              <div class="c-item">
+                <div class="avatar" style="background:linear-gradient(135deg,#818CF8,#4F46E5)">SO</div>
+                <div class="body">
+                  <div class="meta"><b>Sooraj</b> · 4h ago</div>
+                  <p>Pushed the due date visually to the top so nobody misses it. @Soheera can you post the first hero concept for review before EOD tomorrow?</p>
+                </div>
+              </div>
+              <div class="c-item">
+                <div class="avatar" style="background:linear-gradient(135deg,#F472B6,#DB2777)">SH</div>
+                <div class="body">
+                  <div class="meta"><b>Soheera Ahmed</b> · yesterday</div>
+                  <p>Hero concept 01 uploaded. Still iterating on typography — Space Grotesk felt too sharp for the pitch. Trying a pairing with Inter next.</p>
+                </div>
+              </div>
+              <div class="c-item">
+                <div class="avatar" style="background:linear-gradient(135deg,#A78BFA,#6D28D9)">ZA</div>
+                <div class="body">
+                  <div class="meta"><b>Zainab Qureshi</b> · 2d ago</div>
+                  <p>Moodboard approved. Proceeding with the warmer variant — locked the accent to indigo #4F46E5 across the marketing surface.</p>
+                </div>
+              </div>
+              <div class="c-item">
+                <div class="avatar" style="background:linear-gradient(135deg,#818CF8,#4F46E5)">SO</div>
+                <div class="body">
+                  <div class="meta"><b>Sooraj</b> · 3d ago</div>
+                  <p>Kicking this off. Brief attached — let's do a 30-min alignment on Monday.</p>
+                </div>
+              </div>
+            </div>
+            <div class="c-write">
+              <div class="avatar" style="background:linear-gradient(135deg,#818CF8,#4F46E5)">SO</div>
+              <div class="box">
+                <textarea placeholder="Write a comment… Use @ to mention someone."></textarea>
+                <div class="row">
+                  <div class="tools">
+                    <button title="Attach"><svg width="16" height="16"><use href="#i-paperclip"/></svg></button>
+                    <button title="Mention"><svg width="16" height="16"><use href="#i-user"/></svg></button>
+                    <button title="Emoji"><svg width="16" height="16"><use href="#i-sparkle"/></svg></button>
+                  </div>
+                  <button class="btn btn-primary btn-sm">Add comment</button>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Side column -->
+        <aside class="side">
+          <div class="side-actions">
+            <button class="btn btn-primary"><svg class="icon"><use href="#i-check"/></svg> Mark as completed</button>
+            <button class="btn btn-ghost"><svg class="icon"><use href="#i-calendar"/></svg> Reschedule</button>
+          </div>
+
+          <div class="field">
+            <div class="lbl">Status <span class="tiny">auto</span></div>
+            <div class="select">
+              <span class="status overdue"><svg class="icon"><use href="#i-alert"/></svg> Overdue</span>
+              <svg width="14" height="14" style="color:var(--muted)"><use href="#i-chev-down"/></svg>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="lbl">Priority</div>
+            <div class="select">
+              <span class="prio high"><span class="pdot"></span> High</span>
+              <svg width="14" height="14" style="color:var(--muted)"><use href="#i-chev-down"/></svg>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="lbl">Assignee</div>
+            <div class="select">
+              <span class="val">
+                <span class="avatar" style="background:linear-gradient(135deg,#F472B6,#DB2777); width:22px; height:22px; font-size:10px; flex-basis:22px">SH</span>
+                Soheera Ahmed
+              </span>
+              <svg width="14" height="14" style="color:var(--muted)"><use href="#i-chev-down"/></svg>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="lbl">Dates</div>
+            <div style="display:flex; flex-direction:column; gap:8px">
+              <div class="select"><span>Assigned · 17 Apr 2026</span><svg width="14" height="14" style="color:var(--muted)"><use href="#i-calendar"/></svg></div>
+              <div class="select" style="color:var(--danger); font-weight:600"><span>Due · 17 Apr 2026</span><svg width="14" height="14" style="color:var(--muted)"><use href="#i-calendar"/></svg></div>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="lbl">Project / Client</div>
+            <div class="select">
+              <span class="val"><span style="width:20px; height:20px; border-radius:5px; background:linear-gradient(135deg,#6366F1,#312E81); display:inline-grid; place-items:center; color:#fff; font-size:10px; font-weight:700">S</span> Synary</span>
+              <svg width="14" height="14" style="color:var(--muted)"><use href="#i-chev-down"/></svg>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="lbl">Watchers <span class="tiny">3</span></div>
+            <div class="val" style="display:flex">
+              <span class="avatar" style="background:linear-gradient(135deg,#818CF8,#4F46E5); width:24px; height:24px; font-size:10px; flex-basis:24px; border:2px solid #fff">SO</span>
+              <span class="avatar" style="background:linear-gradient(135deg,#A78BFA,#6D28D9); width:24px; height:24px; font-size:10px; flex-basis:24px; border:2px solid #fff; margin-left:-6px">ZA</span>
+              <span class="avatar" style="background:linear-gradient(135deg,#F472B6,#DB2777); width:24px; height:24px; font-size:10px; flex-basis:24px; border:2px solid #fff; margin-left:-6px">SH</span>
+              <button class="btn btn-ghost btn-sm" style="margin-left:auto; padding:4px 8px"><svg class="icon" width="12" height="12"><use href="#i-plus"/></svg></button>
+            </div>
+          </div>
+
+          <div class="field act">
+            <div class="lbl">Activity</div>
+            <ul>
+              <li><b>Sooraj</b> added a comment<small>4 hours ago</small></li>
+              <li><b>Soheera</b> uploaded hero-concept-01.png<small>yesterday · 16:42</small></li>
+              <li>Status changed to <b>Overdue</b> (auto)<small>18 Apr · 00:00</small></li>
+              <li><b>Zainab</b> completed the <b>Moodboard</b> subtask<small>15 Apr · 11:20</small></li>
+              <li><b>Sooraj</b> created this task<small>17 Apr · 09:05</small></li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="sidebar.js"></script>
+<script>
+  fetch('icons.html').then(r=>r.text()).then(t=>document.getElementById('icons').innerHTML=t).then(init).catch(init);
+
+  function getId(){
+    const m = new URLSearchParams(location.search);
+    return parseInt(m.get('id') || '1', 10);
+  }
+
+  function init(){
+    document.getElementById('sidebar-slot').outerHTML = renderSidebar('tasks');
+    document.getElementById('topbar-slot').outerHTML = renderTopbar('Task detail','Open the row, update fields, hand it off.');
+
+    const id = getId();
+    const t = TASKS.find(x => x.id === id) || TASKS[0];
+    document.getElementById('crumb-title').textContent = t.title;
+    document.getElementById('headTitle').textContent = t.title;
+    document.getElementById('headId').textContent = 'TSK-' + String(t.id).padStart(3,'0');
+    document.getElementById('headIcon').setAttribute('href','#' + KIND_ICON[t.kind]);
+
+    const statusHtml = t.status === 'completed'
+      ? '<span class="status completed"><svg class="icon"><use href="#i-check"/></svg> Completed</span>'
+      : '<span class="status overdue"><svg class="icon"><use href="#i-alert"/></svg> Overdue</span>';
+    document.getElementById('headStatus').innerHTML = statusHtml;
+    if(t.status==='completed') document.getElementById('dhead').classList.remove('overdue');
+
+    document.getElementById('headPrio').innerHTML = t.prio==='high'
+      ? '<span class="prio high"><span class="pdot"></span> High</span>'
+      : '<span class="prio medium"><span class="pdot"></span> Medium</span>';
+
+    document.getElementById('headAssignee').innerHTML = `
+      <span class="avatar" style="background:${OWNER_COLORS[t.oi]}; width:26px; height:26px; font-size:10px; flex-basis:26px">${t.oi}</span>
+      <span>${t.owner}<small>${(OWNERS.find(o=>o.id===t.oi)||{}).role||''}</small></span>
+    `;
+  }
+</script>
+</body>
+</html>

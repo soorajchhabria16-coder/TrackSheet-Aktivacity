@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Aktivacity — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+  .hero{
+    display:grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap:16px;
+    margin-bottom:20px;
+  }
+  .hero .card{padding:0; overflow:hidden}
+  /* Alert banner */
+  .alert-card{
+    background:
+      radial-gradient(120% 100% at 100% 0%, rgba(220,38,38,.12) 0%, rgba(220,38,38,0) 50%),
+      linear-gradient(180deg, #FFFFFF 0%, #FFF7F7 100%);
+    border-color:#FECACA;
+    display:flex; flex-direction:column; justify-content:space-between;
+    padding:22px 24px 20px;
+    min-height:200px;
+    position:relative;
+  }
+  .alert-tag{
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:11px; font-weight:700; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--danger);
+    background:#FEE2E2; padding:4px 10px; border-radius:999px;
+    width:max-content;
+  }
+  .alert-num{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:72px; font-weight:700; letter-spacing:-0.03em;
+    color:var(--danger); line-height:1;
+    font-variant-numeric:tabular-nums;
+  }
+  .alert-num small{font-size:20px; color:var(--muted); font-weight:500; margin-left:8px; letter-spacing:0}
+  .alert-line{display:flex; align-items:center; justify-content:space-between; margin-top:12px; gap:12px; flex-wrap:wrap}
+  .alert-line p{margin:0; color:#991B1B; font-size:13px; max-width:420px}
+
+  /* Hero right — today */
+  .today-card{
+    background:
+      radial-gradient(120% 100% at 0% 0%, rgba(79,70,229,.10) 0%, rgba(79,70,229,0) 60%),
+      linear-gradient(180deg,#FFFFFF,#FBFBFF);
+    padding:22px 24px;
+    display:flex; flex-direction:column; gap:14px;
+  }
+  .today-head{display:flex; align-items:center; justify-content:space-between}
+  .today-date{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700; font-size:13px; letter-spacing:.06em;
+    text-transform:uppercase; color:var(--muted);
+  }
+  .today-title{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:20px; font-weight:700; margin:0; letter-spacing:-0.015em;
+  }
+  .today-row{display:flex; gap:18px}
+  .today-stat{flex:1; display:flex; flex-direction:column; gap:2px}
+  .today-num{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:32px; font-weight:700; letter-spacing:-0.02em;
+    font-variant-numeric:tabular-nums; line-height:1.1;
+  }
+  .today-num.red{color:var(--danger)}
+  .today-num.green{color:var(--success)}
+  .today-num.amber{color:#B45309}
+  .today-stat small{font-size:12px; color:var(--muted)}
+
+  /* KPI row */
+  .kpi-row{display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px}
+  .mini-kpi{background:#fff; border:1px solid var(--border); border-radius:14px; padding:16px 18px; box-shadow:var(--shadow-sm)}
+  .mini-kpi .lbl{font-size:12px; color:var(--muted); font-weight:500}
+  .mini-kpi .val{font-family:'Space Grotesk',sans-serif; font-size:28px; font-weight:700; letter-spacing:-0.02em; margin-top:4px; font-variant-numeric:tabular-nums}
+  .mini-kpi .delta{font-size:11px; color:var(--success); font-weight:600; display:inline-flex; align-items:center; gap:3px; margin-top:6px}
+  .mini-kpi .delta.red{color:var(--danger)}
+
+  /* Grid */
+  .grid{
+    display:grid;
+    grid-template-columns:1.35fr 1fr;
+    gap:16px;
+  }
+  .grid > .col{display:flex; flex-direction:column; gap:16px}
+
+  /* Workload */
+  .workload .row{
+    display:grid;
+    grid-template-columns: 160px 1fr 96px;
+    gap:14px;
+    align-items:center;
+    padding:12px 18px;
+    border-top:1px solid var(--border);
+  }
+  .workload .row:first-of-type{border-top:0}
+  .workload .person{display:flex; align-items:center; gap:10px; font-weight:600; font-size:13px}
+  .workload .person .avatar{width:28px; height:28px; font-size:11px; flex-basis:28px}
+  .workload .person small{display:block; font-weight:500; font-size:11px; color:var(--muted)}
+  .wbar{
+    position:relative;
+    height:14px;
+    background:#F1F5F9;
+    border-radius:8px;
+    overflow:hidden;
+    display:flex;
+  }
+  .wbar .seg{height:100%;}
+  .wbar .seg.red{background:var(--danger)}
+  .wbar .seg.green{background:var(--success)}
+  .wbar .seg.amber{background:var(--warning)}
+  .wcount{font-variant-numeric:tabular-nums; text-align:right; font-size:13px; color:var(--muted)}
+  .wcount b{color:var(--text); font-weight:700; font-size:14px}
+
+  /* Throughput */
+  .throughput{padding:18px}
+  .throughput .chart{
+    height:140px;
+    position:relative;
+    margin-top:10px;
+  }
+  .chart svg{width:100%; height:100%; display:block}
+  .chart-axis{display:flex; justify-content:space-between; margin-top:6px; font-size:11px; color:var(--muted); font-family:'Space Grotesk',sans-serif}
+
+  /* Deadlines timeline */
+  .timeline{padding:0}
+  .t-days{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    border-bottom:1px solid var(--border);
+  }
+  .t-day{
+    padding:14px 10px;
+    border-left:1px solid var(--border);
+    text-align:center;
+    font-size:11px; color:var(--muted);
+    text-transform:uppercase; letter-spacing:.06em;
+    position:relative;
+    min-height:120px;
+  }
+  .t-day:first-child{border-left:0}
+  .t-day.today{background:linear-gradient(180deg, rgba(79,70,229,.06), transparent)}
+  .t-day.today::before{
+    content:"TODAY";
+    position:absolute; top:6px; left:50%; transform:translateX(-50%);
+    font-size:9px; color:var(--primary); font-weight:700; letter-spacing:.08em;
+  }
+  .t-day .dnum{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:18px; font-weight:700; color:var(--text);
+    margin-bottom:10px; letter-spacing:-0.01em;
+  }
+  .t-day.past .dnum{color:var(--muted-2)}
+  .t-day .pip{
+    display:block; height:6px; border-radius:3px;
+    margin:3px auto; width:70%;
+    background:var(--primary); opacity:.8;
+  }
+  .t-day .pip.red{background:var(--danger)}
+  .t-day .pip.amber{background:var(--warning)}
+  .t-day .pip.muted{background:#CBD5E1}
+
+  /* Activity */
+  .activity ul{list-style:none; margin:0; padding:0}
+  .activity li{
+    display:flex; gap:12px; padding:12px 18px;
+    border-top:1px solid var(--border);
+    align-items:flex-start;
+  }
+  .activity li:first-child{border-top:0}
+  .activity .dot-ic{
+    width:28px; height:28px; border-radius:8px;
+    display:grid; place-items:center; flex:0 0 28px;
+    background:#F1F5F9; color:var(--muted);
+  }
+  .activity .dot-ic.green{background:var(--success-50); color:var(--success)}
+  .activity .dot-ic.red{background:var(--danger-50); color:var(--danger)}
+  .activity .dot-ic.indigo{background:var(--primary-50); color:var(--primary)}
+  .activity .txt{flex:1; font-size:13px; line-height:1.5}
+  .activity .txt b{font-weight:600}
+  .activity .txt small{display:block; font-size:11px; color:var(--muted-2); margin-top:2px}
+
+  /* Status donut */
+  .donut-wrap{display:flex; align-items:center; gap:24px; padding:18px}
+  .donut{width:140px; height:140px; flex:0 0 140px; position:relative}
+  .donut .ctr{
+    position:absolute; inset:0; display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+  }
+  .donut .ctr .n{font-family:'Space Grotesk',sans-serif; font-size:28px; font-weight:700; letter-spacing:-0.02em}
+  .donut .ctr small{font-size:11px; color:var(--muted)}
+  .donut-legend{display:flex; flex-direction:column; gap:10px; flex:1}
+  .donut-legend .li{display:flex; align-items:center; gap:8px; font-size:13px}
+  .donut-legend .li .sw{width:10px; height:10px; border-radius:3px}
+  .donut-legend .li .sw.red{background:var(--danger)}
+  .donut-legend .li .sw.green{background:var(--success)}
+  .donut-legend .li .sw.amber{background:var(--warning)}
+  .donut-legend b{margin-left:auto; font-variant-numeric:tabular-nums}
+
+  /* At-risk list */
+  .risk li{
+    display:flex; gap:12px; padding:14px 18px;
+    border-top:1px solid var(--border);
+    align-items:center;
+  }
+  .risk li:first-child{border-top:0}
+  .risk .icon-pill{width:32px; height:32px; border-radius:8px; background:#F1F5F9; color:var(--muted); display:grid; place-items:center; flex:0 0 32px}
+  .risk .body{flex:1; min-width:0}
+  .risk .body .title{font-weight:600; font-size:13.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .risk .body .meta{font-size:11px; color:var(--muted); display:flex; gap:8px; align-items:center; margin-top:2px}
+  .risk .body .meta .avatar{width:14px; height:14px; font-size:8px; flex-basis:14px}
+
+  @media (max-width: 1100px){
+    .hero, .grid{grid-template-columns:1fr}
+    .kpi-row{grid-template-columns:repeat(2,1fr)}
+    .workload .row{grid-template-columns: 130px 1fr 80px}
+  }
+  @media (max-width: 640px){
+    .kpi-row{grid-template-columns:1fr}
+    .t-days{grid-template-columns:repeat(7,minmax(60px,1fr)); overflow-x:auto}
+    .workload .row{grid-template-columns: 1fr; gap:8px}
+  }
+</style>
+</head>
+<body>
+<div id="icons"></div>
+
+<div class="app">
+  <div id="sidebar-slot"></div>
+  <main class="main">
+    <div id="topbar-slot"></div>
+    <div class="content">
+
+      <!-- HERO row -->
+      <section class="hero">
+        <div class="card alert-card">
+          <div class="alert-tag">
+            <svg width="10" height="10"><use href="#i-alert"/></svg> Action needed
+          </div>
+          <div>
+            <div class="alert-num">9<small>tasks overdue</small></div>
+            <div class="alert-line">
+              <p>All overdue items share the same due date — <b>17 Apr 2026</b>. Reassign, reschedule, or escalate from the Production Tasks page.</p>
+              <a class="btn btn-primary btn-sm" href="Production Tasks.html">
+                Review overdue <svg class="icon" width="14" height="14"><use href="#i-chev-right"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card today-card">
+          <div class="today-head">
+            <span class="today-date">Mon · 20 Apr 2026</span>
+            <button class="icon-btn"><svg width="14" height="14"><use href="#i-calendar"/></svg></button>
+          </div>
+          <div>
+            <h2 class="today-title">At a glance</h2>
+            <p style="margin:2px 0 0; color:var(--muted); font-size:13px">A snapshot of the Design team this week.</p>
+          </div>
+          <div class="today-row">
+            <div class="today-stat"><div class="today-num">12</div><small>Total tasks</small></div>
+            <div class="today-stat"><div class="today-num green">3</div><small>Completed</small></div>
+            <div class="today-stat"><div class="today-num red">9</div><small>Overdue</small></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Mini KPI row -->
+      <div class="kpi-row">
+        <div class="mini-kpi">
+          <div class="lbl">Completion rate</div>
+          <div class="val">25<span style="font-size:16px; color:var(--muted)">%</span></div>
+          <span class="delta"><svg width="11" height="11"><use href="#i-trend-up"/></svg>+8 pts vs last week</span>
+        </div>
+        <div class="mini-kpi">
+          <div class="lbl">Avg. days to ship</div>
+          <div class="val">4.2<span style="font-size:16px; color:var(--muted)">d</span></div>
+          <span class="delta red"><svg width="11" height="11"><use href="#i-alert"/></svg>+1.3d vs target</span>
+        </div>
+        <div class="mini-kpi">
+          <div class="lbl">On-time rate</div>
+          <div class="val">62<span style="font-size:16px; color:var(--muted)">%</span></div>
+          <span class="delta red">–11 pts vs last month</span>
+        </div>
+        <div class="mini-kpi">
+          <div class="lbl">Active assignees</div>
+          <div class="val">6 <span style="font-size:13px; color:var(--muted); font-weight:500">/ 6</span></div>
+          <span class="delta">Full team utilized</span>
+        </div>
+      </div>
+
+      <!-- Grid -->
+      <div class="grid">
+        <div class="col">
+          <!-- Workload -->
+          <div class="card workload">
+            <div class="card-head">
+              <div>
+                <h3>Workload by assignee</h3>
+                <div class="sub">Colors show status: red overdue, green completed, amber in progress.</div>
+              </div>
+              <a class="btn btn-ghost btn-sm" href="Team.html">Open team <svg class="icon" width="13" height="13"><use href="#i-chev-right"/></svg></a>
+            </div>
+            <div id="workload-rows"></div>
+          </div>
+
+          <!-- Deadlines timeline -->
+          <div class="card timeline">
+            <div class="card-head">
+              <div>
+                <h3>Upcoming deadlines</h3>
+                <div class="sub">This week. All current items cluster on Friday.</div>
+              </div>
+              <div class="seg" style="padding:2px">
+                <button class="on">Week</button>
+                <button>Month</button>
+              </div>
+            </div>
+            <div class="t-days">
+              <div class="t-day past">
+                <div class="dnum">13</div>
+                <span class="pip muted" style="width:30%"></span>
+              </div>
+              <div class="t-day past">
+                <div class="dnum">14</div>
+              </div>
+              <div class="t-day past">
+                <div class="dnum">15</div>
+                <span class="pip muted" style="width:45%"></span>
+              </div>
+              <div class="t-day past">
+                <div class="dnum">16</div>
+              </div>
+              <div class="t-day past" style="background:#FFF7F7">
+                <div class="dnum" style="color:var(--danger)">17</div>
+                <span class="pip red"></span>
+                <span class="pip red"></span>
+                <span class="pip red" style="width:85%"></span>
+                <span class="pip red" style="width:60%"></span>
+                <div style="font-size:10px; color:var(--danger); font-weight:700; margin-top:6px">9 overdue</div>
+              </div>
+              <div class="t-day past">
+                <div class="dnum">18</div>
+              </div>
+              <div class="t-day past">
+                <div class="dnum">19</div>
+              </div>
+            </div>
+            <div class="t-days" style="border-bottom:0">
+              <div class="t-day today">
+                <div class="dnum" style="color:var(--primary)">20</div>
+              </div>
+              <div class="t-day">
+                <div class="dnum">21</div>
+                <span class="pip amber" style="width:40%"></span>
+              </div>
+              <div class="t-day">
+                <div class="dnum">22</div>
+              </div>
+              <div class="t-day">
+                <div class="dnum">23</div>
+                <span class="pip" style="width:55%"></span>
+                <span class="pip" style="width:70%"></span>
+              </div>
+              <div class="t-day">
+                <div class="dnum">24</div>
+                <span class="pip" style="width:80%"></span>
+              </div>
+              <div class="t-day">
+                <div class="dnum" style="color:var(--muted-2)">25</div>
+              </div>
+              <div class="t-day">
+                <div class="dnum" style="color:var(--muted-2)">26</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col">
+          <!-- Status donut -->
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <h3>Status breakdown</h3>
+                <div class="sub">Of 12 total tasks.</div>
+              </div>
+            </div>
+            <div class="donut-wrap">
+              <div class="donut">
+                <svg viewBox="0 0 42 42" width="140" height="140">
+                  <circle cx="21" cy="21" r="15.9" fill="none" stroke="#F1F5F9" stroke-width="6"/>
+                  <!-- Overdue 9/12 = 75% -->
+                  <circle cx="21" cy="21" r="15.9" fill="none" stroke="#DC2626" stroke-width="6"
+                    stroke-dasharray="75 25" stroke-dashoffset="25" transform="rotate(-90 21 21)" stroke-linecap="butt"/>
+                  <!-- Completed 3/12 = 25%, after overdue -->
+                  <circle cx="21" cy="21" r="15.9" fill="none" stroke="#16A34A" stroke-width="6"
+                    stroke-dasharray="25 75" stroke-dashoffset="-50" transform="rotate(-90 21 21)"/>
+                </svg>
+                <div class="ctr"><div class="n">12</div><small>tasks</small></div>
+              </div>
+              <div class="donut-legend">
+                <div class="li"><span class="sw red"></span> Overdue <b>9</b></div>
+                <div class="li"><span class="sw green"></span> Completed <b>3</b></div>
+                <div class="li"><span class="sw amber"></span> In progress <b>0</b></div>
+                <div class="li" style="color:var(--muted); font-size:12px; margin-top:4px">No on-time unfinished tasks — every active item is overdue.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- At risk -->
+          <div class="card risk">
+            <div class="card-head">
+              <div>
+                <h3>Top at-risk tasks</h3>
+                <div class="sub">High priority, overdue.</div>
+              </div>
+              <a class="btn btn-ghost btn-sm" href="Production Tasks.html">View all</a>
+            </div>
+            <ul id="risk-list"></ul>
+          </div>
+
+          <!-- Throughput -->
+          <div class="card throughput">
+            <div class="card-head" style="padding:0 0 14px; border:0">
+              <div>
+                <h3>Throughput</h3>
+                <div class="sub">Tasks completed per week · last 8 weeks</div>
+              </div>
+              <div class="seg" style="padding:2px">
+                <button class="on">8w</button>
+                <button>12w</button>
+              </div>
+            </div>
+            <div class="chart">
+              <svg viewBox="0 0 320 140" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="g-throughput" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0%" stop-color="#4F46E5" stop-opacity="0.22"/>
+                    <stop offset="100%" stop-color="#4F46E5" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+                <!-- gridlines -->
+                <g stroke="#E5E7EB" stroke-dasharray="2 3">
+                  <line x1="0" y1="35" x2="320" y2="35"/>
+                  <line x1="0" y1="70" x2="320" y2="70"/>
+                  <line x1="0" y1="105" x2="320" y2="105"/>
+                </g>
+                <!-- area -->
+                <path d="M0,110 L40,90 L80,85 L120,60 L160,75 L200,50 L240,35 L280,55 L320,105 L320,140 L0,140 Z" fill="url(#g-throughput)"/>
+                <!-- line -->
+                <path d="M0,110 L40,90 L80,85 L120,60 L160,75 L200,50 L240,35 L280,55 L320,105" fill="none" stroke="#4F46E5" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+                <!-- dots -->
+                <g fill="#fff" stroke="#4F46E5" stroke-width="2">
+                  <circle cx="0" cy="110" r="3"/><circle cx="40" cy="90" r="3"/><circle cx="80" cy="85" r="3"/>
+                  <circle cx="120" cy="60" r="3"/><circle cx="160" cy="75" r="3"/><circle cx="200" cy="50" r="3"/>
+                  <circle cx="240" cy="35" r="3"/><circle cx="280" cy="55" r="3"/>
+                  <circle cx="320" cy="105" r="4" fill="#DC2626" stroke="#DC2626"/>
+                </g>
+                <!-- last point label -->
+                <g transform="translate(320,105)">
+                  <rect x="-42" y="-28" width="38" height="18" rx="4" fill="#DC2626"/>
+                  <text x="-23" y="-15" text-anchor="middle" fill="#fff" font-size="10" font-family="Space Grotesk" font-weight="700">3</text>
+                </g>
+              </svg>
+            </div>
+            <div class="chart-axis">
+              <span>W9</span><span>W10</span><span>W11</span><span>W12</span><span>W13</span><span>W14</span><span>W15</span><span>W16</span><span style="color:var(--danger); font-weight:700">Now</span>
+            </div>
+          </div>
+
+          <!-- Recent activity -->
+          <div class="card activity">
+            <div class="card-head">
+              <div>
+                <h3>Recent activity</h3>
+                <div class="sub">Last 24h</div>
+              </div>
+            </div>
+            <ul id="activity-list"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="sidebar.js"></script>
+<script>
+  fetch('icons.html').then(r=>r.text()).then(t=>document.getElementById('icons').innerHTML=t).then(init).catch(init);
+
+  function init(){
+    document.getElementById('sidebar-slot').outerHTML = renderSidebar('dashboard');
+    document.getElementById('topbar-slot').outerHTML = renderTopbar('Welcome back, Sooraj','Monday, 20 April 2026 · Design studio pulse.');
+
+    renderWorkload();
+    renderRisk();
+    renderActivity();
+  }
+
+  function renderWorkload(){
+    // Aggregate per owner
+    const counts = {};
+    OWNERS.forEach(o => counts[o.id] = { total:0, overdue:0, completed:0, progress:0 });
+    TASKS.forEach(t => {
+      const c = counts[t.oi]; if(!c) return;
+      c.total++;
+      if(t.status==='overdue') c.overdue++;
+      else if(t.status==='completed') c.completed++;
+      else c.progress++;
+    });
+    const maxTotal = Math.max(...OWNERS.map(o => counts[o.id].total), 1);
+    const rows = OWNERS.map(o => {
+      const c = counts[o.id];
+      const scale = 100 / maxTotal;
+      return `
+        <div class="row">
+          <div class="person">
+            <div class="avatar" style="background:${OWNER_COLORS[o.id]}">${o.id}</div>
+            <div><div>${o.name.split(' ')[0]}</div><small>${o.role}</small></div>
+          </div>
+          <div class="wbar">
+            ${c.overdue?`<div class="seg red" style="width:${c.overdue*scale}%"></div>`:''}
+            ${c.progress?`<div class="seg amber" style="width:${c.progress*scale}%"></div>`:''}
+            ${c.completed?`<div class="seg green" style="width:${c.completed*scale}%"></div>`:''}
+          </div>
+          <div class="wcount"><b>${c.total}</b> ${c.total===1?'task':'tasks'}</div>
+        </div>
+      `;
+    }).join('');
+    document.getElementById('workload-rows').innerHTML = rows;
+  }
+
+  function renderRisk(){
+    const risky = TASKS.filter(t => t.prio==='high' && t.status==='overdue').slice(0,4);
+    const html = risky.map(t => `
+      <li>
+        <div class="icon-pill"><svg width="16" height="16"><use href="#${KIND_ICON[t.kind]}"/></svg></div>
+        <div class="body">
+          <div class="title">${t.title}</div>
+          <div class="meta">
+            <span class="avatar" style="background:${OWNER_COLORS[t.oi]}">${t.oi}</span>
+            ${t.owner} · Due 17 Apr · <span style="color:var(--danger); font-weight:600">3d overdue</span>
+          </div>
+        </div>
+        <span class="prio high"><span class="pdot"></span> High</span>
+      </li>
+    `).join('');
+    document.getElementById('risk-list').innerHTML = html;
+  }
+
+  function renderActivity(){
+    const items = [
+      { icon:'i-check', tone:'green',  html:'<b>Moiz Kiyani</b> completed <b>Portfolio Design (Moiz Kiyani)</b>.', when:'2h ago'},
+      { icon:'i-alert', tone:'red',    html:'<b>12 tasks</b> flipped to <b>Overdue</b> when Friday\'s deadline passed.', when:'3d ago · automatic'},
+      { icon:'i-bubble',tone:'indigo', html:'<b>Sooraj</b> left a note on <b>Banner Design</b>: "waiting on brand palette".', when:'4h ago'},
+      { icon:'i-check', tone:'green',  html:'<b>Sibghat Nawaz</b> completed <b>Social Media Content (AQUA VENOM)</b>.', when:'yesterday'},
+      { icon:'i-plus',  tone:'indigo', html:'<b>Sooraj</b> created <b>AD Creative Images Additional (5)</b>.', when:'yesterday'},
+    ];
+    document.getElementById('activity-list').innerHTML = items.map(i => `
+      <li>
+        <div class="dot-ic ${i.tone}"><svg width="14" height="14"><use href="#${i.icon}"/></svg></div>
+        <div class="txt">${i.html}<small>${i.when}</small></div>
+      </li>
+    `).join('');
+  }
+</script>
+</body>
+</html>

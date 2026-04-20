@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Aktivacity — Production Tasks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+  /* Page-specific */
+  .action-row{display:flex; align-items:center; gap:12px; margin-bottom:20px; flex-wrap:wrap}
+  .search{position:relative; flex:1; min-width:240px; max-width:520px}
+  .search input{
+    width:100%; border:1px solid var(--border); background:#FFFFFF;
+    border-radius:10px; padding:10px 12px 10px 38px;
+    font-size:14px; color:var(--text); font-family:inherit;
+    box-shadow:var(--shadow-sm); outline:none;
+    transition:border-color .15s, box-shadow .15s;
+  }
+  .search input::placeholder{color:var(--muted-2)}
+  .search input:focus{border-color:var(--primary); box-shadow:var(--ring)}
+  .search .s-icon{position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--muted-2)}
+  .kbd{
+    position:absolute; right:10px; top:50%; transform:translateY(-50%);
+    font-size:11px; color:var(--muted);
+    border:1px solid var(--border); background:#F8FAFC;
+    padding:2px 6px; border-radius:6px;
+    font-family:'Space Grotesk',sans-serif;
+  }
+  .actions-right{margin-left:auto; display:flex; gap:10px}
+
+  .kpi-row{display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:28px}
+  .kpi{
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:14px; padding:18px; box-shadow:var(--shadow-sm);
+    position:relative; overflow:hidden;
+  }
+  .kpi-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px}
+  .kpi-icon{
+    width:32px; height:32px; border-radius:9px;
+    display:grid; place-items:center; background:#F1F5F9; color:var(--muted);
+  }
+  .kpi-icon.indigo{background:var(--primary-50); color:var(--primary)}
+  .kpi-icon.green{background:var(--success-50); color:var(--success)}
+  .kpi-icon.amber{background:var(--warning-50); color:#B45309}
+  .kpi-icon.red{background:#FFFFFF; color:var(--danger); border:1px solid #FECACA}
+  .kpi-trend{
+    display:inline-flex; align-items:center; gap:3px;
+    font-size:11px; font-weight:600;
+    padding:3px 7px; border-radius:999px;
+    background:var(--success-50); color:var(--success);
+  }
+  .kpi-trend.red{background:var(--danger-50); color:var(--danger)}
+  .kpi-label{font-size:12px; color:var(--muted); font-weight:500}
+  .kpi-num{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:38px; font-weight:700; letter-spacing:-0.02em;
+    font-variant-numeric:tabular-nums; line-height:1.05; margin-top:6px;
+  }
+  .kpi-cap{font-size:12px; color:var(--muted); margin-top:6px; display:flex; align-items:center; gap:6px}
+  .kpi-cap .dot{width:6px; height:6px; border-radius:50%; background:var(--success)}
+  .kpi.danger{background:linear-gradient(180deg,#FFF5F5 0%,#FEECEC 100%); border-color:#FECACA}
+  .kpi.danger .kpi-num{color:var(--danger)}
+  .kpi.danger .kpi-label{color:#991B1B}
+  .kpi.danger .kpi-cap{color:#B91C1C}
+  .kpi.danger .kpi-cap .dot{background:var(--danger)}
+  .spark{display:flex; align-items:flex-end; gap:2px; height:22px}
+  .spark span{display:block; width:3px; background:var(--warning); border-radius:1px; opacity:.75}
+
+  .seg{display:inline-flex; padding:3px; border-radius:10px; background:#F1F5F9; border:1px solid var(--border); font-size:13px; font-weight:500; color:var(--muted)}
+  .seg button{border:0; background:transparent; padding:6px 12px; border-radius:7px; color:inherit; font:inherit; cursor:pointer}
+  .seg button.on{background:#FFFFFF; color:var(--text); box-shadow:var(--shadow-sm)}
+
+  .filter-bar{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:14px 0}
+  .pill-filter{
+    display:inline-flex; align-items:center; gap:6px;
+    background:#FFFFFF; border:1px solid var(--border);
+    border-radius:999px; padding:7px 12px;
+    font-size:13px; font-weight:500; color:var(--text);
+    cursor:pointer; box-shadow:var(--shadow-sm);
+  }
+  .pill-filter:hover{border-color:var(--border-strong)}
+  .pill-filter .lbl-muted{color:var(--muted); margin-right:2px}
+  .pill-filter.active{border-color:var(--primary); color:var(--primary-600); background:var(--primary-50)}
+  .pill-filter .count-badge{background:var(--primary); color:#fff; font-size:11px; font-weight:600; padding:1px 6px; border-radius:999px}
+  .reset-link{margin-left:auto; font-size:13px; color:var(--muted); font-weight:500; cursor:pointer; background:none; border:0; padding:6px 4px}
+  .reset-link:hover{color:var(--text); text-decoration:underline}
+
+  .table-wrap{background:var(--surface); border:1px solid var(--border); border-radius:14px; box-shadow:var(--shadow-sm); overflow:hidden}
+  .table-scroll{overflow-x:auto}
+  .table-top{display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid var(--border); background:#FBFCFD; gap:10px; flex-wrap:wrap}
+  .t-count{font-size:13px; color:var(--muted)}
+  .t-count b{color:var(--text); font-weight:600}
+  .t-tools{display:flex; gap:6px}
+  .icon-btn-sm{width:30px; height:30px; border-radius:8px; border:1px solid var(--border); background:#fff; color:var(--muted); display:grid; place-items:center; cursor:pointer}
+  .icon-btn-sm:hover{color:var(--text); background:#F8FAFC}
+
+  table.tasks{width:100%; border-collapse:separate; border-spacing:0; font-size:13.5px; min-width:1020px}
+  table.tasks thead th{
+    position:sticky; top:0; background:#FBFCFD;
+    text-align:left; color:var(--muted);
+    font-weight:600; font-size:12px;
+    text-transform:uppercase; letter-spacing:.04em;
+    padding:11px 14px; border-bottom:1px solid var(--border);
+    white-space:nowrap;
+  }
+  table.tasks thead th .sort{display:inline-flex; align-items:center; gap:4px; cursor:pointer}
+  table.tasks tbody td{padding:14px; border-bottom:1px solid var(--border); vertical-align:middle; background:#fff}
+  table.tasks tbody tr:nth-child(even) td{background:#FBFCFD}
+  table.tasks tbody tr:last-child td{border-bottom:0}
+  table.tasks tbody tr{cursor:pointer; transition:background .15s}
+  table.tasks tbody tr:hover td{background:var(--primary-50) !important}
+  table.tasks tbody tr:hover .row-chev{opacity:1; transform:translateX(0)}
+  .row-chev{opacity:0; transform:translateX(-4px); color:var(--primary); transition:opacity .15s, transform .15s; display:inline-block}
+  .task-title{display:flex; align-items:center; gap:10px; font-weight:600; color:var(--text)}
+  .task-title .icon-pill{width:28px; height:28px; border-radius:8px; background:#F1F5F9; color:var(--muted); display:grid; place-items:center; flex:0 0 28px}
+  .task-title .t-meta{font-size:11px; color:var(--muted); font-weight:500; margin-top:2px; display:flex; align-items:center; gap:6px}
+  .sub-col{display:flex; flex-direction:column; gap:0}
+
+  .date-cell{font-variant-numeric:tabular-nums; color:var(--text); white-space:nowrap}
+  .date-cell .d-sub{display:block; font-size:11px; color:var(--muted)}
+  .date-cell.overdue{color:var(--danger); font-weight:600}
+  .notes{display:inline-flex; align-items:center; gap:6px; color:var(--muted); font-variant-numeric:tabular-nums; font-weight:500}
+  .notes.muted{color:var(--muted-2)}
+  .notes .bubble{width:16px; height:16px; stroke-width:1.75}
+
+  /* Right panel hint */
+  .panel-hint{
+    position:fixed; top:0; right:0;
+    width:112px; height:100vh;
+    background:#FFFFFF;
+    box-shadow:-22px 0 48px -24px rgba(15,23,42,.22);
+    border-left:1px solid var(--border);
+    z-index:8; pointer-events:none;
+    display:flex; flex-direction:column; overflow:hidden;
+  }
+  .ph-top{display:flex; align-items:center; justify-content:space-between; padding:14px; border-bottom:1px solid var(--border)}
+  .ph-top .t-stub{height:10px; width:54px; background:#E2E8F0; border-radius:4px}
+  .ph-top .close{width:24px; height:24px; border-radius:6px; background:#F1F5F9; color:var(--muted-2); display:grid; place-items:center; font-size:14px}
+  .ph-body{padding:14px; display:flex; flex-direction:column; gap:12px; flex:1}
+  .ph-label{height:8px; width:38px; background:#E2E8F0; border-radius:3px}
+  .ph-field{height:32px; border:1px solid var(--border); border-radius:8px; background:#F8FAFC}
+  .ph-field.pill{height:22px; width:80px; border-radius:999px; background:var(--success-100); border-color:transparent}
+  .ph-field.pill.amber{background:var(--warning-100)}
+  .ph-desc{height:64px; border:1px solid var(--border); border-radius:8px; background:#F8FAFC; padding:8px; display:flex; flex-direction:column; gap:6px}
+  .ph-desc .l{height:6px; background:#E2E8F0; border-radius:3px}
+  .ph-desc .l.s{width:70%}
+  .ph-desc .l.xs{width:40%}
+  .ph-section-title{height:10px; width:60px; background:#CBD5E1; border-radius:4px; margin-top:6px}
+  .ph-comment{display:flex; gap:8px; align-items:flex-start}
+  .ph-comment .a{width:22px; height:22px; border-radius:50%; background:linear-gradient(135deg,#A78BFA,#6366F1); flex:0 0 22px}
+  .ph-comment .a.g{background:linear-gradient(135deg,#34D399,#0EA5E9)}
+  .ph-comment .body{flex:1; display:flex; flex-direction:column; gap:4px}
+  .ph-comment .body .l{height:6px; background:#E2E8F0; border-radius:3px}
+  .ph-comment .body .l.s{width:55%}
+  .ph-foot{margin-top:auto; padding:12px 14px; border-top:1px solid var(--border); display:flex; flex-direction:column; gap:8px; background:#FBFCFD}
+  .ph-btn{height:32px; border-radius:8px; background:var(--primary); width:100%; box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}
+  .ph-btn.ghost{background:#FFFFFF; border:1px solid var(--border)}
+
+  .main{padding-right:112px}
+  @media (max-width: 900px){
+    .panel-hint{display:none} .main{padding-right:0}
+  }
+</style>
+</head>
+<body>
+
+<div id="icons"></div>
+<div class="app" id="app-root">
+  <div id="sidebar-slot"></div>
+  <main class="main">
+    <div id="topbar-slot"></div>
+
+    <div class="content">
+      <div class="action-row">
+        <div class="search">
+          <svg class="s-icon" width="16" height="16"><use href="#i-search"/></svg>
+          <input type="text" placeholder="Search tasks…" />
+          <span class="kbd">⌘ K</span>
+        </div>
+        <div class="actions-right">
+          <button class="btn btn-ghost">
+            <svg class="icon sparkle"><use href="#i-sparkle"/></svg> Ask AI
+          </button>
+          <a class="btn btn-primary" href="New Task.html">
+            <svg class="icon"><use href="#i-plus"/></svg> New Task
+          </a>
+        </div>
+      </div>
+
+      <div class="kpi-row">
+        <div class="kpi">
+          <div class="kpi-head">
+            <div class="kpi-icon indigo"><svg width="16" height="16"><use href="#i-layers"/></svg></div>
+            <span class="kpi-trend" style="background:var(--primary-50); color:var(--primary-600)">All tasks</span>
+          </div>
+          <div class="kpi-label">Total tasks</div>
+          <div class="kpi-num">12</div>
+          <div class="kpi-cap">Active + completed</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-head">
+            <div class="kpi-icon green"><svg width="16" height="16"><use href="#i-check"/></svg></div>
+            <span class="kpi-trend"><svg width="11" height="11"><use href="#i-trend-up"/></svg>+1</span>
+          </div>
+          <div class="kpi-label">Completed</div>
+          <div class="kpi-num">3</div>
+          <div class="kpi-cap"><span class="dot"></span> +1 this week</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-head">
+            <div class="kpi-icon amber"><svg width="16" height="16"><use href="#i-clock"/></svg></div>
+            <div class="spark">
+              <span style="height:40%"></span><span style="height:60%"></span><span style="height:50%"></span>
+              <span style="height:80%"></span><span style="height:65%"></span><span style="height:90%"></span><span style="height:75%"></span>
+            </div>
+          </div>
+          <div class="kpi-label">In progress</div>
+          <div class="kpi-num" style="color:#B45309">9</div>
+          <div class="kpi-cap">This week</div>
+        </div>
+        <div class="kpi danger" title="Tasks with due dates before today and not completed.">
+          <div class="kpi-head">
+            <div class="kpi-icon red"><svg width="16" height="16"><use href="#i-alert"/></svg></div>
+            <span class="kpi-trend red"><svg width="11" height="11"><use href="#i-alert"/></svg>Attention</span>
+          </div>
+          <div class="kpi-label">Overdue</div>
+          <div class="kpi-num">9</div>
+          <div class="kpi-cap"><span class="dot"></span> Needs attention</div>
+        </div>
+      </div>
+
+      <div class="section-head">
+        <div>
+          <h2 class="display">All tasks</h2>
+          <p>Sort and filter by assignee, status, and due date.</p>
+        </div>
+        <div class="seg">
+          <button class="on">Table</button>
+          <button>Board</button>
+          <button>Calendar</button>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <button class="pill-filter"><span class="lbl-muted">Team</span> Design <svg width="12" height="12"><use href="#i-chev-down"/></svg></button>
+        <button class="pill-filter active"><span class="lbl-muted">Status</span> Overdue <span class="count-badge">9</span> <svg width="12" height="12"><use href="#i-chev-down"/></svg></button>
+        <button class="pill-filter"><span class="lbl-muted">Priority</span> Any <svg width="12" height="12"><use href="#i-chev-down"/></svg></button>
+        <button class="pill-filter"><span class="lbl-muted">Assignee</span> Any <svg width="12" height="12"><use href="#i-chev-down"/></svg></button>
+        <button class="pill-filter"><span class="lbl-muted">Due</span> Any date <svg width="12" height="12"><use href="#i-chev-down"/></svg></button>
+        <button class="reset-link">Reset filters</button>
+      </div>
+
+      <div class="table-wrap">
+        <div class="table-top">
+          <div class="t-count"><b>12</b> tasks · <b>9</b> overdue · <b>3</b> completed</div>
+          <div class="t-tools">
+            <button class="icon-btn-sm"><svg width="14" height="14"><use href="#i-filter"/></svg></button>
+            <button class="icon-btn-sm"><svg width="14" height="14"><use href="#i-download"/></svg></button>
+            <button class="icon-btn-sm"><svg width="14" height="14"><use href="#i-more"/></svg></button>
+          </div>
+        </div>
+        <div class="table-scroll">
+          <table class="tasks">
+            <thead>
+              <tr>
+                <th style="width:30%"><span class="sort">Task title <svg width="12" height="12"><use href="#i-chev-down"/></svg></span></th>
+                <th>Department</th>
+                <th><span class="sort">Assigned <svg width="12" height="12"><use href="#i-chev-down"/></svg></span></th>
+                <th><span class="sort">Due <svg width="12" height="12"><use href="#i-chev-down"/></svg></span></th>
+                <th>Status</th>
+                <th>Priority</th>
+                <th style="text-align:right">Notes</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <p style="font-size:12px; color:var(--muted); margin:14px 2px 0;">Showing 12 of 12 · Sort: Due date (ascending)</p>
+    </div>
+  </main>
+
+  <aside class="panel-hint" aria-hidden="true">
+    <div class="ph-top"><div class="t-stub"></div><div class="close">×</div></div>
+    <div class="ph-body">
+      <div class="ph-label"></div><div class="ph-field pill"></div>
+      <div class="ph-label" style="width:48px"></div><div class="ph-field pill amber"></div>
+      <div class="ph-label" style="width:60px"></div>
+      <div class="ph-desc"><div class="l"></div><div class="l s"></div><div class="l xs"></div></div>
+      <div class="ph-label" style="width:44px"></div><div class="ph-field" style="height:28px"></div>
+      <div class="ph-section-title"></div>
+      <div class="ph-comment"><div class="a"></div><div class="body"><div class="l"></div><div class="l s"></div></div></div>
+      <div class="ph-comment"><div class="a g"></div><div class="body"><div class="l"></div><div class="l s"></div></div></div>
+    </div>
+    <div class="ph-foot"><div class="ph-btn"></div><div class="ph-btn ghost"></div></div>
+  </aside>
+</div>
+
+<script src="sidebar.js"></script>
+<script>
+  // Load icons
+  fetch('icons.html').then(r=>r.text()).then(t=>document.getElementById('icons').innerHTML=t).then(init).catch(init);
+
+  function init(){
+    document.getElementById('sidebar-slot').outerHTML = renderSidebar('tasks');
+    document.getElementById('topbar-slot').outerHTML = renderTopbar('Welcome back, Sooraj','Stay on top of due dates and priorities.');
+    renderRows();
+  }
+
+  function renderRows(){
+    const rows = TASKS.map(t => {
+      const dateCls = t.status === 'completed' ? '' : 'overdue';
+      const statusHtml = t.status === 'completed'
+        ? `<span class="status completed"><svg class="icon"><use href="#i-check"/></svg> Completed</span>`
+        : `<span class="status overdue"><svg class="icon"><use href="#i-alert"/></svg> Overdue</span>`;
+      const prioHtml = t.prio === 'high'
+        ? `<span class="prio high"><span class="pdot"></span> High</span>`
+        : `<span class="prio medium"><span class="pdot"></span> Medium</span>`;
+      const notesHtml = t.notes === 0
+        ? `<span class="notes muted"><svg class="bubble"><use href="#i-bubble"/></svg> 0</span>`
+        : `<span class="notes"><svg class="bubble"><use href="#i-bubble"/></svg> ${t.notes}</span>`;
+      return `
+        <tr onclick="location.href='Task Detail.html?id=${t.id}'">
+          <td>
+            <div class="task-title">
+              <div class="icon-pill"><svg width="15" height="15"><use href="#${KIND_ICON[t.kind]}"/></svg></div>
+              <div class="sub-col">
+                <span>${t.title}</span>
+                <span class="t-meta">
+                  <span class="avatar" style="width:16px;height:16px;font-size:9px;background:${OWNER_COLORS[t.oi]};flex-basis:16px;">${t.oi}</span>
+                  ${t.owner}
+                </span>
+              </div>
+            </div>
+          </td>
+          <td><span class="dept-pill"><span class="sq"></span> Design</span></td>
+          <td class="date-cell tab-num">17 Apr 2026</td>
+          <td class="date-cell tab-num ${dateCls}">17 Apr 2026${t.status==='completed'?'':'<span class="d-sub">3d overdue</span>'}</td>
+          <td>${statusHtml}</td>
+          <td>${prioHtml}</td>
+          <td style="text-align:right">${notesHtml}<span class="row-chev" style="margin-left:10px"><svg width="14" height="14"><use href="#i-chev-right"/></svg></span></td>
+        </tr>
+      `;
+    }).join('');
+    document.getElementById('tbody').innerHTML = rows;
+  }
+</script>
+</body>
+</html>

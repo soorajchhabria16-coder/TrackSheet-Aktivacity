@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Aktivacity — Settings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+  .settings-layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 32px;
+  }
+  .settings-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .settings-nav-item {
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+  .settings-nav-item:hover {
+    background: #F1F5F9;
+    color: var(--text);
+  }
+  .settings-nav-item.active {
+    background: var(--primary-50);
+    color: var(--primary);
+  }
+  .settings-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+    padding: 32px;
+  }
+  .settings-section {
+    margin-bottom: 40px;
+  }
+  .settings-section:last-child {
+    margin-bottom: 0;
+  }
+  .settings-section h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 8px;
+  }
+  .settings-section p {
+    color: var(--muted);
+    font-size: 13px;
+    margin: 0 0 20px;
+  }
+  .profile-edit {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+  .profile-edit .avatar {
+    width: 80px;
+    height: 80px;
+    font-size: 24px;
+  }
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .form-group.full { grid-column: span 2; }
+  .form-group label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .form-group input, .form-group select {
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    background: #FBFCFD;
+  }
+  .toggle-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .toggle-group:last-child { border-bottom: 0; }
+  .toggle-info h4 { font-size: 14px; margin: 0; }
+  .toggle-info p { font-size: 12px; color: var(--muted); margin: 2px 0 0; }
+  
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 22px;
+  }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider {
+    position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #E2E8F0; transition: .4s; border-radius: 34px;
+  }
+  .slider:before {
+    position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px;
+    background-color: white; transition: .4s; border-radius: 50%;
+  }
+  input:checked + .slider { background-color: var(--primary); }
+  input:checked + .slider:before { transform: translateX(18px); }
+
+  @media (max-width: 900px) {
+    .settings-layout { grid-template-columns: 1fr; }
+    .settings-nav { flex-direction: row; overflow-x: auto; padding-bottom: 8px; }
+    .settings-nav-item { white-space: nowrap; }
+  }
+</style>
+</head>
+<body>
+<div id="icons"></div>
+
+<div class="app">
+  <div id="sidebar-slot"></div>
+  <main class="main">
+    <div id="topbar-slot"></div>
+    <div class="content">
+      <div class="settings-layout">
+        <aside class="settings-nav">
+          <div class="settings-nav-item active">My Profile</div>
+          <div class="settings-nav-item">Workspace Settings</div>
+          <div class="settings-nav-item">Notifications</div>
+          <div class="settings-nav-item">Team Management</div>
+          <div class="settings-nav-item" style="color:var(--danger)">Security & Privacy</div>
+        </aside>
+
+        <div class="settings-card">
+          <section class="settings-section">
+            <h3>My Profile</h3>
+            <p>Update your personal information and how you appear in the dashboard.</p>
+            
+            <div class="profile-edit">
+              <div class="avatar">SO</div>
+              <div class="actions">
+                <button class="btn btn-primary btn-sm">Change photo</button>
+                <button class="btn btn-ghost btn-sm" style="margin-left:8px">Remove</button>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" value="Sooraj Ahmed">
+              </div>
+              <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" value="sooraj@aktivacity.studio">
+              </div>
+              <div class="form-group">
+                <label>Role</label>
+                <input type="text" value="Studio Lead">
+              </div>
+              <div class="form-group">
+                <label>Timezone</label>
+                <select>
+                  <option>Karachi (GMT+5)</option>
+                  <option>Dubai (GMT+4)</option>
+                  <option>London (GMT+0)</option>
+                </select>
+              </div>
+            </div>
+          </section>
+
+          <section class="settings-section">
+            <h3>Notifications</h3>
+            <p>Configure which alerts you want to receive via email and in-app bubble.</p>
+            
+            <div class="toggle-group">
+              <div class="toggle-info">
+                <h4>Overdue Alerts</h4>
+                <p>Notify me immediately when a task passes its due date.</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+            
+            <div class="toggle-group">
+              <div class="toggle-info">
+                <h4>Comments & Mentions</h4>
+                <p>Receive notifications when someone mentions you or comments on your tasks.</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="toggle-group">
+              <div class="toggle-info">
+                <h4>Weekly Recap</h4>
+                <p>Receive a summary of your team's throughput every Monday morning.</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox">
+                <span class="slider"></span>
+              </label>
+            </div>
+          </section>
+
+          <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:20px">
+            <button class="btn btn-ghost">Discard Changes</button>
+            <button class="btn btn-primary">Save Settings</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="sidebar.js"></script>
+<script>
+  fetch('icons.html').then(r=>r.text()).then(t=>document.getElementById('icons').innerHTML=t).then(init).catch(init);
+
+  function init(){
+    document.getElementById('sidebar-slot').outerHTML = renderSidebar('dashboard');
+    document.getElementById('topbar-slot').outerHTML = renderTopbar('Settings', 'Manage your profile and studio preferences.');
+  }
+</script>
+</body>
+</html>
