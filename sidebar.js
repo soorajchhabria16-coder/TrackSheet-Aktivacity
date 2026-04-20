@@ -4,6 +4,7 @@ window.renderSidebar = function(active){
     { key:'tasks',    label:'Production Tasks', href:'Production Tasks.html', icon:'i-list',  count:12 },
     { key:'dashboard',label:'Dashboard',         href:'Dashboard.html',        icon:'i-grid'   },
     { key:'team',     label:'Team',              href:'Team.html',             icon:'i-users'  },
+    { key:'admin',    label:'Admin Panel',       href:'Admin.html',            icon:'i-activity' },
   ];
   return `
     <aside class="sidebar">
