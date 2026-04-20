@@ -299,15 +299,22 @@
   </aside>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="db.js"></script>
 <script src="sidebar.js"></script>
 <script src="logic.js"></script>
 <script>
   // Load icons
   fetch('icons.html').then(r=>r.text()).then(t=>document.getElementById('icons').innerHTML=t).then(init).catch(init);
 
-  function init(){
+  async function init(){
     document.getElementById('sidebar-slot').outerHTML = renderSidebar('tasks');
-    document.getElementById('topbar-slot').outerHTML = renderTopbar('Welcome back, Sooraj','Stay on top of due dates and priorities.');
+    document.getElementById('topbar-slot').outerHTML = renderTopbar('Production Tasks', 'Stay on top of due dates and priorities.');
+
+    if (window.TASKS.length === 0) {
+        await initializeDashboardData();
+    }
+
     
     // Search handler
     const sInput = document.querySelector('.search input');

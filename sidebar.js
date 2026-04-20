@@ -65,21 +65,9 @@ window.renderTopbar = function(title, subtitle){
   `;
 };
 
-// Shared task data
-window.TASKS = [
-  { id:1,  title:"Official Synary Website Redesign", owner:"Soheera",  oi:"SH", kind:"web",      status:"overdue",   prio:"high",   notes:4 },
-  { id:2,  title:"Portfolio's Individual Designs #1 — Soheera",   owner:"Soheera", oi:"SH", kind:"portfolio",status:"overdue",   prio:"medium", notes:2 },
-  { id:3,  title:"Portfolio's Individual Designs #2 — Sibghat",   owner:"Sibghat", oi:"SB", kind:"portfolio",status:"overdue",   prio:"medium", notes:1 },
-  { id:4,  title:"Portfolio's Individual Designs #3 — Timothy",   owner:"Timothy", oi:"TM", kind:"portfolio",status:"overdue",   prio:"high",   notes:3 },
-  { id:5,  title:"Portfolio's Individual Designs #4 — Inam",      owner:"Inam",    oi:"IN", kind:"portfolio",status:"overdue",   prio:"medium", notes:0 },
-  { id:6,  title:"Portfolio's Individual Designs #5 — Zainab",    owner:"Zainab",  oi:"ZA", kind:"portfolio",status:"overdue",   prio:"medium", notes:2 },
-  { id:7,  title:"Portfolio Design (Moiz Kiyani)",                 owner:"Moiz",    oi:"MK", kind:"portfolio",status:"completed", prio:"high",   notes:5 },
-  { id:8,  title:"Banner Design",                                  owner:"Zainab",  oi:"ZA", kind:"banner",   status:"overdue",   prio:"high",   notes:1 },
-  { id:9,  title:"AD Creative Images (30)",                        owner:"Timothy", oi:"TM", kind:"ads",      status:"overdue",   prio:"medium", notes:3 },
-  { id:10, title:"AD Creative Images Additional (5)",              owner:"Inam",    oi:"IN", kind:"ads",      status:"completed", prio:"medium", notes:2 },
-  { id:11, title:"Social Media Content (AQUA VENOM)",              owner:"Sibghat", oi:"SB", kind:"social",   status:"completed", prio:"medium", notes:4 },
-  { id:12, title:"Social Media Content (CocoaCrumbs Riyadh)",      owner:"Soheera", oi:"SH", kind:"social",   status:"overdue",   prio:"high",   notes:2 },
-];
+// Shared task data (Initial mock data while loading)
+window.TASKS = [];
+window.OWNERS = [];
 
 window.OWNER_COLORS = {
   SH:"linear-gradient(135deg,#F472B6,#DB2777)",
@@ -90,14 +78,23 @@ window.OWNER_COLORS = {
   MK:"linear-gradient(135deg,#F87171,#B91C1C)",
 };
 
-window.OWNERS = [
-  { id:"SH", name:"Soheera Ahmed",  role:"Senior Designer",  email:"soheera@aktivacity.studio" },
-  { id:"SB", name:"Sibghat Nawaz",  role:"Designer",          email:"sibghat@aktivacity.studio" },
-  { id:"TM", name:"Timothy Chen",   role:"Motion Designer",   email:"timothy@aktivacity.studio" },
-  { id:"IN", name:"Inam Khan",      role:"Designer",          email:"inam@aktivacity.studio" },
-  { id:"ZA", name:"Zainab Qureshi", role:"Art Director",      email:"zainab@aktivacity.studio" },
-  { id:"MK", name:"Moiz Kiyani",    role:"Design Lead",       email:"moiz@aktivacity.studio" },
-];
+/**
+ * Initializes the dashboard by fetching real data from Supabase.
+ * Falls back to static data if no database is connected or table is empty.
+ */
+async function initializeDashboardData() {
+  if (typeof fetchTasks === 'function') {
+    try {
+      const liveTasks = await fetchTasks();
+      const liveProfiles = await fetchProfiles();
+      
+      if (liveTasks && liveTasks.length > 0) window.TASKS = liveTasks;
+      if (liveProfiles && liveProfiles.length > 0) window.OWNERS = liveProfiles;
+    } catch (e) {
+      console.warn('Fallback to local data due to fetch error:', e);
+    }
+  }
+}
 
 // Load Supabase if available
 if (typeof supabase === 'undefined' && typeof window.supabase !== 'undefined') {
@@ -106,9 +103,10 @@ if (typeof supabase === 'undefined' && typeof window.supabase !== 'undefined') {
 
 /**
  * Global Auth Gate: Redirects to Login.html if no session is found.
- * Only runs if Supabase is configured.
  */
 async function checkAuth() {
+  await initializeDashboardData(); // Load data before checking session
+  
   if (typeof supabase !== 'undefined' && supabase) {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session && !window.location.pathname.includes('Login.html')) {

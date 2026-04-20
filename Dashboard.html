@@ -497,9 +497,14 @@
 <script>
   fetch('icons.html').then(r=>r.text()).then(t=>document.getElementById('icons').innerHTML=t).then(init).catch(init);
 
-  function init(){
+  async function init(){
     document.getElementById('sidebar-slot').outerHTML = renderSidebar('dashboard');
     document.getElementById('topbar-slot').outerHTML = renderTopbar('Welcome back, Sooraj','Monday, 20 April 2026 · Design studio pulse.');
+
+    // Wait for dynamic data if it's still empty
+    if (window.TASKS.length === 0) {
+        await initializeDashboardData();
+    }
 
     renderWorkload();
     renderRisk();
