@@ -29,6 +29,43 @@ window.fetchTasks = async function() {
  */
 window.fetchProfiles = async function() {
   if (!supabase) return window.OWNERS;
-  const { data, error } = await supabase.from('profiles').select('*');
-  return error ? window.OWNERS : data;
+  
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .order('name', { ascending: true });
+    
+  if (error) {
+    console.error('Error fetching profiles:', error);
+    return window.OWNERS;
+  }
+  return data;
+};
+
+/**
+ * Invites/Adds a new user to the studio.
+ */
+window.inviteUser = async function(userData) {
+  if (!supabase) {
+    alert('Database not connected. Adding to local session only.');
+    return { ...userData, id: 'NEW' };
+  }
+  
+  const { data, error } = await supabase
+    .from('profiles')
+    .insert([userData])
+    .select();
+    
+  if (error) throw error;
+  return data[0];
+};
+
+/**
+ * Deletes a user profile.
+ */
+window.removeUser = async function(userId) {
+  if (!supabase) return true;
+  const { error } = await supabase.from('profiles').delete().eq('id', userId);
+  if (error) throw error;
+  return true;
 };

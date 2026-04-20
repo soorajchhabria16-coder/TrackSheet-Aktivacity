@@ -27,13 +27,18 @@ window.renderSidebar = function(active){
           <svg class="icon" style="width:18px;height:18px"><use href="#i-cog"/></svg>
           <span>Settings</span>
         </a>
-        <a class="user-chip" href="Settings.html">
-          <div class="avatar">SO</div>
-          <div class="meta">
-            <div class="name">Sooraj</div>
-            <div class="role">Studio Lead</div>
+        <div class="user-chip">
+          <div class="avatar">SA</div>
+          <div class="user-info">
+            <span class="name">Sooraj Ahmed</span>
+            <span class="role">Studio Lead</span>
           </div>
-        </a>
+          <button class="icon-btn" onclick="handleLogout()" title="Sign Out" style="margin-left:auto; border:0; background:none; cursor:pointer; color:var(--muted)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
+            </svg>
+          </button>
+        </div>
       </div>
     </aside>
   `;
@@ -113,6 +118,17 @@ async function checkAuth() {
 }
 checkAuth();
 
+/**
+ * Global Logout handler.
+ */
+async function handleLogout() {
+  if (typeof supabase !== 'undefined' && supabase) {
+    await supabase.auth.signOut();
+  }
+  window.location.href = 'Login.html';
+}
+
 window.KIND_ICON = {
   web:'i-globe', portfolio:'i-image', banner:'i-megaphone', ads:'i-image', social:'i-megaphone'
 };
+
