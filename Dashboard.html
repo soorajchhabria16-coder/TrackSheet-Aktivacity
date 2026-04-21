@@ -487,6 +487,11 @@
   fetch('icons.html').then(r=>r.text()).then(t=>document.getElementById('icons').innerHTML=t).then(init).catch(init);
 
   async function init(){
+    await window.authReady;
+    if ((window.CURRENT_USER || {}).user_role === 'member') {
+      window.location.href = 'Production Tasks.html';
+      return;
+    }
     const now = new Date();
     const dateStr = now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
     document.getElementById('sidebar-slot').outerHTML = renderSidebar('dashboard');

@@ -1243,13 +1243,22 @@ function showSkeletons(){
 }
 
 async function init(){
-  document.getElementById('sidebar-slot').outerHTML = renderSidebar('tasks');
-  document.getElementById('topbar-slot').outerHTML  = renderTopbar('Production Tasks','Control room — sorted by urgency.');
-
   showSkeletons();
+  await window.authReady;
 
-  if(window.TASKS.length===0) await initializeDashboardData();
-  if(window.TASKS.length===0) window.TASKS = mockTasks();
+  const cu = window.CURRENT_USER || {};
+
+  // Member role: only show tasks assigned to them
+  if (cu.user_role === 'member') {
+    window.TASKS = (window.TASKS || []).filter(t =>
+      t.oi === cu.oi || t.owner === cu.name
+    );
+  } else if (window.TASKS.length === 0) {
+    window.TASKS = mockTasks();
+  }
+
+  document.getElementById('sidebar-slot').outerHTML = renderSidebar('tasks');
+  document.getElementById('topbar-slot').outerHTML  = renderTopbar('Production Tasks', 'Control room — sorted by urgency.');
 
   document.getElementById('cr-search').addEventListener('input',debounce(e=>{
     window.FilterState.search=e.target.value;

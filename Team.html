@@ -194,9 +194,14 @@
   fetch('icons.html').then(r=>r.text()).then(t=>document.getElementById('icons').innerHTML=t).then(init).catch(init);
 
   async function init(){
+    await window.authReady;
+    if ((window.CURRENT_USER || {}).user_role === 'member') {
+      window.location.href = 'Production Tasks.html';
+      return;
+    }
     document.getElementById('sidebar-slot').outerHTML = renderSidebar('team');
     document.getElementById('topbar-slot').outerHTML = renderTopbar('Team','Six designers across production. Balance load, surface overdue risk.');
-    
+
     if (window.OWNERS.length === 0) {
         await initializeDashboardData();
     }

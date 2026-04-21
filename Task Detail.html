@@ -462,6 +462,7 @@
   }
 
   async function init(){
+    await window.authReady;
     document.getElementById('sidebar-slot').outerHTML = renderSidebar('tasks');
     document.getElementById('topbar-slot').outerHTML  = renderTopbar('Task detail', 'Open the row, update fields, hand it off.');
 
