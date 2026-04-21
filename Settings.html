@@ -299,7 +299,8 @@
   fetch('icons.html').then(r=>r.text()).then(t=>document.getElementById('icons').innerHTML=t).then(init).catch(init);
 
   async function init(){
-    document.getElementById('sidebar-slot').outerHTML = renderSidebar('dashboard');
+    await window.authReady;
+    document.getElementById('sidebar-slot').outerHTML = renderSidebar('settings');
     document.getElementById('topbar-slot').outerHTML = renderTopbar('Settings', 'Manage your profile and studio preferences.');
     await renderUsers();
   }
@@ -319,25 +320,28 @@
 
   async function renderUsers() {
     const users = await fetchProfiles();
-    const html = users.map(o => `
+    const html = users.map(o => {
+      const oi = o.oi || (o.name || '?').split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,2);
+      const roleLabel = o.user_role === 'admin' ? 'Admin' : o.user_role === 'pm' ? 'Project Manager' : 'Member';
+      return `
       <tr style="border-top:1px solid var(--border)">
         <td style="padding:12px 16px">
           <div style="display:flex; align-items:center; gap:10px">
-            <div class="avatar avatar-${o.id ? o.id.toLowerCase() : 'sh'}" style="width:32px; height:32px; font-size:12px; flex-basis:32px; border-radius:50%; display:grid; place-items:center; color:#fff">${o.id || o.name[0]}</div>
+            <div style="width:32px; height:32px; font-size:12px; flex-basis:32px; border-radius:50%; display:grid; place-items:center; color:#fff; background:${(window.OWNER_COLORS||{})[oi]||'linear-gradient(135deg,#6B7FD7,#4B5EAA)'}">${oi}</div>
             <div style="min-width:0">
               <div style="font-weight:600; color:var(--text)">${o.name}</div>
               <div style="font-size:11px; color:var(--muted)">${o.email}</div>
             </div>
           </div>
         </td>
-        <td style="padding:12px 16px; color:var(--muted)">${o.role}</td>
+        <td style="padding:12px 16px; color:var(--muted)">${roleLabel}</td>
         <td style="padding:12px 16px"><span class="pc-status green"><span class="sw"></span> Active</span></td>
         <td style="padding:12px 16px; text-align:right">
           <button class="icon-btn-sm" title="Edit User" style="display:inline-flex; border:0; background:none; cursor:pointer" onclick="alert('Editing ${o.name} is not permitted for your current access level.')"><svg width="14" height="14"><use href="#i-edit"/></svg></button>
           <button class="icon-btn-sm" title="Remove User" style="display:inline-flex; border:0; background:none; cursor:pointer; color:var(--danger)" onclick="confirmRemoveUser('${o.id}', '${o.name}')"><svg width="14" height="14"><use href="#i-archive"/></svg></button>
         </td>
       </tr>
-    `).join('');
+    `}).join('');
     document.getElementById('user-table-body').innerHTML = html;
   }
 

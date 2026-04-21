@@ -194,18 +194,20 @@
   fetch('icons.html').then(r=>r.text()).then(t=>document.getElementById('icons').innerHTML=t).then(init).catch(init);
 
   async function init(){
+    await window.authReady;
+
+    if ((window.CURRENT_USER || {}).user_role === 'member') {
+      window.location.href = 'Production Tasks.html';
+      return;
+    }
+
     document.getElementById('sidebar-slot').outerHTML = renderSidebar('tasks');
     document.getElementById('topbar-slot').outerHTML = renderTopbar('New Task', 'Initialize a new production item.');
-    
-    // Wait for owners to load
-    if (window.OWNERS.length === 0) {
-        await initializeDashboardData();
-    }
-    
-    // Populate assignee dropdown — use oi (initials) as value so it matches t.oi in task records
+
+    // Populate assignee dropdown — use oi as value so it matches t.oi in task records
     const select = document.getElementById('assignee');
     select.innerHTML = '<option value="">Select individual...</option>' +
-      window.OWNERS.map(o => `<option value="${o.oi || o.id}">${o.name}</option>`).join('');
+      (window.OWNERS || []).map(o => `<option value="${o.oi || o.id}">${o.name}</option>`).join('');
   }
 
   async function handleSubmitTask() {
