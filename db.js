@@ -98,3 +98,98 @@ window.updateTask = async function(id, updates) {
   if (error) throw error;
   return data?.[0];
 };
+
+window.updateProfile = async function(id, updates) {
+  if (!supabase) return null;
+  const { data, error } = await supabase
+    .from('profiles').update(updates).eq('id', id).select();
+  if (error) throw error;
+  return data?.[0] || null;
+};
+
+window.sendMagicLink = async function(email) {
+  if (!supabase) return { error: new Error('Supabase not available') };
+  return await supabase.auth.signInWithOtp({
+    email,
+    options: { emailRedirectTo: window.location.origin + '/Login.html' }
+  });
+};
+
+window.fetchComments = async function(taskId) {
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from('comments')
+    .select('*, profiles(id, name)')
+    .eq('task_id', taskId)
+    .order('created_at', { ascending: true });
+  return error ? [] : (data || []);
+};
+
+window.createComment = async function(taskId, content) {
+  if (!supabase || !window.CURRENT_USER) return null;
+  const { data, error } = await supabase
+    .from('comments')
+    .insert([{ task_id: taskId, user_id: window.CURRENT_USER.id, content }])
+    .select('*, profiles(id, name)');
+  if (error) throw error;
+  const comment = data?.[0];
+
+  const task  = (window.TASKS || []).find(t => String(t.id) === String(taskId));
+  const title = task ? (task.title || task.name || 'a task') : 'a task';
+  const role  = (window.CURRENT_USER.user_role || 'member');
+
+  if (role === 'member') {
+    await window.notifyManagers(taskId, 'comment',
+      `${window.CURRENT_USER.name} commented on "${title}"`);
+  } else {
+    const assignee = (window.OWNERS || []).find(
+      o => o.oi === task?.oi || o.name === task?.owner
+    );
+    if (assignee?.id) {
+      await window.createNotification(assignee.id, taskId, 'comment',
+        `${window.CURRENT_USER.name} commented on "${title}"`);
+    }
+  }
+  return comment;
+};
+
+window.createNotification = async function(userId, taskId, type, message) {
+  if (!supabase || !userId) return;
+  const { error } = await supabase
+    .from('notifications')
+    .insert([{ user_id: userId, task_id: taskId, type, message }]);
+  if (error) console.warn('createNotification failed:', error);
+};
+
+window.notifyManagers = async function(taskId, type, message) {
+  const managers = (window.OWNERS || []).filter(
+    p => ['pm', 'admin'].includes(p.user_role)
+  );
+  await Promise.all(
+    managers.map(m => window.createNotification(m.id, taskId, type, message))
+  );
+};
+
+window.fetchNotifications = async function() {
+  if (!supabase || !window.CURRENT_USER) return [];
+  const { data, error } = await supabase
+    .from('notifications')
+    .select('*, tasks(title)')
+    .eq('user_id', window.CURRENT_USER.id)
+    .order('created_at', { ascending: false });
+  return error ? [] : (data || []);
+};
+
+window.markNotificationRead = async function(id) {
+  if (!supabase) return;
+  await supabase.from('notifications').update({ read: true }).eq('id', id);
+};
+
+window.markAllNotificationsRead = async function() {
+  if (!supabase || !window.CURRENT_USER) return;
+  await supabase
+    .from('notifications')
+    .update({ read: true })
+    .eq('user_id', window.CURRENT_USER.id)
+    .eq('read', false);
+};
