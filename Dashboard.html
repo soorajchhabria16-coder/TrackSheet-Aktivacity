@@ -239,14 +239,14 @@
 
       <!-- HERO row -->
       <section class="hero">
-        <div class="card alert-card">
+        <div class="card alert-card" id="alert-card">
           <div class="alert-tag">
             <svg width="10" height="10"><use href="#i-alert"/></svg> Action needed
           </div>
           <div>
-            <div class="alert-num">9<small>tasks overdue</small></div>
+            <div class="alert-num" id="d-overdue-num">—<small>tasks overdue</small></div>
             <div class="alert-line">
-              <p>All overdue items share the same due date — <b>17 Apr 2026</b>. Reassign, reschedule, or escalate from the Production Tasks page.</p>
+              <p id="d-overdue-msg">Loading task data…</p>
               <a class="btn btn-primary btn-sm" href="Production Tasks.html">
                 Review overdue <svg class="icon" width="14" height="14"><use href="#i-chev-right"/></svg>
               </a>
@@ -256,17 +256,17 @@
 
         <div class="card today-card">
           <div class="today-head">
-            <span class="today-date">Mon · 20 Apr 2026</span>
-            <button class="icon-btn"><svg width="14" height="14"><use href="#i-calendar"/></svg></button>
+            <span class="today-date" id="d-today-date">—</span>
+            <button class="icon-btn" aria-label="Calendar"><svg width="14" height="14"><use href="#i-calendar"/></svg></button>
           </div>
           <div>
             <h2 class="today-title">At a glance</h2>
-            <p style="margin:2px 0 0; color:var(--muted); font-size:13px">A snapshot of the Design team this week.</p>
+            <p style="margin:2px 0 0; color:var(--muted); font-size:13px">A snapshot of the team's current load.</p>
           </div>
           <div class="today-row">
-            <div class="today-stat"><div class="today-num">12</div><small>Total tasks</small></div>
-            <div class="today-stat"><div class="today-num green">3</div><small>Completed</small></div>
-            <div class="today-stat"><div class="today-num red">9</div><small>Overdue</small></div>
+            <div class="today-stat"><div class="today-num" id="d-total">—</div><small>Total tasks</small></div>
+            <div class="today-stat"><div class="today-num green" id="d-done">—</div><small>Completed</small></div>
+            <div class="today-stat"><div class="today-num red" id="d-ov2">—</div><small>Overdue</small></div>
           </div>
         </div>
       </section>
@@ -275,23 +275,23 @@
       <div class="kpi-row">
         <div class="mini-kpi">
           <div class="lbl">Completion rate</div>
-          <div class="val">25<span style="font-size:16px; color:var(--muted)">%</span></div>
-          <span class="delta"><svg width="11" height="11"><use href="#i-trend-up"/></svg>+8 pts vs last week</span>
+          <div class="val" id="kpi-complete-rate">—<span style="font-size:16px; color:var(--muted)">%</span></div>
+          <span class="delta" id="kpi-complete-delta"></span>
         </div>
         <div class="mini-kpi">
-          <div class="lbl">Avg. days to ship</div>
-          <div class="val">4.2<span style="font-size:16px; color:var(--muted)">d</span></div>
-          <span class="delta red"><svg width="11" height="11"><use href="#i-alert"/></svg>+1.3d vs target</span>
+          <div class="lbl">Overdue tasks</div>
+          <div class="val" id="kpi-overdue-val">—</div>
+          <span class="delta red" id="kpi-overdue-delta"></span>
         </div>
         <div class="mini-kpi">
           <div class="lbl">On-time rate</div>
-          <div class="val">62<span style="font-size:16px; color:var(--muted)">%</span></div>
-          <span class="delta red">–11 pts vs last month</span>
+          <div class="val" id="kpi-ontime-rate">—<span style="font-size:16px; color:var(--muted)">%</span></div>
+          <span class="delta" id="kpi-ontime-delta"></span>
         </div>
         <div class="mini-kpi">
           <div class="lbl">Active assignees</div>
-          <div class="val">6 <span style="font-size:13px; color:var(--muted); font-weight:500">/ 6</span></div>
-          <span class="delta">Full team utilized</span>
+          <div class="val" id="kpi-assignees">—</div>
+          <span class="delta" id="kpi-assignees-delta"></span>
         </div>
       </div>
 
@@ -388,28 +388,17 @@
             <div class="card-head">
               <div>
                 <h3>Status breakdown</h3>
-                <div class="sub">Of 12 total tasks.</div>
+                <div class="sub" id="donut-sub">Of — total tasks.</div>
               </div>
             </div>
-            <div class="donut-wrap">
+            <div class="donut-wrap" id="donut-wrap">
               <div class="donut">
-                <svg viewBox="0 0 42 42" width="140" height="140">
+                <svg viewBox="0 0 42 42" width="140" height="140" id="donut-svg">
                   <circle cx="21" cy="21" r="15.9" fill="none" stroke="#F1F5F9" stroke-width="6"/>
-                  <!-- Overdue 9/12 = 75% -->
-                  <circle cx="21" cy="21" r="15.9" fill="none" stroke="#DC2626" stroke-width="6"
-                    stroke-dasharray="75 25" stroke-dashoffset="25" transform="rotate(-90 21 21)" stroke-linecap="butt"/>
-                  <!-- Completed 3/12 = 25%, after overdue -->
-                  <circle cx="21" cy="21" r="15.9" fill="none" stroke="#16A34A" stroke-width="6"
-                    stroke-dasharray="25 75" stroke-dashoffset="-50" transform="rotate(-90 21 21)"/>
                 </svg>
-                <div class="ctr"><div class="n">12</div><small>tasks</small></div>
+                <div class="ctr"><div class="n" id="donut-n">—</div><small>tasks</small></div>
               </div>
-              <div class="donut-legend">
-                <div class="li"><span class="sw red"></span> Overdue <b>9</b></div>
-                <div class="li"><span class="sw green"></span> Completed <b>3</b></div>
-                <div class="li"><span class="sw amber"></span> In progress <b>0</b></div>
-                <div class="li" style="color:var(--muted); font-size:12px; margin-top:4px">No on-time unfinished tasks — every active item is overdue.</div>
-              </div>
+              <div class="donut-legend" id="donut-legend"></div>
             </div>
           </div>
 
@@ -498,17 +487,116 @@
   fetch('icons.html').then(r=>r.text()).then(t=>document.getElementById('icons').innerHTML=t).then(init).catch(init);
 
   async function init(){
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
     document.getElementById('sidebar-slot').outerHTML = renderSidebar('dashboard');
-    document.getElementById('topbar-slot').outerHTML = renderTopbar('Welcome back, Sooraj','Monday, 20 April 2026 · Design studio pulse.');
+    document.getElementById('topbar-slot').outerHTML = renderTopbar('Dashboard', dateStr + ' · Studio pulse.');
 
-    // Wait for dynamic data if it's still empty
-    if (window.TASKS.length === 0) {
-        await initializeDashboardData();
-    }
+    if (window.TASKS.length === 0) await initializeDashboardData();
 
+    renderHero();
+    renderKPIs();
+    renderDonut();
     renderWorkload();
     renderRisk();
     renderActivity();
+  }
+
+  function renderHero(){
+    const todayStr = new Date().toISOString().split('T')[0];
+    const total    = TASKS.length;
+    const done     = TASKS.filter(t => t.status === 'completed').length;
+    const overdue  = TASKS.filter(t => t.status !== 'completed' && t.due_date && t.due_date < todayStr).length;
+    const inprog   = TASKS.filter(t => t.status === 'in-progress' && !(t.due_date && t.due_date < todayStr)).length;
+
+    document.getElementById('d-overdue-num').innerHTML = `${overdue}<small>${overdue === 1 ? 'task' : 'tasks'} overdue</small>`;
+    document.getElementById('d-total').textContent = total;
+    document.getElementById('d-done').textContent  = done;
+    document.getElementById('d-ov2').textContent   = overdue;
+
+    const d = new Date();
+    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    document.getElementById('d-today-date').textContent = `${days[d.getDay()]} · ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+
+    const alertCard = document.getElementById('alert-card');
+    if (overdue === 0) {
+      alertCard.style.background = 'radial-gradient(120% 100% at 100% 0%, rgba(22,163,74,.1) 0%, rgba(22,163,74,0) 50%), linear-gradient(180deg,#FFFFFF,#F0FDF4)';
+      alertCard.style.borderColor = '#BBF7D0';
+      alertCard.querySelector('.alert-tag').style.cssText = 'background:#DCFCE7; color:#15803D';
+      alertCard.querySelector('.alert-tag').innerHTML = `<svg width="10" height="10"><use href="#i-check"/></svg> All on track`;
+      document.getElementById('d-overdue-msg').innerHTML = `All ${total} tasks are on schedule. Keep it up.`;
+    } else {
+      document.getElementById('d-overdue-msg').innerHTML = `${overdue} task${overdue>1?'s':''} past their deadline. Reassign, reschedule, or escalate from the Production Tasks page.`;
+    }
+  }
+
+  function renderKPIs(){
+    const todayStr = new Date().toISOString().split('T')[0];
+    const total    = TASKS.length || 1;
+    const done     = TASKS.filter(t => t.status === 'completed').length;
+    const overdue  = TASKS.filter(t => t.status !== 'completed' && t.due_date && t.due_date < todayStr).length;
+    const active   = new Set(TASKS.map(t => t.oi || (t.owner||'').slice(0,2).toUpperCase()).filter(Boolean)).size;
+    const teamSize = OWNERS.length || active;
+
+    const completeRate = Math.round(done / total * 100);
+    const ontimeRate   = Math.round((done / total) * 100); // simplified: done out of total
+
+    document.getElementById('kpi-complete-rate').innerHTML = `${completeRate}<span style="font-size:16px; color:var(--muted)">%</span>`;
+    document.getElementById('kpi-complete-delta').innerHTML = completeRate >= 50
+      ? `<svg width="11" height="11"><use href="#i-trend-up"/></svg>${completeRate}% tasks done`
+      : `${completeRate}% tasks done`;
+    document.getElementById('kpi-complete-delta').className = `delta ${completeRate >= 50 ? '' : 'red'}`;
+
+    document.getElementById('kpi-overdue-val').textContent = overdue;
+    document.getElementById('kpi-overdue-delta').textContent = overdue === 0 ? 'None overdue — great!' : `${overdue} need attention`;
+    document.getElementById('kpi-overdue-delta').className = `delta ${overdue > 0 ? 'red' : ''}`;
+
+    const active2 = TASKS.filter(t => t.status !== 'completed').length;
+    const ontime  = active2 - overdue;
+    const ontimeP = active2 > 0 ? Math.round(ontime / active2 * 100) : 100;
+    document.getElementById('kpi-ontime-rate').innerHTML = `${ontimeP}<span style="font-size:16px; color:var(--muted)">%</span>`;
+    document.getElementById('kpi-ontime-delta').textContent = ontimeP >= 70 ? 'Good pace' : 'Needs improvement';
+    document.getElementById('kpi-ontime-delta').className = `delta ${ontimeP >= 70 ? '' : 'red'}`;
+
+    document.getElementById('kpi-assignees').innerHTML = `${active} <span style="font-size:13px; color:var(--muted); font-weight:500">/ ${teamSize}</span>`;
+    document.getElementById('kpi-assignees-delta').textContent = active === teamSize ? 'Full team active' : `${teamSize - active} inactive`;
+    document.getElementById('kpi-assignees-delta').className = `delta ${active === teamSize ? '' : 'red'}`;
+  }
+
+  function renderDonut(){
+    const todayStr = new Date().toISOString().split('T')[0];
+    const total    = TASKS.length;
+    const done     = TASKS.filter(t => t.status === 'completed').length;
+    const overdue  = TASKS.filter(t => t.status !== 'completed' && t.due_date && t.due_date < todayStr).length;
+    const inprog   = TASKS.filter(t => t.status === 'in-progress' && !(t.due_date && t.due_date < todayStr)).length;
+    const pending  = total - done - overdue - inprog;
+
+    document.getElementById('donut-sub').textContent = `Of ${total} total task${total !== 1 ? 's' : ''}.`;
+    document.getElementById('donut-n').textContent = total;
+
+    const segments = [
+      { pct: total ? Math.round(overdue / total * 100) : 0,  color:'#DC2626', label:'Overdue',     count: overdue },
+      { pct: total ? Math.round(done    / total * 100) : 0,  color:'#16A34A', label:'Completed',   count: done },
+      { pct: total ? Math.round(inprog  / total * 100) : 0,  color:'#F59E0B', label:'In progress', count: inprog },
+      { pct: total ? Math.round(pending / total * 100) : 0,  color:'#CBD5E1', label:'Pending',     count: pending },
+    ].filter(s => s.count > 0);
+
+    let offset = 25; // SVG donut starts at top (offset by 25)
+    const circles = segments.map(s => {
+      const c = `<circle cx="21" cy="21" r="15.9" fill="none" stroke="${s.color}" stroke-width="6"
+        stroke-dasharray="${s.pct} ${100 - s.pct}" stroke-dashoffset="${-offset + 25}" transform="rotate(-90 21 21)"/>`;
+      offset += s.pct;
+      return c;
+    }).join('');
+
+    document.getElementById('donut-svg').innerHTML =
+      `<circle cx="21" cy="21" r="15.9" fill="none" stroke="#F1F5F9" stroke-width="6"/>` + circles;
+
+    const colorClass = { '#DC2626':'red', '#16A34A':'green', '#F59E0B':'amber', '#CBD5E1':'' };
+    document.getElementById('donut-legend').innerHTML = segments.map(s =>
+      `<div class="li"><span class="sw ${colorClass[s.color]||''}" style="${!colorClass[s.color]?'background:#CBD5E1':''}"></span> ${s.label} <b>${s.count}</b></div>`
+    ).join('');
   }
 
   function renderWorkload(){

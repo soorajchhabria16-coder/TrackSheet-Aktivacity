@@ -228,7 +228,7 @@
           </div>
           <div class="cell">
             <div class="k">Due</div>
-            <div class="v" style="color:var(--danger)"><svg width="14" height="14" style="color:var(--danger)"><use href="#i-calendar"/></svg> 17 Apr 2026 <small>3 days overdue</small></div>
+            <div class="v" id="headDue"><svg width="14" height="14"><use href="#i-calendar"/></svg> —</div>
           </div>
         </div>
       </section>
@@ -498,6 +498,20 @@
       <span class="avatar" style="background:${OWNER_COLORS[t.oi]||'linear-gradient(135deg,#6B7FD7,#4B5EAA)'}; width:26px; height:26px; font-size:10px; flex-basis:26px">${t.oi}</span>
       <span>${t.owner}<small>${owner.role||''}</small></span>
     `;
+
+    // Due date cell — dynamic
+    const dueEl = document.getElementById('headDue');
+    if (t.due_date) {
+      const dueFmt = new Date(t.due_date + 'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+      const diffDays = Math.round((new Date(t.due_date+'T00:00:00') - new Date(todayStr+'T00:00:00')) / 86400000);
+      let relTxt = '';
+      if (isOverdue)       relTxt = `<small>${Math.abs(diffDays)}d overdue</small>`;
+      else if (diffDays === 0) relTxt = `<small>Due today</small>`;
+      else if (diffDays === 1) relTxt = `<small>Due tomorrow</small>`;
+      else if (diffDays > 0)   relTxt = `<small>In ${diffDays}d</small>`;
+      dueEl.style.color = isOverdue ? 'var(--danger)' : '';
+      dueEl.innerHTML = `<svg width="14" height="14" style="color:${isOverdue?'var(--danger)':'var(--muted)'}"><use href="#i-calendar"/></svg> ${dueFmt} ${relTxt}`;
+    }
 
     // If already completed, disable the mark-complete button
     if (effStatus === 'completed') {
