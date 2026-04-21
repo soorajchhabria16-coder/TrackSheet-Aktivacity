@@ -149,6 +149,56 @@
     color: var(--text);
     font-weight: 700;
   }
+  .msg {
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 13.5px;
+    margin-bottom: 18px;
+    display: none;
+  }
+  .msg.error   { background: #FEF2F2; color: #B91C1C; border: 1px solid #FECACA; }
+  .msg.success { background: #F0FDF4; color: #166534; border: 1px solid #BBF7D0; }
+  .panel {
+    display: none;
+    flex-direction: column;
+    gap: 14px;
+    padding: 20px;
+    background: #F8FAFC;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 20px;
+  }
+  .panel.open { display: flex; }
+  .panel p { margin: 0; font-size: 13.5px; color: var(--muted); line-height: 1.5; }
+  .panel .panel-title { font-size: 14px; font-weight: 700; color: var(--text); margin: 0; }
+  /* Overlay modal */
+  .overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.5);
+    align-items: center; justify-content: center;
+    z-index: 100;
+  }
+  .overlay.open { display: flex; }
+  .modal-box {
+    background: #fff;
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 380px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 25px 50px rgba(0,0,0,.25);
+  }
+  .modal-box .ico {
+    width: 52px; height: 52px;
+    background: var(--primary-50);
+    border-radius: 14px;
+    display: grid; place-items: center;
+    margin: 0 auto 16px;
+    color: var(--primary);
+  }
+  .modal-box h3 { font-family: 'Space Grotesk',sans-serif; font-size: 18px; font-weight: 700; margin: 0 0 8px; }
+  .modal-box p  { font-size: 14px; color: var(--muted); margin: 0 0 20px; line-height: 1.55; }
   /* Decorative background */
   .bg-pattern {
     position: fixed;
@@ -179,26 +229,58 @@
   </header>
 
   <div class="login-body">
-    <form onsubmit="handleLogin(event)">
+    <div class="msg" id="msg"></div>
+
+    <!-- Main login form -->
+    <form id="login-form" onsubmit="handleLogin(event)">
       <div class="form-group">
         <label for="email">Email Address</label>
-        <input type="email" id="email" value="sooraj@aktivacity.studio" required>
+        <input type="email" id="email" placeholder="you@studio.com" autocomplete="email" required>
       </div>
       <div class="form-group">
         <label for="password">Password</label>
-        <input type="password" id="password" value="••••••••" required>
-      </div>
-      
-      <div class="forgot">
-        <a href="#">Forgot password?</a>
+        <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" required>
       </div>
 
-      <button type="submit" class="btn-login">Sign in to workspace</button>
+      <div class="forgot">
+        <a href="#" onclick="toggleForgot(event)">Forgot password?</a>
+      </div>
+
+      <button type="submit" class="btn-login" id="login-btn">Sign in to workspace</button>
     </form>
 
-    <div class="login-foot">
-      Don't have an account? <a href="#">Request access</a>
+    <!-- Forgot password panel -->
+    <div class="panel" id="forgot-panel">
+      <p class="panel-title">Reset your password</p>
+      <p>Enter your email and we'll send you a link to reset your password.</p>
+      <div class="form-group" style="margin:0">
+        <input type="email" id="reset-email" placeholder="you@studio.com" style="width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:10px;font-family:inherit;font-size:14px;background:#fff;box-sizing:border-box">
+      </div>
+      <div style="display:flex;gap:8px">
+        <button onclick="sendReset()" class="btn-login" style="flex:1;padding:11px;font-size:14px">Send reset link</button>
+        <button onclick="toggleForgot()" type="button"
+          style="padding:11px 16px;border:1px solid var(--border);border-radius:12px;background:#fff;font-size:14px;font-weight:600;cursor:pointer;color:var(--muted)">Cancel</button>
+      </div>
     </div>
+
+    <div class="login-foot">
+      Don't have an account? <a href="#" onclick="openRequestModal(event)">Request access</a>
+    </div>
+  </div>
+</div>
+
+<!-- Request access modal -->
+<div class="overlay" id="request-modal" onclick="closeRequestModal(event)">
+  <div class="modal-box">
+    <div class="ico">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+      </svg>
+    </div>
+    <h3>Invite-only access</h3>
+    <p>Aktivacity is a private studio workspace. Ask your studio admin to invite you — you'll receive a magic-link email to get started.</p>
+    <button onclick="closeRequestModal()" class="btn-login" style="font-size:14px;padding:12px">Got it</button>
   </div>
 </div>
 
@@ -206,39 +288,84 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="db.js"></script>
 <script>
+  function showMsg(text, type) {
+    const el = document.getElementById('msg');
+    el.textContent = text;
+    el.className = 'msg ' + type;
+    el.style.display = 'block';
+  }
+  function clearMsg() {
+    const el = document.getElementById('msg');
+    el.style.display = 'none';
+  }
+
   async function handleLogin(e) {
     e.preventDefault();
-    const email = document.getElementById('email').value;
+    clearMsg();
+    const email    = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
-    const btn = e.target.querySelector('button');
-    
-    btn.textContent = 'Signing in...';
+    const btn      = document.getElementById('login-btn');
+
+    btn.textContent = 'Signing in…';
     btn.disabled = true;
 
-    // Fallback if Supabase is not yet configured
-    if (!supabase) {
-      console.log('Supabase not configured, using mockup login.');
-      setTimeout(() => {
-        window.location.href = 'Dashboard.html';
-      }, 800);
-      return;
-    }
-
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password,
-      });
-
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      
-      console.log('Login successful:', data);
       window.location.href = 'Dashboard.html';
-    } catch (error) {
-      alert('Login failed: ' + error.message);
+    } catch (err) {
+      showMsg(err.message, 'error');
       btn.textContent = 'Sign in to workspace';
       btn.disabled = false;
     }
+  }
+
+  function toggleForgot(e) {
+    if (e) e.preventDefault();
+    const panel = document.getElementById('forgot-panel');
+    const form  = document.getElementById('login-form');
+    const open  = panel.classList.toggle('open');
+    form.style.display = open ? 'none' : 'block';
+    clearMsg();
+    if (open) {
+      const emailVal = document.getElementById('email').value;
+      document.getElementById('reset-email').value = emailVal;
+      document.getElementById('reset-email').focus();
+    }
+  }
+
+  async function sendReset() {
+    clearMsg();
+    const email = document.getElementById('reset-email').value.trim();
+    if (!email) { showMsg('Please enter your email address.', 'error'); return; }
+
+    const btns = document.querySelectorAll('#forgot-panel button');
+    btns.forEach(b => b.disabled = true);
+    btns[0].textContent = 'Sending…';
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + '/Login'
+      });
+      if (error) throw error;
+      showMsg('Reset link sent! Check your email inbox.', 'success');
+      document.getElementById('forgot-panel').classList.remove('open');
+      document.getElementById('login-form').style.display = 'block';
+    } catch (err) {
+      showMsg(err.message, 'error');
+    } finally {
+      btns.forEach(b => b.disabled = false);
+      btns[0].textContent = 'Send reset link';
+    }
+  }
+
+  function openRequestModal(e) {
+    if (e) e.preventDefault();
+    document.getElementById('request-modal').classList.add('open');
+  }
+  function closeRequestModal(e) {
+    if (e && e.target !== document.getElementById('request-modal')) return;
+    document.getElementById('request-modal').classList.remove('open');
   }
 </script>
 </body>
