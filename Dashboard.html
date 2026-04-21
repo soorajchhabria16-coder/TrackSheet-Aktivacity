@@ -512,53 +512,76 @@
   }
 
   function renderWorkload(){
-    // Aggregate per owner
+    const todayStr = new Date().toISOString().split('T')[0];
     const counts = {};
-    OWNERS.forEach(o => counts[o.id] = { total:0, overdue:0, completed:0, progress:0 });
-    TASKS.forEach(t => {
-      const c = counts[t.oi]; if(!c) return;
-      c.total++;
-      if(t.status==='overdue') c.overdue++;
-      else if(t.status==='completed') c.completed++;
-      else c.progress++;
+    OWNERS.forEach(o => {
+      const key = o.oi || o.id;
+      counts[key] = { total:0, overdue:0, completed:0, progress:0 };
     });
-    const maxTotal = Math.max(...OWNERS.map(o => counts[o.id].total), 1);
+    TASKS.forEach(t => {
+      const key = t.oi || (t.owner||'?').slice(0,2).toUpperCase();
+      if (!counts[key]) counts[key] = { total:0, overdue:0, completed:0, progress:0 };
+      counts[key].total++;
+      const isOverdue = t.status !== 'completed' && t.due_date && t.due_date < todayStr;
+      if      (t.status === 'completed') counts[key].completed++;
+      else if (isOverdue || t.status === 'overdue') counts[key].overdue++;
+      else    counts[key].progress++;
+    });
+    const maxTotal = Math.max(...Object.values(counts).map(c => c.total), 1);
     const rows = OWNERS.map(o => {
-      const c = counts[o.id];
+      const key   = o.oi || o.id;
+      const c     = counts[key] || { total:0, overdue:0, completed:0, progress:0 };
       const scale = 100 / maxTotal;
+      const grad  = OWNER_COLORS[key] || 'linear-gradient(135deg,#6B7FD7,#4B5EAA)';
       return `
         <div class="row">
           <div class="person">
-            <div class="avatar" style="background:${OWNER_COLORS[o.id]}">${o.id}</div>
-            <div><div>${o.name.split(' ')[0]}</div><small>${o.role}</small></div>
+            <div class="avatar" style="background:${grad}">${key}</div>
+            <div><div>${o.name.split(' ')[0]}</div><small>${o.role||''}</small></div>
           </div>
           <div class="wbar">
-            ${c.overdue?`<div class="seg red" style="width:${c.overdue*scale}%"></div>`:''}
-            ${c.progress?`<div class="seg amber" style="width:${c.progress*scale}%"></div>`:''}
-            ${c.completed?`<div class="seg green" style="width:${c.completed*scale}%"></div>`:''}
+            ${c.overdue   ? `<div class="seg red"   style="width:${c.overdue*scale}%"></div>`   : ''}
+            ${c.progress  ? `<div class="seg amber" style="width:${c.progress*scale}%"></div>` : ''}
+            ${c.completed ? `<div class="seg green" style="width:${c.completed*scale}%"></div>`: ''}
           </div>
           <div class="wcount"><b>${c.total}</b> ${c.total===1?'task':'tasks'}</div>
         </div>
       `;
     }).join('');
-    document.getElementById('workload-rows').innerHTML = rows;
+    document.getElementById('workload-rows').innerHTML = rows || '<div style="padding:16px 18px; color:var(--muted); font-size:13px">No team data available.</div>';
   }
 
   function renderRisk(){
-    const risky = TASKS.filter(t => t.prio==='high' && t.status==='overdue').slice(0,4);
-    const html = risky.map(t => `
-      <li>
-        <div class="icon-pill"><svg width="16" height="16"><use href="#${KIND_ICON[t.kind]}"/></svg></div>
-        <div class="body">
-          <div class="title">${t.title}</div>
-          <div class="meta">
-            <span class="avatar" style="background:${OWNER_COLORS[t.oi]}">${t.oi}</span>
-            ${t.owner} · Due 17 Apr · <span style="color:var(--danger); font-weight:600">3d overdue</span>
+    const todayStr = new Date().toISOString().split('T')[0];
+    const risky = TASKS.filter(t => {
+      const prio     = (t.priority || t.prio || '').toLowerCase();
+      const isOverdue = t.status !== 'completed' && t.due_date && t.due_date < todayStr;
+      return prio === 'high' && (t.status === 'overdue' || isOverdue);
+    }).slice(0, 4);
+
+    const html = risky.map(t => {
+      const oi      = t.oi || (t.owner||'?').slice(0,2).toUpperCase();
+      const grad    = OWNER_COLORS[oi] || 'linear-gradient(135deg,#6B7FD7,#4B5EAA)';
+      const dueDate = t.due_date
+        ? new Date(t.due_date+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short'})
+        : 'No date';
+      const diffDays = t.due_date
+        ? Math.round((new Date(todayStr) - new Date(t.due_date+'T00:00:00')) / 86400000)
+        : 0;
+      return `
+        <li>
+          <div class="icon-pill"><svg width="16" height="16"><use href="#${KIND_ICON[t.kind]||'i-list'}"/></svg></div>
+          <div class="body">
+            <div class="title">${t.title}</div>
+            <div class="meta">
+              <span class="avatar" style="background:${grad}; width:14px; height:14px; font-size:8px; flex-basis:14px">${oi}</span>
+              ${t.owner} · Due ${dueDate} · <span style="color:var(--danger); font-weight:600">${diffDays}d overdue</span>
+            </div>
           </div>
-        </div>
-        <span class="prio high"><span class="pdot"></span> High</span>
-      </li>
-    `).join('');
+          <span class="prio high"><span class="pdot"></span> High</span>
+        </li>
+      `;
+    }).join('') || '<li style="padding:14px 18px; color:var(--muted); font-size:13px">No high-priority overdue tasks.</li>';
     document.getElementById('risk-list').innerHTML = html;
   }
 

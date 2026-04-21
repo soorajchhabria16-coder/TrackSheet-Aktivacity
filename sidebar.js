@@ -65,7 +65,7 @@ window.renderTopbar = function(title, subtitle){
   `;
 };
 
-// Shared task data (Initial mock data while loading)
+// Shared task data (populated by initializeDashboardData)
 window.TASKS = [];
 window.OWNERS = [];
 
@@ -78,22 +78,89 @@ window.OWNER_COLORS = {
   MK:"linear-gradient(135deg,#F87171,#B91C1C)",
 };
 
+/* Normalize a task from Supabase or mock, ensuring both prio+priority and oi exist */
+window._normTask = function(t) {
+  const oi = t.oi || (t.owner || t.assigned_to || '?').slice(0,2).toUpperCase();
+  const priority = (t.priority || t.prio || 'medium').toLowerCase();
+  return {
+    ...t,
+    oi,
+    priority,
+    prio: priority,
+    owner:      t.owner || t.assigned_to || 'Unassigned',
+    status:     (t.status || 'pending').toLowerCase().replace('_', '-'),
+    due_date:   t.due_date || t.dueDate || null,
+    notes:      typeof t.notes === 'number' ? t.notes : parseInt(t.notes) || 0,
+    kind:       t.kind || 'web',
+    department: t.department || 'Design',
+  };
+};
+
+/* Normalize a profile from Supabase, deriving oi (initials) from name */
+window._normOwner = function(p) {
+  const parts = (p.name || p.email || 'Unknown User').trim().split(/\s+/);
+  const oi = p.oi || p.initials || (
+    (parts[0]?.[0] || '') + (parts[1]?.[0] || parts[0]?.[1] || '')
+  ).toUpperCase() || 'UN';
+  return {
+    ...p,
+    oi,
+    name: p.name || p.email || 'Unknown',
+    role: p.role || p.position || 'Team Member',
+  };
+};
+
+/* Fallback task set used when Supabase returns nothing */
+window._mockTasks = function() {
+  const ts = new Date().toISOString().split('T')[0];
+  const d = o => { const dt = new Date(ts); dt.setDate(dt.getDate()+o); return dt.toISOString().split('T')[0]; };
+  return [
+    {id:1, title:'Brand identity refresh — Season 3',  status:'in-progress',priority:'high',  prio:'high',  due_date:d(-4),owner:'Sara Hassan',   oi:'SH',kind:'portfolio',notes:3, department:'Design'},
+    {id:2, title:'Campaign hero banner — Q2 launch',   status:'in-progress',priority:'high',  prio:'high',  due_date:d(-2),owner:'Sibghat Nawaz', oi:'SB',kind:'banner',   notes:1, department:'Marketing'},
+    {id:3, title:'Podcast thumbnail system',           status:'in-progress',priority:'medium',prio:'medium',due_date:d(-1),owner:'Tom Morris',    oi:'TM',kind:'social',   notes:0, department:'Content'},
+    {id:4, title:'Mobile app UI overhaul — v3',        status:'pending',    priority:'high',  prio:'high',  due_date:d(0), owner:'Inam Khan',     oi:'IN',kind:'web',      notes:5, department:'Design'},
+    {id:5, title:'Social media asset pack — April',    status:'in-progress',priority:'medium',prio:'medium',due_date:d(0), owner:'Zainab Qureshi',oi:'ZA',kind:'social',   notes:2, department:'Marketing'},
+    {id:6, title:'Annual report layout',               status:'pending',    priority:'high',  prio:'high',  due_date:d(2), owner:'Moiz Kiyani',   oi:'MK',kind:'portfolio',notes:0, department:'Design'},
+    {id:7, title:'Merch lineup visual direction',      status:'in-progress',priority:'medium',prio:'medium',due_date:d(3), owner:'Sara Hassan',   oi:'SH',kind:'banner',   notes:1, department:'Creative'},
+    {id:8, title:'Email newsletter template',          status:'pending',    priority:'low',   prio:'low',   due_date:d(5), owner:'Sibghat Nawaz', oi:'SB',kind:'web',      notes:0, department:'Marketing'},
+    {id:9, title:'Event backdrop artwork',             status:'pending',    priority:'medium',prio:'medium',due_date:d(6), owner:'Tom Morris',    oi:'TM',kind:'banner',   notes:3, department:'Events'},
+    {id:10,title:'Product photography art direction',  status:'pending',    priority:'low',   prio:'low',   due_date:d(14),owner:'Inam Khan',     oi:'IN',kind:'portfolio',notes:0, department:'Creative'},
+    {id:11,title:'YouTube thumbnail A/B test series',  status:'completed',  priority:'medium',prio:'medium',due_date:d(-5),owner:'Zainab Qureshi',oi:'ZA',kind:'social',   notes:4, department:'Content'},
+    {id:12,title:'Brand guidelines v2.1',              status:'completed',  priority:'high',  prio:'high',  due_date:d(-7),owner:'Moiz Kiyani',   oi:'MK',kind:'portfolio',notes:2, department:'Design'},
+    {id:13,title:'Reel storyboard — Q1 retrospective', status:'completed',  priority:'low',   prio:'low',   due_date:d(-3),owner:'Sara Hassan',   oi:'SH',kind:'social',   notes:1, department:'Content'},
+  ];
+};
+
+/* Fallback owner set */
+window._mockOwners = function() {
+  return [
+    {id:'SH',oi:'SH',name:'Sara Hassan',    role:'Lead Designer'},
+    {id:'SB',oi:'SB',name:'Sibghat Nawaz',  role:'Graphic Designer'},
+    {id:'TM',oi:'TM',name:'Tom Morris',     role:'Content Creator'},
+    {id:'IN',oi:'IN',name:'Inam Khan',      role:'UI Developer'},
+    {id:'ZA',oi:'ZA',name:'Zainab Qureshi', role:'Motion Designer'},
+    {id:'MK',oi:'MK',name:'Moiz Kiyani',   role:'Illustrator'},
+  ];
+};
+
 /**
  * Initializes the dashboard by fetching real data from Supabase.
- * Falls back to static data if no database is connected or table is empty.
+ * Normalizes all records so oi, prio, priority are consistently available.
+ * Falls back to mock data if Supabase is unreachable or returns nothing.
  */
 async function initializeDashboardData() {
   if (typeof fetchTasks === 'function') {
     try {
-      const liveTasks = await fetchTasks();
+      const liveTasks    = await fetchTasks();
       const liveProfiles = await fetchProfiles();
-      
-      if (liveTasks && liveTasks.length > 0) window.TASKS = liveTasks;
-      if (liveProfiles && liveProfiles.length > 0) window.OWNERS = liveProfiles;
+      if (liveTasks    && liveTasks.length    > 0) window.TASKS  = liveTasks.map(window._normTask);
+      if (liveProfiles && liveProfiles.length > 0) window.OWNERS = liveProfiles.map(window._normOwner);
     } catch (e) {
-      console.warn('Fallback to local data due to fetch error:', e);
+      console.warn('Aktivacity: Supabase fetch failed, using fallback data:', e);
     }
   }
+  if (window.TASKS.length  === 0) window.TASKS  = window._mockTasks();
+  if (window.OWNERS.length === 0) window.OWNERS = window._mockOwners();
 }
 
 // Load Supabase if available

@@ -374,7 +374,7 @@
         <!-- Side column -->
         <aside class="side">
           <div class="side-actions">
-            <button class="btn btn-primary"><svg class="icon"><use href="#i-check"/></svg> Mark as completed</button>
+            <button class="btn btn-primary" onclick="markTaskComplete()"><svg class="icon"><use href="#i-check"/></svg> Mark as completed</button>
             <button class="btn btn-ghost"><svg class="icon"><use href="#i-calendar"/></svg> Reschedule</button>
           </div>
 
@@ -447,40 +447,82 @@
   </main>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="db.js"></script>
 <script src="sidebar.js"></script>
+<script src="logic.js"></script>
 <script>
-  fetch('icons.html').then(r=>r.text()).then(t=>document.getElementById('icons').innerHTML=t).then(init).catch(init);
+  fetch('icons.html').then(r=>r.text()).then(t=>document.getElementById('icons').innerHTML=t).catch(()=>{}).finally(init);
 
   function getId(){
-    const m = new URLSearchParams(location.search);
-    return parseInt(m.get('id') || '1', 10);
+    const p = new URLSearchParams(location.search);
+    const raw = p.get('id');
+    const asInt = parseInt(raw, 10);
+    return isNaN(asInt) ? raw : asInt;
   }
 
-  function init(){
+  async function init(){
     document.getElementById('sidebar-slot').outerHTML = renderSidebar('tasks');
-    document.getElementById('topbar-slot').outerHTML = renderTopbar('Task detail','Open the row, update fields, hand it off.');
+    document.getElementById('topbar-slot').outerHTML  = renderTopbar('Task detail', 'Open the row, update fields, hand it off.');
+
+    if (window.TASKS.length === 0) await initializeDashboardData();
 
     const id = getId();
-    const t = TASKS.find(x => x.id === id) || TASKS[0];
-    document.getElementById('crumb-title').textContent = t.title;
-    document.getElementById('headTitle').textContent = t.title;
-    document.getElementById('headId').textContent = 'TSK-' + String(t.id).padStart(3,'0');
-    document.getElementById('headIcon').setAttribute('href','#' + KIND_ICON[t.kind]);
+    const t = TASKS.find(x => String(x.id) === String(id)) || TASKS[0];
+    if (!t) return;
 
-    const statusHtml = t.status === 'completed'
+    const prio     = (t.priority || t.prio || 'medium').toLowerCase();
+    const todayStr = new Date().toISOString().split('T')[0];
+    const isOverdue = t.status !== 'completed' && t.due_date && t.due_date < todayStr;
+    const effStatus = t.status === 'completed' ? 'completed' : isOverdue ? 'overdue' : (t.status || 'pending');
+
+    document.getElementById('crumb-title').textContent = t.title;
+    document.getElementById('headTitle').textContent   = t.title;
+    document.getElementById('headId').textContent      = 'TSK-' + String(t.id).padStart(3,'0');
+    document.getElementById('headIcon').setAttribute('href','#' + (KIND_ICON[t.kind]||'i-list'));
+
+    const statusHtml = effStatus === 'completed'
       ? '<span class="status completed"><svg class="icon"><use href="#i-check"/></svg> Completed</span>'
       : '<span class="status overdue"><svg class="icon"><use href="#i-alert"/></svg> Overdue</span>';
     document.getElementById('headStatus').innerHTML = statusHtml;
-    if(t.status==='completed') document.getElementById('dhead').classList.remove('overdue');
+    if (effStatus === 'completed') document.getElementById('dhead').classList.remove('overdue');
 
-    document.getElementById('headPrio').innerHTML = t.prio==='high'
+    document.getElementById('headPrio').innerHTML = prio === 'high'
       ? '<span class="prio high"><span class="pdot"></span> High</span>'
+      : prio === 'low'
+      ? '<span class="prio medium" style="color:#64748B"><span class="pdot" style="background:#94A3B8"></span> Low</span>'
       : '<span class="prio medium"><span class="pdot"></span> Medium</span>';
 
+    const owner = OWNERS.find(o => o.oi === t.oi || o.id === t.oi) || {};
     document.getElementById('headAssignee').innerHTML = `
-      <span class="avatar" style="background:${OWNER_COLORS[t.oi]}; width:26px; height:26px; font-size:10px; flex-basis:26px">${t.oi}</span>
-      <span>${t.owner}<small>${(OWNERS.find(o=>o.id===t.oi)||{}).role||''}</small></span>
+      <span class="avatar" style="background:${OWNER_COLORS[t.oi]||'linear-gradient(135deg,#6B7FD7,#4B5EAA)'}; width:26px; height:26px; font-size:10px; flex-basis:26px">${t.oi}</span>
+      <span>${t.owner}<small>${owner.role||''}</small></span>
     `;
+
+    // If already completed, disable the mark-complete button
+    if (effStatus === 'completed') {
+      const btn = document.querySelector('.side-actions .btn-primary');
+      if (btn) { btn.textContent = '✓ Completed'; btn.disabled = true; btn.style.opacity = '.6'; }
+    }
+  }
+
+  async function markTaskComplete(){
+    const id  = getId();
+    const btn = document.querySelector('.side-actions .btn-primary');
+    if (btn) { btn.disabled = true; btn.textContent = 'Marking…'; }
+
+    const task = window.TASKS.find(x => String(x.id) === String(id));
+    if (task) task.status = 'completed';
+
+    document.getElementById('headStatus').innerHTML =
+      '<span class="status completed"><svg class="icon"><use href="#i-check"/></svg> Completed</span>';
+    document.getElementById('dhead').classList.remove('overdue');
+    if (btn) { btn.textContent = '✓ Completed'; btn.style.opacity = '.6'; }
+
+    if (typeof updateTask === 'function') {
+      try { await updateTask(id, { status: 'completed' }); }
+      catch(e) { console.warn('Could not persist to Supabase:', e); }
+    }
   }
 </script>
 </body>

@@ -69,3 +69,32 @@ window.removeUser = async function(userId) {
   if (error) throw error;
   return true;
 };
+
+/**
+ * Creates a new task in the 'tasks' table.
+ * Falls back to updating the local TASKS array if Supabase is unavailable.
+ */
+window.createTask = async function(taskData) {
+  if (!supabase) {
+    const newTask = { ...taskData, id: Date.now() };
+    window.TASKS = [...(window.TASKS || []), newTask];
+    return newTask;
+  }
+  const { data, error } = await supabase.from('tasks').insert([taskData]).select();
+  if (error) throw error;
+  if (data?.[0]) window.TASKS = [...(window.TASKS || []), data[0]];
+  return data[0];
+};
+
+/**
+ * Updates an existing task by id.
+ * Applies the update locally first, then persists to Supabase.
+ */
+window.updateTask = async function(id, updates) {
+  const idx = (window.TASKS || []).findIndex(t => String(t.id) === String(id));
+  if (idx > -1) window.TASKS[idx] = { ...window.TASKS[idx], ...updates };
+  if (!supabase) return (window.TASKS || [])[idx];
+  const { data, error } = await supabase.from('tasks').update(updates).eq('id', id).select();
+  if (error) throw error;
+  return data?.[0];
+};

@@ -1,168 +1,596 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Aktivacity — Production Tasks</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="shared.css">
 <style>
-  /* Page-specific */
-  .action-row{display:flex; align-items:center; gap:12px; margin-bottom:20px; flex-wrap:wrap}
-  .search{position:relative; flex:1; min-width:240px; max-width:520px}
-  .search input{
-    width:100%; border:1px solid var(--border); background:#FFFFFF;
-    border-radius:10px; padding:10px 12px 10px 38px;
-    font-size:14px; color:var(--text); font-family:inherit;
-    box-shadow:var(--shadow-sm); outline:none;
-    transition:border-color .15s, box-shadow .15s;
-  }
-  .search input::placeholder{color:var(--muted-2)}
-  .search input:focus{border-color:var(--primary); box-shadow:var(--ring)}
-  .search .s-icon{position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--muted-2)}
-  .kbd{
-    position:absolute; right:10px; top:50%; transform:translateY(-50%);
-    font-size:11px; color:var(--muted);
-    border:1px solid var(--border); background:#F8FAFC;
-    padding:2px 6px; border-radius:6px;
-    font-family:'Space Grotesk',sans-serif;
-  }
-  .actions-right{margin-left:auto; display:flex; gap:10px}
+/* ================================================================
+   CONTROL ROOM — Full dark theme override for Production Tasks
+   ================================================================ */
+:root {
+  --cr-bg:         #0e0f13;
+  --cr-s1:         #141519;
+  --cr-s2:         #1a1b23;
+  --cr-s3:         #22232e;
+  --cr-border:     rgba(255,255,255,0.07);
+  --cr-border-hi:  rgba(255,255,255,0.14);
+  --cr-text:       #eef0f8;
+  --cr-muted:      rgba(238,240,248,0.45);
+  --cr-muted2:     rgba(238,240,248,0.22);
 
-  .kpi-row{display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:28px}
-  .kpi{
-    background:var(--surface); border:1px solid var(--border);
-    border-radius:14px; padding:18px; box-shadow:var(--shadow-sm);
-    position:relative; overflow:hidden;
-  }
-  .kpi-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px}
-  .kpi-icon{
-    width:32px; height:32px; border-radius:9px;
-    display:grid; place-items:center; background:#F1F5F9; color:var(--muted);
-  }
-  .kpi-icon.indigo{background:var(--primary-50); color:var(--primary)}
-  .kpi-icon.green{background:var(--success-50); color:var(--success)}
-  .kpi-icon.amber{background:var(--warning-50); color:#B45309}
-  .kpi-icon.red{background:#FFFFFF; color:var(--danger); border:1px solid #FECACA}
-  .kpi-trend{
-    display:inline-flex; align-items:center; gap:3px;
-    font-size:11px; font-weight:600;
-    padding:3px 7px; border-radius:999px;
-    background:var(--success-50); color:var(--success);
-  }
-  .kpi-trend.red{background:var(--danger-50); color:var(--danger)}
-  .kpi-label{font-size:12px; color:var(--muted); font-weight:500}
-  .kpi-num{
-    font-family:'Space Grotesk',sans-serif;
-    font-size:38px; font-weight:700; letter-spacing:-0.02em;
-    font-variant-numeric:tabular-nums; line-height:1.05; margin-top:6px;
-  }
-  .kpi-cap{font-size:12px; color:var(--muted); margin-top:6px; display:flex; align-items:center; gap:6px}
-  .kpi-cap .dot{width:6px; height:6px; border-radius:50%; background:var(--success)}
-  .kpi.danger{background:linear-gradient(180deg,#FFF5F5 0%,#FEECEC 100%); border-color:#FECACA}
-  .kpi.danger .kpi-num{color:var(--danger)}
-  .kpi.danger .kpi-label{color:#991B1B}
-  .kpi.danger .kpi-cap{color:#B91C1C}
-  .kpi.danger .kpi-cap .dot{background:var(--danger)}
-  .spark{display:flex; align-items:flex-end; gap:2px; height:22px}
-  .spark span{display:block; width:3px; background:var(--warning); border-radius:1px; opacity:.75}
+  --cr-red:        #FF3B3B;
+  --cr-red-dim:    rgba(255,59,59,0.12);
+  --cr-red-glow:   rgba(255,59,59,0.4);
+  --cr-amber:      #F5A623;
+  --cr-amber-dim:  rgba(245,166,35,0.11);
+  --cr-emerald:    #22C55E;
+  --cr-em-dim:     rgba(34,197,94,0.11);
+  --cr-blue:       #6B7FD7;
+  --cr-blue-dim:   rgba(107,127,215,0.12);
 
-  .seg{display:inline-flex; padding:3px; border-radius:10px; background:#F1F5F9; border:1px solid var(--border); font-size:13px; font-weight:500; color:var(--muted)}
-  .seg button{border:0; background:transparent; padding:6px 12px; border-radius:7px; color:inherit; font:inherit; cursor:pointer}
-  .seg button.on{background:#FFFFFF; color:var(--text); box-shadow:var(--shadow-sm)}
+  /* Override shared tokens so sidebar/topbar go dark too */
+  --bg:            var(--cr-bg);
+  --surface:       var(--cr-s1);
+  --border:        var(--cr-border);
+  --border-strong: var(--cr-border-hi);
+  --text:          var(--cr-text);
+  --muted:         var(--cr-muted);
+  --muted-2:       var(--cr-muted2);
+  --primary:       var(--cr-blue);
+  --primary-50:    var(--cr-blue-dim);
+  --primary-600:   #8FA4FF;
+  --shadow-sm:     0 1px 3px rgba(0,0,0,0.4);
+  --shadow-md:     0 4px 16px rgba(0,0,0,0.5);
+}
 
-  .filter-bar{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:14px 0}
-  .pill-filter{
-    display:inline-flex; align-items:center; gap:6px;
-    background:#FFFFFF; border:1px solid var(--border);
-    border-radius:999px; padding:7px 12px;
-    font-size:13px; font-weight:500; color:var(--text);
-    cursor:pointer; box-shadow:var(--shadow-sm);
-  }
-  .pill-filter:hover{border-color:var(--border-strong)}
-  .pill-filter .lbl-muted{color:var(--muted); margin-right:2px}
-  .pill-filter.active{border-color:var(--primary); color:var(--primary-600); background:var(--primary-50)}
-  .pill-filter .count-badge{background:var(--primary); color:#fff; font-size:11px; font-weight:600; padding:1px 6px; border-radius:999px}
-  .reset-link{margin-left:auto; font-size:13px; color:var(--muted); font-weight:500; cursor:pointer; background:none; border:0; padding:6px 4px}
-  .reset-link:hover{color:var(--text); text-decoration:underline}
+body { font-family:'DM Sans',system-ui,sans-serif; background:var(--cr-bg); color:var(--cr-text); }
 
-  .table-wrap{background:var(--surface); border:1px solid var(--border); border-radius:14px; box-shadow:var(--shadow-sm); overflow:hidden}
-  .table-scroll{overflow-x:auto}
-  .table-top{display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid var(--border); background:#FBFCFD; gap:10px; flex-wrap:wrap}
-  .t-count{font-size:13px; color:var(--muted)}
-  .t-count b{color:var(--text); font-weight:600}
-  .t-tools{display:flex; gap:6px}
-  .icon-btn-sm{width:30px; height:30px; border-radius:8px; border:1px solid var(--border); background:#fff; color:var(--muted); display:grid; place-items:center; cursor:pointer}
-  .icon-btn-sm:hover{color:var(--text); background:#F8FAFC}
+/* ---- Sidebar dark ---- */
+.sidebar { background:var(--cr-s1)!important; border-right-color:var(--cr-border)!important; }
+.brand-name { color:var(--cr-text)!important; }
+.nav-section-label { color:var(--cr-muted)!important; }
+.nav-item { color:var(--cr-muted)!important; }
+.nav-item:hover { background:var(--cr-blue-dim)!important; color:#8FA4FF!important; }
+.nav-item.active { background:var(--cr-blue)!important; color:#fff!important; box-shadow:0 2px 8px rgba(107,127,215,.35)!important; }
+.nav-item.active:hover { background:var(--cr-blue)!important; }
+.nav-item:not(.active) .count { background:var(--cr-s3)!important; color:var(--cr-muted)!important; }
+.sidebar-foot { border-top-color:var(--cr-border)!important; }
+.settings { color:var(--cr-muted)!important; }
+.settings:hover { background:var(--cr-s2)!important; color:var(--cr-text)!important; }
+.user-chip { background:var(--cr-s2)!important; border-color:var(--cr-border)!important; }
+.user-chip .name { color:var(--cr-text)!important; }
+.user-chip .role { color:var(--cr-muted)!important; }
 
-  table.tasks{width:100%; border-collapse:separate; border-spacing:0; font-size:13.5px; min-width:1020px}
-  table.tasks thead th{
-    position:sticky; top:0; background:#FBFCFD;
-    text-align:left; color:var(--muted);
-    font-weight:600; font-size:12px;
-    text-transform:uppercase; letter-spacing:.04em;
-    padding:11px 14px; border-bottom:1px solid var(--border);
-    white-space:nowrap;
-  }
-  table.tasks thead th .sort{display:inline-flex; align-items:center; gap:4px; cursor:pointer}
-  table.tasks tbody td{padding:14px; border-bottom:1px solid var(--border); vertical-align:middle; background:#fff}
-  table.tasks tbody tr:nth-child(even) td{background:#FBFCFD}
-  table.tasks tbody tr:last-child td{border-bottom:0}
-  table.tasks tbody tr{cursor:pointer; transition:background .15s}
-  table.tasks tbody tr:hover td{background:var(--primary-50) !important}
-  table.tasks tbody tr:hover .row-chev{opacity:1; transform:translateX(0)}
-  .row-chev{opacity:0; transform:translateX(-4px); color:var(--primary); transition:opacity .15s, transform .15s; display:inline-block}
-  .task-title{display:flex; align-items:center; gap:10px; font-weight:600; color:var(--text)}
-  .task-title .icon-pill{width:28px; height:28px; border-radius:8px; background:#F1F5F9; color:var(--muted); display:grid; place-items:center; flex:0 0 28px}
-  .task-title .t-meta{font-size:11px; color:var(--muted); font-weight:500; margin-top:2px; display:flex; align-items:center; gap:6px}
-  .sub-col{display:flex; flex-direction:column; gap:0}
+/* ---- Topbar dark ---- */
+.topbar { background:var(--cr-s1)!important; border-bottom-color:var(--cr-border)!important; }
+.greeting h1 { font-family:'Barlow Condensed',sans-serif!important; font-size:22px!important; letter-spacing:.06em!important; text-transform:uppercase!important; color:var(--cr-text)!important; }
+.greeting p { color:var(--cr-muted)!important; font-size:12px!important; }
+.icon-btn { background:var(--cr-s2)!important; border-color:var(--cr-border)!important; color:var(--cr-muted)!important; }
+.icon-btn:hover { color:var(--cr-text)!important; background:var(--cr-s3)!important; }
+.account { background:var(--cr-s2)!important; border-color:var(--cr-border)!important; }
+.account .caret { color:var(--cr-muted)!important; }
 
-  .date-cell{font-variant-numeric:tabular-nums; color:var(--text); white-space:nowrap}
-  .date-cell .d-sub{display:block; font-size:11px; color:var(--muted)}
-  .date-cell.overdue{color:var(--danger); font-weight:600}
-  .notes{display:inline-flex; align-items:center; gap:6px; color:var(--muted); font-variant-numeric:tabular-nums; font-weight:500}
-  .notes.muted{color:var(--muted-2)}
-  .notes .bubble{width:16px; height:16px; stroke-width:1.75}
+/* ---- Main area ---- */
+.main { background:var(--cr-bg); }
+.content { padding:0 0 80px; }
 
-  /* Right panel hint */
-  .panel-hint{
-    position:fixed; top:0; right:0;
-    width:112px; height:100vh;
-    background:#FFFFFF;
-    box-shadow:-22px 0 48px -24px rgba(15,23,42,.22);
-    border-left:1px solid var(--border);
-    z-index:8; pointer-events:none;
-    display:flex; flex-direction:column; overflow:hidden;
-  }
-  .ph-top{display:flex; align-items:center; justify-content:space-between; padding:14px; border-bottom:1px solid var(--border)}
-  .ph-top .t-stub{height:10px; width:54px; background:#E2E8F0; border-radius:4px}
-  .ph-top .close{width:24px; height:24px; border-radius:6px; background:#F1F5F9; color:var(--muted-2); display:grid; place-items:center; font-size:14px}
-  .ph-body{padding:14px; display:flex; flex-direction:column; gap:12px; flex:1}
-  .ph-label{height:8px; width:38px; background:#E2E8F0; border-radius:3px}
-  .ph-field{height:32px; border:1px solid var(--border); border-radius:8px; background:#F8FAFC}
-  .ph-field.pill{height:22px; width:80px; border-radius:999px; background:var(--success-100); border-color:transparent}
-  .ph-field.pill.amber{background:var(--warning-100)}
-  .ph-desc{height:64px; border:1px solid var(--border); border-radius:8px; background:#F8FAFC; padding:8px; display:flex; flex-direction:column; gap:6px}
-  .ph-desc .l{height:6px; background:#E2E8F0; border-radius:3px}
-  .ph-desc .l.s{width:70%}
-  .ph-desc .l.xs{width:40%}
-  .ph-section-title{height:10px; width:60px; background:#CBD5E1; border-radius:4px; margin-top:6px}
-  .ph-comment{display:flex; gap:8px; align-items:flex-start}
-  .ph-comment .a{width:22px; height:22px; border-radius:50%; background:linear-gradient(135deg,#A78BFA,#6366F1); flex:0 0 22px}
-  .ph-comment .a.g{background:linear-gradient(135deg,#34D399,#0EA5E9)}
-  .ph-comment .body{flex:1; display:flex; flex-direction:column; gap:4px}
-  .ph-comment .body .l{height:6px; background:#E2E8F0; border-radius:3px}
-  .ph-comment .body .l.s{width:55%}
-  .ph-foot{margin-top:auto; padding:12px 14px; border-top:1px solid var(--border); display:flex; flex-direction:column; gap:8px; background:#FBFCFD}
-  .ph-btn{height:32px; border-radius:8px; background:var(--primary); width:100%; box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}
-  .ph-btn.ghost{background:#FFFFFF; border:1px solid var(--border)}
+/* ================================================================
+   SECTION 1 — HERO STATUS BAR
+   ================================================================ */
+.hero-bar {
+  position:sticky; top:72px; z-index:4;
+  padding:28px 36px 22px;
+  overflow:hidden;
+  border-bottom:1px solid var(--cr-border);
+  transition:background 1s ease;
+}
+.hero-bar.calm    { background:linear-gradient(135deg,#071b2e 0%,#0a2230 50%,#081b26 100%); }
+.hero-bar.warn    { background:linear-gradient(135deg,#1c1200 0%,#2e1d00 50%,#1c1200 100%); }
+.hero-bar.critical{ background:linear-gradient(135deg,#1c0000 0%,#2e0000 50%,#1a0000 100%); }
 
-  .main{padding-right:112px}
-  @media (max-width: 900px){
-    .panel-hint{display:none} .main{padding-right:0}
-  }
+/* SVG grain noise overlay */
+.hero-bar::before {
+  content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
+  opacity:.35;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+  animation:grain-drift 0.18s steps(1) infinite;
+}
+@keyframes grain-drift {
+  0%  { transform:translate(0,0) }
+  25% { transform:translate(-2%,1%) }
+  50% { transform:translate(1%,-2%) }
+  75% { transform:translate(-1%,2%) }
+}
+
+.hero-inner { position:relative; z-index:1; }
+
+.hero-eyebrow {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:10px; font-weight:700;
+  letter-spacing:.22em; text-transform:uppercase;
+  color:var(--cr-muted); margin-bottom:12px;
+}
+
+.hero-stats {
+  display:flex; align-items:baseline; flex-wrap:wrap;
+  gap:0; line-height:1; margin-bottom:18px;
+}
+.stat-block {
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:800;
+  font-size:clamp(44px,5.5vw,78px);
+  letter-spacing:-.01em;
+  color:var(--cr-text);
+  white-space:nowrap;
+  display:flex; align-items:baseline; gap:8px;
+}
+.stat-block .label {
+  font-size:.28em; font-weight:600;
+  letter-spacing:.1em; text-transform:uppercase;
+  opacity:.6; margin-left:2px;
+}
+.stat-sep {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:clamp(28px,3vw,48px);
+  font-weight:300; opacity:.18;
+  margin:0 20px; align-self:center;
+}
+
+.stat-block.s-overdue .num { color:var(--cr-red); }
+.stat-block.s-overdue .num.pulse {
+  animation:overdue-glow 2.2s ease-in-out infinite;
+}
+@keyframes overdue-glow {
+  0%,100% { text-shadow:0 0 18px rgba(255,59,59,.5); color:#FF3B3B; }
+  50%     { text-shadow:0 0 36px rgba(255,59,59,.95),0 0 72px rgba(255,59,59,.3); color:#FF6060; }
+}
+
+.stat-block.s-done .num   { color:var(--cr-emerald); }
+.stat-block.s-total .num  { color:var(--cr-text); }
+
+.hero-legend {
+  display:flex; align-items:center; gap:18px; flex-wrap:wrap;
+}
+.leg-item {
+  display:flex; align-items:center; gap:6px;
+  font-size:10px; font-weight:600;
+  letter-spacing:.1em; text-transform:uppercase;
+  color:var(--cr-muted);
+}
+.leg-dot {
+  width:6px; height:6px; border-radius:50%; flex-shrink:0;
+}
+.leg-dot.r { background:var(--cr-red);    box-shadow:0 0 6px var(--cr-red-glow); }
+.leg-dot.a { background:var(--cr-amber);  box-shadow:0 0 6px rgba(245,166,35,.5); }
+.leg-dot.e { background:var(--cr-emerald);box-shadow:0 0 6px rgba(34,197,94,.4); }
+.leg-dot.b { background:var(--cr-blue);   box-shadow:0 0 6px rgba(107,127,215,.5); }
+
+/* ================================================================
+   FILTER BAR
+   ================================================================ */
+.filter-zone {
+  display:flex; align-items:center; flex-wrap:wrap;
+  gap:8px; padding:13px 36px;
+  border-bottom:1px solid var(--cr-border);
+  background:var(--cr-s1);
+}
+.filter-sentence {
+  display:flex; align-items:center; gap:7px; flex-wrap:wrap;
+}
+.f-connector {
+  font-size:12px; color:var(--cr-muted2);
+  font-family:'Barlow Condensed',sans-serif;
+  letter-spacing:.06em;
+}
+
+.f-token {
+  position:relative;
+  display:inline-flex; align-items:center; gap:5px;
+  background:var(--cr-s2); border:1px solid var(--cr-border-hi);
+  border-radius:6px; padding:5px 10px;
+  font-size:12px; font-weight:600; color:var(--cr-text);
+  cursor:pointer; user-select:none;
+  transition:border-color .15s,background .15s;
+  white-space:nowrap;
+}
+.f-token:hover  { border-color:var(--cr-blue); background:var(--cr-blue-dim); }
+.f-token.on     { border-color:var(--cr-blue); background:var(--cr-blue-dim); color:#8FA4FF; }
+.f-token.on.red { border-color:var(--cr-red);  background:var(--cr-red-dim);  color:#ff7070; }
+.f-token .caret { font-size:9px; opacity:.5; }
+.f-token .badge { background:var(--cr-red); color:#fff; font-size:9px; font-weight:700; padding:1px 5px; border-radius:3px; }
+
+.f-drop {
+  display:none; position:absolute; top:calc(100% + 6px); left:0;
+  min-width:140px;
+  background:var(--cr-s2); border:1px solid var(--cr-border-hi);
+  border-radius:8px; box-shadow:0 20px 50px rgba(0,0,0,.7);
+  z-index:200; overflow:hidden;
+  animation:drop-in .12s ease;
+}
+@keyframes drop-in { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+.f-token.open .f-drop { display:block; }
+.d-opt {
+  padding:9px 14px; font-size:12px; font-weight:500;
+  color:var(--cr-muted); cursor:pointer;
+  transition:background .1s,color .1s;
+}
+.d-opt:hover   { background:var(--cr-s3); color:var(--cr-text); }
+.d-opt.sel     { color:var(--cr-blue); background:var(--cr-blue-dim); }
+
+.filter-right {
+  margin-left:auto; display:flex; align-items:center; gap:8px;
+}
+.cr-search { position:relative; }
+.cr-search input {
+  background:var(--cr-s2); border:1px solid var(--cr-border);
+  border-radius:8px; padding:8px 12px 8px 32px;
+  font-size:12.5px; color:var(--cr-text);
+  font-family:'DM Sans',sans-serif; width:220px; outline:none;
+  transition:border-color .15s;
+}
+.cr-search input::placeholder { color:var(--cr-muted2); }
+.cr-search input:focus { border-color:var(--cr-blue); }
+.cr-search .si {
+  position:absolute; left:10px; top:50%; transform:translateY(-50%);
+  color:var(--cr-muted2); pointer-events:none;
+}
+.rst-btn {
+  background:none; border:none; font-size:11px; color:var(--cr-muted2);
+  cursor:pointer; font-family:'DM Sans',sans-serif;
+  padding:6px 8px; border-radius:6px; transition:color .15s;
+  letter-spacing:.04em;
+}
+.rst-btn:hover { color:var(--cr-text); }
+.new-btn {
+  display:inline-flex; align-items:center; gap:7px;
+  padding:8px 14px; background:var(--cr-blue); border:none;
+  border-radius:8px; color:#fff; font-family:'DM Sans',sans-serif;
+  font-size:12px; font-weight:600; cursor:pointer; text-decoration:none;
+  box-shadow:0 2px 10px rgba(107,127,215,.4);
+  transition:background .15s,transform .05s;
+}
+.new-btn:hover  { background:#5a6ec7; }
+.new-btn:active { transform:translateY(1px); }
+
+/* ================================================================
+   SECTION 2 — TIMELINE
+   ================================================================ */
+.tl-section { padding:30px 36px 0; }
+.sec-label {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:10px; font-weight:700; letter-spacing:.2em;
+  text-transform:uppercase; color:var(--cr-muted2);
+  display:flex; align-items:center; gap:12px; margin-bottom:22px;
+}
+.sec-label::after { content:''; flex:1; height:1px; background:var(--cr-border); }
+
+.lanes { display:flex; flex-direction:column; gap:30px; }
+
+/* Lane */
+.lane-head {
+  display:flex; align-items:center; gap:10px; margin-bottom:13px;
+}
+.lane-name {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:12px; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+}
+.lane-cnt {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:10px; font-weight:700; padding:2px 8px; border-radius:4px;
+}
+
+.ln-ov .lane-name { color:var(--cr-red); }
+.ln-ov .lane-cnt  { background:var(--cr-red-dim); color:var(--cr-red); border:1px solid rgba(255,59,59,.2); }
+
+.ln-td .lane-name { color:var(--cr-amber); }
+.ln-td .lane-cnt  { background:var(--cr-amber-dim); color:var(--cr-amber); border:1px solid rgba(245,166,35,.2); }
+
+.ln-wk .lane-name { color:var(--cr-blue); }
+.ln-wk .lane-cnt  { background:var(--cr-blue-dim); color:var(--cr-blue); border:1px solid rgba(107,127,215,.2); }
+
+.ln-lt .lane-name { color:var(--cr-muted); }
+.ln-lt .lane-cnt  { background:var(--cr-s2); color:var(--cr-muted); border:1px solid var(--cr-border); }
+
+.ln-dn .lane-name { color:var(--cr-emerald); }
+.ln-dn .lane-cnt  { background:var(--cr-em-dim); color:var(--cr-emerald); border:1px solid rgba(34,197,94,.2); }
+
+.cards-row { display:flex; gap:12px; flex-wrap:wrap; }
+.lane-nil  { font-size:12px; color:var(--cr-muted2); font-style:italic; padding:12px 0; }
+
+/* Task card */
+.tcard {
+  width:256px; flex-shrink:0;
+  background:var(--cr-s1); border:1px solid var(--cr-border);
+  border-radius:12px; overflow:hidden; cursor:pointer;
+  position:relative;
+  transition:transform .2s,box-shadow .2s,border-color .2s,opacity .3s;
+  animation:card-up .4s ease backwards;
+}
+@keyframes card-up {
+  from{ opacity:0; transform:translateY(18px) }
+  to  { opacity:1; transform:translateY(0) }
+}
+.tcard:hover { transform:translateY(-3px); }
+
+/* Lane-specific card styles */
+.ln-ov .tcard { border-left:3px solid var(--cr-red); background:rgba(18,8,8,.95); }
+.ln-ov .tcard:hover {
+  box-shadow:0 14px 36px rgba(255,59,59,.22),0 0 0 1px rgba(255,59,59,.2);
+  animation:shake-hover .5s ease;
+  border-color:rgba(255,59,59,.35); border-left-color:var(--cr-red);
+}
+@keyframes shake-hover {
+  0%,100%{ transform:translateX(0) translateY(-3px) }
+  20%    { transform:translateX(-3px) translateY(-3px) }
+  40%    { transform:translateX(3px) translateY(-3px) }
+  60%    { transform:translateX(-2px) translateY(-3px) }
+  80%    { transform:translateX(2px) translateY(-3px) }
+}
+.ln-td .tcard { border-left:3px solid var(--cr-amber); background:rgba(18,13,4,.95); }
+.ln-td .tcard:hover { box-shadow:0 14px 36px rgba(245,166,35,.15); border-color:rgba(245,166,35,.3); border-left-color:var(--cr-amber); }
+
+.ln-wk .tcard { border-left:3px solid var(--cr-blue); }
+.ln-wk .tcard:hover { box-shadow:0 14px 36px rgba(107,127,215,.15); border-color:rgba(107,127,215,.3); border-left-color:var(--cr-blue); }
+
+.ln-lt .tcard { border-left:3px solid var(--cr-border-hi); opacity:.7; }
+.ln-lt .tcard:hover { opacity:1; }
+
+.ln-dn .tcard { border-left:3px solid var(--cr-emerald); opacity:.55; }
+.ln-dn .tcard:hover { opacity:.85; }
+
+/* In-progress shimmer */
+.tcard.prog::after {
+  content:''; position:absolute; top:0; height:1px; left:0; right:0;
+  background:linear-gradient(90deg,transparent 0%,var(--cr-blue) 50%,transparent 100%);
+  animation:shim 2.8s ease-in-out infinite;
+}
+@keyframes shim {
+  0%   { transform:translateX(-100%) }
+  100% { transform:translateX(100%) }
+}
+
+.card-body-top { padding:13px 13px 10px; }
+.card-chips { display:flex; align-items:center; gap:5px; margin-bottom:9px; flex-wrap:wrap; }
+.chip {
+  font-size:9px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+  padding:2px 7px; border-radius:4px;
+}
+.chip.ov  { background:var(--cr-red-dim);   color:var(--cr-red);    border:1px solid rgba(255,59,59,.2); }
+.chip.td  { background:var(--cr-amber-dim); color:var(--cr-amber);  border:1px solid rgba(245,166,35,.2); }
+.chip.ip  { background:var(--cr-blue-dim);  color:var(--cr-blue);   border:1px solid rgba(107,127,215,.2); }
+.chip.dn  { background:var(--cr-em-dim);    color:var(--cr-emerald);border:1px solid rgba(34,197,94,.2); }
+.chip.nd  { background:var(--cr-s3);        color:var(--cr-muted);  border:1px solid var(--cr-border); }
+.chip.hi  { background:rgba(255,59,59,.08); color:#ff7070; border:1px solid rgba(255,59,59,.15); }
+.chip.med { background:var(--cr-amber-dim); color:var(--cr-amber);  border:1px solid rgba(245,166,35,.15); }
+.chip.lo  { background:var(--cr-s3); color:var(--cr-muted); border:1px solid var(--cr-border); }
+
+.card-title {
+  font-size:13px; font-weight:600; color:var(--cr-text);
+  line-height:1.38; margin-bottom:9px;
+}
+.card-who {
+  display:flex; align-items:center; gap:6px;
+  font-size:11px; color:var(--cr-muted);
+}
+.cava {
+  width:18px; height:18px; border-radius:50%;
+  font-size:7px; font-weight:700; color:#fff;
+  display:grid; place-items:center; flex-shrink:0;
+}
+
+/* Expandable hover area */
+.card-expand {
+  max-height:0; overflow:hidden; opacity:0;
+  border-top:0px solid var(--cr-border);
+  transition:max-height .28s ease,opacity .2s,border-top-width .28s;
+}
+.tcard:hover .card-expand {
+  max-height:110px; opacity:1; border-top-width:1px;
+}
+.card-exp-inner {
+  padding:10px 13px 12px;
+  display:flex; flex-direction:column; gap:7px;
+}
+.card-exp-row {
+  display:flex; align-items:center; gap:6px;
+  font-size:11px; color:var(--cr-muted);
+}
+.card-exp-row b { color:var(--cr-text); font-weight:500; }
+.mc-btn {
+  display:flex; align-items:center; justify-content:center; gap:5px;
+  width:100%; padding:6px 12px;
+  background:var(--cr-em-dim); border:1px solid rgba(34,197,94,.25);
+  border-radius:6px; color:var(--cr-emerald);
+  font-size:11px; font-weight:600; cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  transition:background .15s,border-color .15s;
+  letter-spacing:.03em;
+}
+.mc-btn:hover { background:rgba(34,197,94,.2); border-color:rgba(34,197,94,.45); }
+.mc-btn:disabled { opacity:.45; cursor:default; }
+
+/* Completing flash */
+.tcard.completing { animation:card-pop .5s ease forwards; }
+@keyframes card-pop {
+  0%  { transform:scale(1); }
+  35% { transform:scale(1.05); }
+  65% { transform:scale(0.97); }
+  100%{ transform:scale(1); opacity:.25; pointer-events:none; }
+}
+
+/* ================================================================
+   SECTION 3 — COMPACT DETAIL TABLE
+   ================================================================ */
+.tbl-section { padding:30px 36px 0; }
+
+.tbl-wrap {
+  background:var(--cr-s1); border:1px solid var(--cr-border);
+  border-radius:14px; overflow:hidden;
+}
+.tbl-head {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 18px; border-bottom:1px solid var(--cr-border);
+}
+.tbl-ttl {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:11px; font-weight:700; letter-spacing:.15em;
+  text-transform:uppercase; color:var(--cr-muted);
+}
+.tbl-ttl b { color:var(--cr-text); }
+.tbl-tools { display:flex; gap:5px; }
+.t-ibtn {
+  width:28px; height:28px; border-radius:7px;
+  border:1px solid var(--cr-border); background:var(--cr-s2);
+  color:var(--cr-muted); display:grid; place-items:center; cursor:pointer;
+  transition:color .15s,background .15s;
+}
+.t-ibtn:hover { color:var(--cr-text); background:var(--cr-s3); }
+
+.tbl-scroll { overflow-x:auto; }
+table.cr-t {
+  width:100%; border-collapse:separate; border-spacing:0;
+  font-size:12.5px; min-width:860px;
+}
+table.cr-t thead th {
+  background:var(--cr-s2); text-align:left;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:10px; font-weight:700; letter-spacing:.15em; text-transform:uppercase;
+  color:var(--cr-muted); padding:10px 16px;
+  border-bottom:1px solid var(--cr-border);
+  white-space:nowrap;
+}
+table.cr-t thead th .srt {
+  display:inline-flex; align-items:center; gap:3px; cursor:pointer;
+}
+table.cr-t tbody td {
+  padding:0 16px; height:56px; border-bottom:1px solid var(--cr-border);
+  vertical-align:middle; color:var(--cr-text);
+  transition:background .1s;
+}
+table.cr-t tbody tr:nth-child(even) td { background:rgba(255,255,255,.015); }
+table.cr-t tbody tr:last-child td { border-bottom:none; }
+table.cr-t tbody tr { cursor:pointer; }
+table.cr-t tbody tr:hover td { background:rgba(107,127,215,.07)!important; }
+
+/* Table cells */
+.tt-cell { display:flex; align-items:center; gap:9px; }
+.tt-icon {
+  width:26px; height:26px; border-radius:7px;
+  background:var(--cr-s3); color:var(--cr-muted);
+  display:grid; place-items:center; flex-shrink:0;
+}
+.tt-name { font-weight:600; font-size:13px; color:var(--cr-text); }
+.tt-sub  { font-size:10.5px; color:var(--cr-muted); margin-top:1px; display:flex; align-items:center; gap:4px; }
+.tt-ava  { width:13px; height:13px; border-radius:50%; font-size:6px; font-weight:700; color:#fff; display:inline-grid; place-items:center; }
+
+/* Status chips (table) */
+.sc {
+  display:inline-flex; align-items:center; gap:5px;
+  padding:3px 9px; border-radius:5px;
+  font-size:10.5px; font-weight:600; white-space:nowrap;
+}
+.sc.ov { background:var(--cr-red-dim); color:var(--cr-red); border:1px solid rgba(255,59,59,.2); }
+.sc.dn { background:var(--cr-em-dim);  color:var(--cr-emerald); border:1px solid rgba(34,197,94,.2); }
+.sc.pd { background:var(--cr-s3);      color:var(--cr-muted);   border:1px solid var(--cr-border); }
+.sc.ip {
+  background:var(--cr-blue-dim); color:var(--cr-blue);
+  border:1px solid rgba(107,127,215,.2);
+  position:relative; overflow:hidden;
+}
+.sc.ip::before {
+  content:''; position:absolute; inset:0;
+  background:repeating-linear-gradient(
+    -45deg, transparent, transparent 4px,
+    rgba(107,127,215,.12) 4px, rgba(107,127,215,.12) 8px
+  );
+  animation:stripes .7s linear infinite;
+}
+@keyframes stripes { to { background-position:14px 0; } }
+.sc .si {
+  width:13px; height:13px; border-radius:50%;
+  display:grid; place-items:center;
+  font-size:8px; font-weight:900; flex-shrink:0;
+}
+.sc.ov .si { background:var(--cr-red);    color:#fff; }
+.sc.dn .si { background:var(--cr-emerald);color:#fff; }
+.sc .chip-lbl { position:relative; z-index:1; }
+
+/* Priority dots (table) */
+.pc { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:500; }
+.pd { border-radius:50%; flex-shrink:0; }
+.pd.hi { width:10px; height:10px; background:var(--cr-red);    box-shadow:0 0 8px rgba(255,59,59,.6),0 0 0 2px rgba(255,59,59,.15); }
+.pd.md { width:8px;  height:8px;  background:var(--cr-amber);  box-shadow:0 0 6px rgba(245,166,35,.4); }
+.pd.lo { width:6px;  height:6px;  background:#3d4258; }
+.pc.hi { color:#ff7070; }
+.pc.md { color:var(--cr-amber); }
+.pc.lo { color:var(--cr-muted); }
+
+/* Date cell (table) */
+.dc { font-variant-numeric:tabular-nums; font-size:12px; white-space:nowrap; }
+.dc .dsub { font-size:10px; color:var(--cr-muted); display:block; margin-top:1px; }
+.dc.ov { color:var(--cr-red); font-weight:600; }
+.dc.ov .dsub { color:rgba(255,59,59,.55); }
+.dc.td-today { color:var(--cr-amber); font-weight:600; }
+
+/* Dept label */
+.dept-lbl {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--cr-muted);
+}
+
+/* Empty state */
+.empty-st {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:56px 20px; gap:10px; text-align:center;
+}
+.empty-ico {
+  width:52px; height:52px; border-radius:14px;
+  background:var(--cr-s2); border:1px solid var(--cr-border);
+  display:grid; place-items:center; color:var(--cr-muted2);
+}
+.empty-ttl {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:18px; font-weight:700; letter-spacing:.06em;
+  color:var(--cr-muted); text-transform:uppercase;
+}
+.empty-sub { font-size:12px; color:var(--cr-muted2); }
+
+/* ================================================================
+   CONFETTI PARTICLES
+   ================================================================ */
+.cf {
+  position:fixed; pointer-events:none; z-index:9999; border-radius:2px;
+  animation:cf-fall var(--d,1s) ease-out forwards;
+}
+@keyframes cf-fall {
+  0%   { transform:translateY(0) translateX(0) rotate(0deg) scale(1); opacity:1; }
+  100% { transform:translateY(var(--ty,80px)) translateX(var(--tx,0px)) rotate(var(--r,360deg)) scale(.4); opacity:0; }
+}
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+@media(max-width:900px){
+  .hero-bar,.tl-section,.tbl-section,.filter-zone { padding-left:16px; padding-right:16px; }
+  .stat-block { font-size:38px!important; }
+  .stat-sep { margin:0 12px; font-size:28px!important; }
+  .cr-search input { width:170px; }
+  .tcard { width:220px; }
+}
+@media(max-width:640px){
+  .hero-stats { flex-direction:column; gap:6px; }
+  .stat-sep { display:none; }
+  .filter-sentence { flex-direction:column; align-items:flex-start; }
+  .filter-right { margin-left:0; flex-wrap:wrap; }
+  .cards-row { flex-direction:column; }
+  .tcard { width:100%; }
+}
 </style>
 </head>
 <body>
@@ -172,220 +600,604 @@
   <div id="sidebar-slot"></div>
   <main class="main">
     <div id="topbar-slot"></div>
-
     <div class="content">
-      <div class="action-row">
-        <div class="search">
-          <svg class="s-icon" width="16" height="16"><use href="#i-search"/></svg>
-          <input type="text" placeholder="Search tasks…" />
-          <span class="kbd">⌘ K</span>
+
+      <!-- ══════════ HERO STATUS BAR ══════════ -->
+      <div class="hero-bar calm" id="hero-bar">
+        <div class="hero-inner">
+          <div class="hero-eyebrow" id="hero-date">Loading…</div>
+          <div class="hero-stats">
+            <div class="stat-block s-total">
+              <span class="num" id="h-total">—</span>
+              <span class="label">Tasks</span>
+            </div>
+            <span class="stat-sep">·</span>
+            <div class="stat-block s-overdue">
+              <span class="num" id="h-overdue">—</span>
+              <span class="label">Overdue</span>
+            </div>
+            <span class="stat-sep">·</span>
+            <div class="stat-block s-done">
+              <span class="num" id="h-done">—</span>
+              <span class="label">Done</span>
+            </div>
+          </div>
+          <div class="hero-legend">
+            <span class="leg-item"><span class="leg-dot r"></span>Overdue</span>
+            <span class="leg-item"><span class="leg-dot a"></span>Due Soon</span>
+            <span class="leg-item"><span class="leg-dot e"></span>Done</span>
+            <span class="leg-item"><span class="leg-dot b"></span>In Progress</span>
+          </div>
         </div>
-        <div class="actions-right">
-          <button class="btn btn-ghost">
-            <svg class="icon sparkle"><use href="#i-sparkle"/></svg> Ask AI
-          </button>
-          <a class="btn btn-primary" href="New Task.html">
-            <svg class="icon"><use href="#i-plus"/></svg> New Task
+      </div>
+
+      <!-- ══════════ FILTER BAR ══════════ -->
+      <div class="filter-zone">
+        <div class="filter-sentence">
+          <span class="f-connector">Show tasks</span>
+          <span class="f-connector">·</span>
+          <span class="f-connector">status</span>
+
+          <div class="f-token" id="ft-status" onclick="openDrop('ft-status',event)">
+            <span id="fv-status">Any</span>
+            <span class="caret">▾</span>
+            <div class="f-drop">
+              <div class="d-opt sel" onclick="pickFilter('status','Any','ft-status','fv-status',event)">Any</div>
+              <div class="d-opt" onclick="pickFilter('status','Overdue','ft-status','fv-status',event)">Overdue</div>
+              <div class="d-opt" onclick="pickFilter('status','In Progress','ft-status','fv-status',event)">In Progress</div>
+              <div class="d-opt" onclick="pickFilter('status','Completed','ft-status','fv-status',event)">Completed</div>
+              <div class="d-opt" onclick="pickFilter('status','Pending','ft-status','fv-status',event)">Pending</div>
+            </div>
+          </div>
+
+          <span class="f-connector">·</span>
+          <span class="f-connector">priority</span>
+
+          <div class="f-token" id="ft-prio" onclick="openDrop('ft-prio',event)">
+            <span id="fv-prio">Any</span>
+            <span class="caret">▾</span>
+            <div class="f-drop">
+              <div class="d-opt sel" onclick="pickFilter('priority','Any','ft-prio','fv-prio',event)">Any</div>
+              <div class="d-opt" onclick="pickFilter('priority','High','ft-prio','fv-prio',event)">High</div>
+              <div class="d-opt" onclick="pickFilter('priority','Medium','ft-prio','fv-prio',event)">Medium</div>
+              <div class="d-opt" onclick="pickFilter('priority','Low','ft-prio','fv-prio',event)">Low</div>
+            </div>
+          </div>
+
+          <span class="f-connector">·</span>
+          <span class="f-connector">assigned to</span>
+
+          <div class="f-token" id="ft-who" onclick="openDrop('ft-who',event)">
+            <span id="fv-who">Anyone</span>
+            <span class="caret">▾</span>
+            <div class="f-drop" id="dd-who">
+              <div class="d-opt sel" onclick="pickFilter('assignee','Any','ft-who','fv-who',event)">Anyone</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="filter-right">
+          <div class="cr-search">
+            <svg class="si" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <input id="cr-search" type="text" placeholder="Search tasks…"/>
+          </div>
+          <button class="rst-btn" onclick="resetAll()">Reset</button>
+          <a class="new-btn" href="New Task.html">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+            New Task
           </a>
         </div>
       </div>
 
-      <div class="kpi-row">
-        <div class="kpi">
-          <div class="kpi-head">
-            <div class="kpi-icon indigo"><svg width="16" height="16"><use href="#i-layers"/></svg></div>
-            <span class="kpi-trend" style="background:var(--primary-50); color:var(--primary-600)">All tasks</span>
-          </div>
-          <div class="kpi-label">Total tasks</div>
-          <div class="kpi-num">12</div>
-          <div class="kpi-cap">Active + completed</div>
-        </div>
-        <div class="kpi">
-          <div class="kpi-head">
-            <div class="kpi-icon green"><svg width="16" height="16"><use href="#i-check"/></svg></div>
-            <span class="kpi-trend"><svg width="11" height="11"><use href="#i-trend-up"/></svg>+1</span>
-          </div>
-          <div class="kpi-label">Completed</div>
-          <div class="kpi-num">3</div>
-          <div class="kpi-cap"><span class="dot"></span> +1 this week</div>
-        </div>
-        <div class="kpi">
-          <div class="kpi-head">
-            <div class="kpi-icon amber"><svg width="16" height="16"><use href="#i-clock"/></svg></div>
-            <div class="spark">
-              <span class="spark-col" style="height:40%"></span>
-              <span class="spark-col" style="height:60%"></span>
-              <span class="spark-col" style="height:50%"></span>
-              <span class="spark-col" style="height:80%"></span>
-              <span class="spark-col" style="height:65%"></span>
-              <span class="spark-col" style="height:90%"></span>
-              <span class="spark-col" style="height:75%"></span>
+      <!-- ══════════ TIMELINE ══════════ -->
+      <div class="tl-section">
+        <div class="sec-label">Timeline View</div>
+        <div class="lanes" id="lanes-root"></div>
+      </div>
+
+      <!-- ══════════ TABLE ══════════ -->
+      <div class="tbl-section" style="margin-top:40px">
+        <div class="sec-label">Detail Table</div>
+        <div class="tbl-wrap">
+          <div class="tbl-head">
+            <div class="tbl-ttl"><b id="tbl-cnt">—</b> tasks</div>
+            <div class="tbl-tools">
+              <button class="t-ibtn" title="Download">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              </button>
+              <button class="t-ibtn" title="More">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+              </button>
             </div>
           </div>
-          <div class="kpi-label">In progress</div>
-          <div class="kpi-num" style="color:#B45309">9</div>
-          <div class="kpi-cap">This week</div>
-        </div>
-        <div class="kpi danger" title="Tasks with due dates before today and not completed.">
-          <div class="kpi-head">
-            <div class="kpi-icon red"><svg width="16" height="16"><use href="#i-alert"/></svg></div>
-            <span class="kpi-trend red"><svg width="11" height="11"><use href="#i-alert"/></svg>Attention</span>
-          </div>
-          <div class="kpi-label">Overdue</div>
-          <div class="kpi-num">9</div>
-          <div class="kpi-cap"><span class="dot"></span> Needs attention</div>
-        </div>
-      </div>
-
-      <div class="section-head">
-        <div>
-          <h2 class="display">All tasks</h2>
-          <p>Sort and filter by assignee, status, and due date.</p>
-        </div>
-        <div class="seg">
-          <button class="on">Table</button>
-          <button>Board</button>
-          <button>Calendar</button>
-        </div>
-      </div>
-
-      <div class="filter-bar">
-        <button class="pill-filter"><span class="lbl-muted">Team</span> Design <svg width="12" height="12"><use href="#i-chev-down"/></svg></button>
-        <button class="pill-filter active"><span class="lbl-muted">Status</span> Overdue <span class="count-badge">9</span> <svg width="12" height="12"><use href="#i-chev-down"/></svg></button>
-        <button class="pill-filter"><span class="lbl-muted">Priority</span> Any <svg width="12" height="12"><use href="#i-chev-down"/></svg></button>
-        <button class="pill-filter"><span class="lbl-muted">Assignee</span> Any <svg width="12" height="12"><use href="#i-chev-down"/></svg></button>
-        <button class="pill-filter"><span class="lbl-muted">Due</span> Any date <svg width="12" height="12"><use href="#i-chev-down"/></svg></button>
-        <button class="reset-link">Reset filters</button>
-      </div>
-
-      <div class="table-wrap">
-        <div class="table-top">
-          <div class="t-count"><b>12</b> tasks · <b>9</b> overdue · <b>3</b> completed</div>
-          <div class="t-tools">
-            <button class="icon-btn-sm" title="Advanced Filter"><svg width="14" height="14"><use href="#i-filter"/></svg></button>
-            <button class="icon-btn-sm" title="Download TSV"><svg width="14" height="14"><use href="#i-download"/></svg></button>
-            <button class="icon-btn-sm" title="More Actions"><svg width="14" height="14"><use href="#i-more"/></svg></button>
+          <div class="tbl-scroll">
+            <table class="cr-t">
+              <thead>
+                <tr>
+                  <th style="width:35%"><span class="srt">Task <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6,9 12,15 18,9"/></svg></span></th>
+                  <th>Department</th>
+                  <th><span class="srt">Due <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6,9 12,15 18,9"/></svg></span></th>
+                  <th>Status</th>
+                  <th>Priority</th>
+                  <th style="text-align:right">Notes</th>
+                </tr>
+              </thead>
+              <tbody id="cr-tbody">
+                <tr><td colspan="6">
+                  <div class="empty-st">
+                    <div class="empty-ico">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                    </div>
+                    <div class="empty-ttl">Loading…</div>
+                  </div>
+                </td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
-        <div class="table-scroll">
-          <table class="tasks">
-            <thead>
-              <tr>
-                <th style="width:30%"><span class="sort">Task title <svg width="12" height="12"><use href="#i-chev-down"/></svg></span></th>
-                <th>Department</th>
-                <th><span class="sort">Assigned <svg width="12" height="12"><use href="#i-chev-down"/></svg></span></th>
-                <th><span class="sort">Due <svg width="12" height="12"><use href="#i-chev-down"/></svg></span></th>
-                <th>Status</th>
-                <th>Priority</th>
-                <th style="text-align:right">Notes</th>
-              </tr>
-            </thead>
-            <tbody id="tbody"></tbody>
-          </table>
-        </div>
+        <p style="font-size:10.5px;color:var(--cr-muted2);margin:11px 0 0;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.12em;text-transform:uppercase;">
+          <span id="tbl-foot">— tasks</span> · Sorted by due date
+        </p>
       </div>
-      <p style="font-size:12px; color:var(--muted); margin:14px 2px 0;">Showing 12 of 12 · Sort: Due date (ascending)</p>
-    </div>
+
+    </div><!-- .content -->
   </main>
-
-  <aside class="panel-hint" aria-hidden="true">
-    <div class="ph-top"><div class="t-stub"></div><div class="close">×</div></div>
-    <div class="ph-body">
-      <div class="ph-label"></div><div class="ph-field pill"></div>
-      <div class="ph-label" style="width:48px"></div><div class="ph-field pill amber"></div>
-      <div class="ph-label" style="width:60px"></div>
-      <div class="ph-desc"><div class="l"></div><div class="l s"></div><div class="l xs"></div></div>
-      <div class="ph-label" style="width:44px"></div><div class="ph-field" style="height:28px"></div>
-      <div class="ph-section-title"></div>
-      <div class="ph-comment"><div class="a"></div><div class="body"><div class="l"></div><div class="l s"></div></div></div>
-      <div class="ph-comment"><div class="a g"></div><div class="body"><div class="l"></div><div class="l s"></div></div></div>
-    </div>
-    <div class="ph-foot"><div class="ph-btn"></div><div class="ph-btn ghost"></div></div>
-  </aside>
 </div>
 
+<!-- ================================================================
+     SCRIPTS
+     ================================================================ -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="db.js"></script>
 <script src="sidebar.js"></script>
 <script src="logic.js"></script>
 <script>
-  // Load icons
-  fetch('icons.html').then(r=>r.text()).then(t=>document.getElementById('icons').innerHTML=t).then(init).catch(init);
+/* ---- Constants ---- */
+const TODAY_STR  = new Date().toISOString().split('T')[0];
+const TODAY_DT   = new Date(TODAY_STR + 'T00:00:00');
+const WEEK_STR   = (() => { const d=new Date(TODAY_DT); d.setDate(d.getDate()+7); return d.toISOString().split('T')[0]; })();
 
-  async function init(){
-    document.getElementById('sidebar-slot').outerHTML = renderSidebar('tasks');
-    document.getElementById('topbar-slot').outerHTML = renderTopbar('Production Tasks', 'Stay on top of due dates and priorities.');
+const GRADS = {
+  SH:'linear-gradient(135deg,#F472B6,#DB2777)',
+  SB:'linear-gradient(135deg,#FBBF24,#D97706)',
+  TM:'linear-gradient(135deg,#34D399,#059669)',
+  IN:'linear-gradient(135deg,#60A5FA,#2563EB)',
+  ZA:'linear-gradient(135deg,#A78BFA,#6D28D9)',
+  MK:'linear-gradient(135deg,#F87171,#B91C1C)',
+  JB:'linear-gradient(135deg,#FB923C,#EA580C)',
+};
+function grad(oi){ return GRADS[oi]||'linear-gradient(135deg,#6B7FD7,#4B5EAA)'; }
 
-    if (window.TASKS.length === 0) {
-        await initializeDashboardData();
+/* ---- Normalize task fields from any source ---- */
+function norm(t){
+  const oi = t.oi || (t.owner||t.assigned_to||'?').slice(0,2).toUpperCase();
+  return {
+    id:         t.id,
+    title:      t.title || t.name || 'Untitled',
+    status:     (t.status||'pending').toLowerCase().replace('_','-'),
+    priority:   (t.priority||t.prio||'medium').toLowerCase(),
+    due_date:   t.due_date || t.dueDate || null,
+    owner:      t.owner || t.assigned_to || 'Unassigned',
+    oi,
+    kind:       t.kind || 'web',
+    notes:      typeof t.notes==='number' ? t.notes : parseInt(t.notes)||0,
+    department: t.department || 'Design',
+  };
+}
+
+/* ---- Effective status (overdue if past-due & not done) ---- */
+function effStatus(t){
+  if (t.status==='completed') return 'completed';
+  if (t.due_date && t.due_date < TODAY_STR) return 'overdue';
+  if (t.status==='in-progress') return 'in-progress';
+  return t.status || 'pending';
+}
+
+/* ---- Lane bucket ---- */
+function lane(t){
+  const e = effStatus(t);
+  if (e==='completed') return 'dn';
+  if (e==='overdue')   return 'ov';
+  if (!t.due_date)     return 'lt';
+  if (t.due_date===TODAY_STR) return 'td';
+  if (t.due_date<=WEEK_STR)   return 'wk';
+  return 'lt';
+}
+
+/* ---- Date formatting ---- */
+function fmtDate(s){
+  if (!s) return '—';
+  return new Date(s+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+}
+function relLabel(s){
+  if (!s) return '';
+  const diff = Math.round((new Date(s+'T00:00:00')-TODAY_DT)/86400000);
+  if (diff===0)  return 'Today';
+  if (diff===1)  return 'Tomorrow';
+  if (diff===-1) return 'Yesterday';
+  if (diff>0)    return `in ${diff}d`;
+  return `${Math.abs(diff)}d overdue`;
+}
+
+/* ---- HTML escape ---- */
+function h(s){ return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+/* ---- Override getFilteredTasks to use effective status ---- */
+window.getFilteredTasks = function(){
+  return window.TASKS.filter(raw => {
+    const t  = norm(raw);
+    const e  = effStatus(t);
+    const fs = window.FilterState;
+
+    const mSrc = !fs.search ||
+      t.title.toLowerCase().includes(fs.search.toLowerCase()) ||
+      t.owner.toLowerCase().includes(fs.search.toLowerCase());
+
+    let mSt = fs.status==='Any';
+    if (!mSt){
+      if (fs.status==='Overdue')     mSt = e==='overdue';
+      else if (fs.status==='Completed')   mSt = e==='completed';
+      else if (fs.status==='In Progress') mSt = e==='in-progress';
+      else if (fs.status==='Pending')     mSt = e==='pending';
     }
 
-    
-    // Search handler
-    const sInput = document.querySelector('.search input');
-    sInput.addEventListener('input', debounce((e) => {
-      FilterState.search = e.target.value;
-      renderRows();
-    }));
+    const mPr = fs.priority==='Any' || t.priority===fs.priority.toLowerCase();
+    const mWh = fs.assignee==='Any' || t.owner===fs.assignee;
 
-    // Filter pill handlers (Mock implementation for demo)
-    document.querySelectorAll('.pill-filter').forEach(pill => {
-      pill.addEventListener('click', () => {
-        const type = pill.textContent.split(' ')[0].trim().toLowerCase();
-        // Toggle active state for demo visualization
-        pill.classList.toggle('active');
-        // In a real app, this would open a dropdown to select the value
-        alert('Filtering by ' + type + '... (Dropdown would appear here)');
-      });
-    });
+    return mSrc && mSt && mPr && mWh;
+  });
+};
 
-    renderRows();
+/* ================================================================
+   CONFETTI
+   ================================================================ */
+function confetti(originX, originY){
+  const cols=['#FF3B3B','#F5A623','#22C55E','#6B7FD7','#FFD700','#FF6B9D','#40E0D0'];
+  for(let i=0;i<30;i++){
+    const p=document.createElement('div');
+    p.className='cf';
+    const tx=(Math.random()-.5)*260, ty=-(Math.random()*170+40), r=(Math.random()-.5)*900;
+    const dur=.75+Math.random()*.5;
+    p.style.cssText=`left:${originX}px;top:${originY}px;`
+      +`background:${cols[i%cols.length]};`
+      +`width:${3+Math.random()*6}px;height:${5+Math.random()*9}px;`
+      +`border-radius:${Math.random()>.5?'50%':'2px'};`
+      +`--tx:${tx}px;--ty:${ty}px;--r:${r}deg;--d:${dur}s;`
+      +`animation-delay:${Math.random()*.25}s;`;
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),(dur+.3)*1000);
+  }
+}
+
+/* ================================================================
+   MARK COMPLETE
+   ================================================================ */
+async function markComplete(id, btn){
+  btn.disabled=true; btn.textContent='Marking…';
+  const task=window.TASKS.find(t=>String(t.id)===String(id));
+  if(task) task.status='completed';
+
+  const rect=btn.getBoundingClientRect();
+  confetti(rect.left+rect.width/2, rect.top+rect.height/2);
+
+  const card=btn.closest('.tcard');
+  if(card) card.classList.add('completing');
+
+  setTimeout(renderAll, 650);
+
+  if(typeof supabase!=='undefined'&&supabase){
+    try{ await supabase.from('tasks').update({status:'completed'}).eq('id',id); }
+    catch(e){ console.warn('Supabase update failed:',e); }
+  }
+}
+
+/* ================================================================
+   HERO BAR
+   ================================================================ */
+function updateHero(tasks){
+  const total    = tasks.length;
+  const overdue  = tasks.filter(t=>effStatus(norm(t))==='overdue').length;
+  const done     = tasks.filter(t=>norm(t).status==='completed').length;
+
+  document.getElementById('h-total').textContent   = total;
+  document.getElementById('h-overdue').textContent = overdue;
+  document.getElementById('h-done').textContent    = done;
+
+  const d=new Date();
+  document.getElementById('hero-date').textContent =
+    d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+  const bar=document.getElementById('hero-bar');
+  bar.classList.remove('calm','warn','critical');
+  bar.classList.add(overdue===0?'calm':overdue<=3?'warn':'critical');
+
+  const numEl=document.getElementById('h-overdue');
+  numEl.classList.toggle('pulse', overdue>0);
+}
+
+/* ================================================================
+   TIMELINE RENDER
+   ================================================================ */
+const LANE_CFG=[
+  {key:'ov', cls:'ln-ov', label:'Overdue'},
+  {key:'td', cls:'ln-td', label:'Today'},
+  {key:'wk', cls:'ln-wk', label:'This Week'},
+  {key:'lt', cls:'ln-lt', label:'Later'},
+  {key:'dn', cls:'ln-dn', label:'Completed'},
+];
+
+function renderTimeline(tasks){
+  const buckets={ov:[],td:[],wk:[],lt:[],dn:[]};
+  tasks.forEach((raw,i)=>{ const t=norm(raw); t._raw=raw; t._i=i; buckets[lane(t)].push(t); });
+
+  document.getElementById('lanes-root').innerHTML = LANE_CFG.map(({key,cls,label})=>{
+    const cards=buckets[key];
+    if(key==='dn'&&cards.length===0) return '';
+    return `
+      <div class="lane ${cls}">
+        <div class="lane-head">
+          <span class="lane-name">${label}</span>
+          <span class="lane-cnt">${cards.length}</span>
+        </div>
+        <div class="cards-row">
+          ${cards.length===0
+            ? `<div class="lane-nil">All clear.</div>`
+            : cards.map((t,i)=>renderCard(t,i)).join('')}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function renderCard(t, i){
+  const e   = effStatus(t);
+  const del = `${i*55}ms`;
+
+  const statusChip = e==='overdue'?'ov ov':'in-progress'?'ip ip':e==='completed'?'dn dn':e==='pending'?'nd nd':'ip ip';
+  const statusLbl  = e==='overdue'?'Overdue':e==='in-progress'?'In Progress':e==='completed'?'Done':'Pending';
+  const chipCls    = e==='overdue'?'ov':e==='in-progress'?'ip':e==='completed'?'dn':'nd';
+
+  const prioCls    = t.priority==='high'?'hi':t.priority==='medium'?'med':'lo';
+  const prioLbl    = t.priority.charAt(0).toUpperCase()+t.priority.slice(1);
+
+  const isComplete = e==='completed';
+  const isIP       = e==='in-progress';
+
+  return `
+    <div class="tcard ${isIP?'prog':''}" style="animation-delay:${del}"
+         onclick="location.href='Task Detail.html?id=${h(t.id)}'">
+      <div class="card-body-top">
+        <div class="card-chips">
+          <span class="chip ${chipCls}">${statusLbl}</span>
+          <span class="chip ${prioCls}">${prioLbl}</span>
+        </div>
+        <div class="card-title">${h(t.title)}</div>
+        <div class="card-who">
+          <div class="cava" style="background:${grad(t.oi)}">${h(t.oi)}</div>
+          ${h(t.owner)}
+        </div>
+      </div>
+      <div class="card-expand">
+        <div class="card-exp-inner">
+          <div class="card-exp-row">
+            <span>Dept:</span><b>${h(t.department)}</b>
+            ${t.due_date?`<span style="margin-left:auto;font-size:10px;color:${e==='overdue'?'var(--cr-red)':'var(--cr-muted)'};">${relLabel(t.due_date)}</span>`:''}
+          </div>
+          ${t.notes?`<div class="card-exp-row"><span>Notes:</span><b>${t.notes}</b></div>`:''}
+          ${isComplete
+            ? `<div class="card-exp-row" style="color:var(--cr-emerald)">
+                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20,6 9,17 4,12"/></svg>
+                 Completed
+               </div>`
+            : `<button class="mc-btn" onclick="event.stopPropagation();markComplete(${h(t.id)},this)">
+                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20,6 9,17 4,12"/></svg>
+                 Mark Complete
+               </button>`
+          }
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ================================================================
+   TABLE RENDER
+   ================================================================ */
+function renderTable(tasks){
+  const cnt=document.getElementById('tbl-cnt');
+  const tbody=document.getElementById('cr-tbody');
+  const foot=document.getElementById('tbl-foot');
+
+  cnt.textContent=tasks.length;
+  foot.textContent=`${tasks.length} of ${window.TASKS.length} tasks`;
+
+  if(!tasks.length){
+    tbody.innerHTML=`<tr><td colspan="6"><div class="empty-st">
+      <div class="empty-ico">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+      </div>
+      <div class="empty-ttl">Nothing here — all clear.</div>
+      <div class="empty-sub">Try adjusting your filters</div>
+    </div></td></tr>`;
+    return;
   }
 
-  function renderRows(){
-    const tasks = getFilteredTasks();
-    const rows = tasks.map(t => {
-      const dateCls = t.status === 'completed' ? '' : 'overdue';
-      const statusHtml = t.status === 'completed'
-        ? `<span class="status completed"><svg class="icon"><use href="#i-check"/></svg> Completed</span>`
-        : `<span class="status overdue"><svg class="icon"><use href="#i-alert"/></svg> Overdue</span>`;
-      const prioHtml = t.prio === 'high'
-        ? `<span class="prio high"><span class="pdot"></span> High</span>`
-        : `<span class="prio medium"><span class="pdot"></span> Medium</span>`;
-      const notesHtml = t.notes === 0
-        ? `<span class="notes muted"><svg class="bubble"><use href="#i-bubble"/></svg> 0</span>`
-        : `<span class="notes"><svg class="bubble"><use href="#i-bubble"/></svg> ${t.notes}</span>`;
-      return `
-        <tr onclick="location.href='Task Detail.html?id=${t.id}'">
-          <td>
-            <div class="task-title">
-              <div class="icon-pill"><svg width="15" height="15"><use href="#${KIND_ICON[t.kind]}"/></svg></div>
-              <div class="sub-col">
-                <span>${t.title}</span>
-                <span class="t-meta">
-                  <span class="avatar avatar-${t.oi.toLowerCase()}" style="width:16px;height:16px;font-size:9px;flex-basis:16px;">${t.oi}</span>
-                  ${t.owner}
-                </span>
+  tbody.innerHTML=tasks.map(raw=>{
+    const t  = norm(raw);
+    const e  = effStatus(t);
+
+    /* Status chip */
+    let sc;
+    if(e==='overdue')
+      sc=`<span class="sc ov"><span class="si">!</span><span class="chip-lbl">Overdue</span></span>`;
+    else if(e==='in-progress')
+      sc=`<span class="sc ip"><span class="chip-lbl">In Progress</span></span>`;
+    else if(e==='completed')
+      sc=`<span class="sc dn"><span class="si">✓</span><span class="chip-lbl">Done</span></span>`;
+    else
+      sc=`<span class="sc pd"><span class="chip-lbl">Pending</span></span>`;
+
+    /* Priority chip */
+    let pc;
+    if(t.priority==='high')
+      pc=`<span class="pc hi"><span class="pd hi"></span>High</span>`;
+    else if(t.priority==='medium')
+      pc=`<span class="pc md"><span class="pd md"></span>Medium</span>`;
+    else
+      pc=`<span class="pc lo"><span class="pd lo"></span>Low</span>`;
+
+    /* Date cell */
+    const dcls = e==='overdue'?'ov':e==='pending'&&t.due_date===TODAY_STR?'td-today':'';
+    const dsub = relLabel(t.due_date);
+
+    return `
+      <tr onclick="location.href='Task Detail.html?id=${h(t.id)}'">
+        <td>
+          <div class="tt-cell">
+            <div class="tt-icon">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 12h8M8 8h5"/></svg>
+            </div>
+            <div>
+              <div class="tt-name">${h(t.title)}</div>
+              <div class="tt-sub">
+                <span class="tt-ava" style="background:${grad(t.oi)}">${h(t.oi)}</span>
+                ${h(t.owner)}
               </div>
             </div>
-          </td>
-          <td><span class="dept-pill"><span class="sq"></span> Design</span></td>
-          <td class="date-cell tab-num">17 Apr 2026</td>
-          <td class="date-cell tab-num ${dateCls}">17 Apr 2026${t.status==='completed'?'':'<span class="d-sub">3d overdue</span>'}</td>
-          <td>${statusHtml}</td>
-          <td>${prioHtml}</td>
-          <td style="text-align:right">${notesHtml}<span class="row-chev" style="margin-left:10px"><svg width="14" height="14"><use href="#i-chev-right"/></svg></span></td>
-        </tr>
-      `;
-    }).join('');
-    
-    document.getElementById('tbody').innerHTML = rows || `<tr><td colspan="7" style="text-align:center; padding:40px; color:var(--muted)">No tasks match your search.</td></tr>`;
-    // Update count in UI
-    const countDisplay = document.querySelector('.t-count');
-    if(countDisplay) {
-        countDisplay.innerHTML = `<b>${tasks.length}</b> tasks filtered · <b>${tasks.filter(x=>x.status==='overdue').length}</b> overdue`;
-    }
-  }
+          </div>
+        </td>
+        <td><span class="dept-lbl">${h(t.department)}</span></td>
+        <td>
+          <div class="dc ${dcls}">
+            ${fmtDate(t.due_date)}
+            ${dsub?`<span class="dsub">${dsub}</span>`:''}
+          </div>
+        </td>
+        <td>${sc}</td>
+        <td>${pc}</td>
+        <td style="text-align:right;color:var(--cr-muted);font-size:11.5px;">
+          ${t.notes>0
+            ?`<span style="display:inline-flex;align-items:center;gap:4px;">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                ${t.notes}
+              </span>`
+            :`<span style="color:var(--cr-muted2)">—</span>`}
+        </td>
+      </tr>`;
+  }).join('');
+}
+
+/* ================================================================
+   RENDER ALL
+   ================================================================ */
+function renderAll(){
+  const filtered=getFilteredTasks();
+  updateHero(window.TASKS);
+  renderTimeline(filtered);
+  renderTable(filtered);
+}
+
+/* ================================================================
+   FILTER DROPDOWNS
+   ================================================================ */
+function openDrop(id, e){
+  e.stopPropagation();
+  const el=document.getElementById(id);
+  const wasOpen=el.classList.contains('open');
+  document.querySelectorAll('.f-token').forEach(t=>t.classList.remove('open'));
+  if(!wasOpen) el.classList.add('open');
+}
+document.addEventListener('click',()=>document.querySelectorAll('.f-token').forEach(t=>t.classList.remove('open')));
+
+function pickFilter(key, val, tokenId, valId, e){
+  e.stopPropagation();
+  document.getElementById(valId).textContent = val==='Any'?(key==='assignee'?'Anyone':'Any'):val;
+  const tok=document.getElementById(tokenId);
+  tok.classList.remove('open');
+  if(val==='Any'){ tok.classList.remove('on','red'); }
+  else { tok.classList.add('on'); tok.classList.toggle('red', key==='status'&&val==='Overdue'); }
+
+  const ddId={'status':'ft-status','priority':'ft-prio','assignee':'ft-who'}[key];
+  if(ddId) document.querySelectorAll(`#${ddId} .d-opt`).forEach(o=>{
+    o.classList.toggle('sel', o.textContent.trim()===val||(val==='Any'&&(o.textContent.trim()==='Any'||o.textContent.trim()==='Anyone')));
+  });
+
+  if(key==='status')   window.FilterState.status   = val;
+  if(key==='priority') window.FilterState.priority = val;
+  if(key==='assignee') window.FilterState.assignee = val;
+  renderAll();
+}
+
+function resetAll(){
+  window.FilterState.search=''; window.FilterState.status='Any';
+  window.FilterState.priority='Any'; window.FilterState.assignee='Any';
+  document.getElementById('cr-search').value='';
+  document.getElementById('fv-status').textContent='Any';
+  document.getElementById('fv-prio').textContent='Any';
+  document.getElementById('fv-who').textContent='Anyone';
+  ['ft-status','ft-prio','ft-who'].forEach(id=>document.getElementById(id).classList.remove('on','red'));
+  renderAll();
+}
+
+/* ================================================================
+   POPULATE ASSIGNEE DROPDOWN
+   ================================================================ */
+function buildAssigneeDD(){
+  const names=[...new Set(window.TASKS.map(t=>norm(t).owner).filter(Boolean))].sort();
+  const dd=document.getElementById('dd-who');
+  names.forEach(n=>{
+    const o=document.createElement('div');
+    o.className='d-opt';
+    o.textContent=n;
+    o.onclick=(e)=>pickFilter('assignee',n,'ft-who','fv-who',e);
+    dd.appendChild(o);
+  });
+}
+
+/* ================================================================
+   MOCK DATA (fallback)
+   ================================================================ */
+function mockTasks(){
+  const d=o=>{ const dt=new Date(TODAY_DT); dt.setDate(dt.getDate()+o); return dt.toISOString().split('T')[0]; };
+  return [
+    {id:1, title:'Brand identity refresh — Season 3',    status:'in-progress',priority:'high',  due_date:d(-4),owner:'Sara Hassan',  oi:'SH',notes:3, department:'Design'},
+    {id:2, title:'Campaign hero banner — Q2 launch',     status:'in-progress',priority:'high',  due_date:d(-2),owner:'James Bowen',  oi:'JB',notes:1, department:'Marketing'},
+    {id:3, title:'Podcast thumbnail system',             status:'in-progress',priority:'medium',due_date:d(-1),owner:'Tom Morris',   oi:'TM',notes:0, department:'Content'},
+    {id:4, title:'Mobile app UI overhaul — v3',          status:'pending',    priority:'high',  due_date:d(0), owner:'Isaac Nguyen', oi:'IN',notes:5, department:'Design'},
+    {id:5, title:'Social media asset pack — April',      status:'in-progress',priority:'medium',due_date:d(0), owner:'Zahra Ahmadi', oi:'ZA',notes:2, department:'Marketing'},
+    {id:6, title:'Annual report layout',                 status:'pending',    priority:'high',  due_date:d(2), owner:'Marcus King',  oi:'MK',notes:0, department:'Design'},
+    {id:7, title:'Merch lineup visual direction',        status:'in-progress',priority:'medium',due_date:d(3), owner:'Sara Hassan',  oi:'SH',notes:1, department:'Creative'},
+    {id:8, title:'Email newsletter template',            status:'pending',    priority:'low',   due_date:d(5), owner:'James Bowen',  oi:'JB',notes:0, department:'Marketing'},
+    {id:9, title:'Event backdrop artwork',               status:'pending',    priority:'medium',due_date:d(6), owner:'Tom Morris',   oi:'TM',notes:3, department:'Events'},
+    {id:10,title:'Product photography art direction',    status:'pending',    priority:'low',   due_date:d(14),owner:'Isaac Nguyen', oi:'IN',notes:0, department:'Creative'},
+    {id:11,title:'YouTube thumbnail A/B test series',    status:'completed',  priority:'medium',due_date:d(-5),owner:'Zahra Ahmadi', oi:'ZA',notes:4, department:'Content'},
+    {id:12,title:'Brand guidelines v2.1',                status:'completed',  priority:'high',  due_date:d(-7),owner:'Marcus King',  oi:'MK',notes:2, department:'Design'},
+    {id:13,title:'Reel storyboard — Q1 retrospective',   status:'completed',  priority:'low',   due_date:d(-3),owner:'Sara Hassan',  oi:'SH',notes:1, department:'Content'},
+  ];
+}
+
+/* ================================================================
+   INIT
+   ================================================================ */
+fetch('icons.html')
+  .then(r=>r.text())
+  .then(t=>{ document.getElementById('icons').innerHTML=t; })
+  .catch(()=>{})
+  .finally(init);
+
+async function init(){
+  document.getElementById('sidebar-slot').outerHTML = renderSidebar('tasks');
+  document.getElementById('topbar-slot').outerHTML  = renderTopbar('Production Tasks','Control room — sorted by urgency.');
+
+  if(window.TASKS.length===0) await initializeDashboardData();
+  if(window.TASKS.length===0) window.TASKS = mockTasks();
+
+  document.getElementById('cr-search').addEventListener('input',debounce(e=>{
+    window.FilterState.search=e.target.value;
+    renderAll();
+  },240));
+
+  buildAssigneeDD();
+  renderAll();
+}
 </script>
 </body>
 </html>
