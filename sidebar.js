@@ -1,11 +1,29 @@
 // Shared sidebar renderer. Pass active page name.
-window.renderSidebar = function(active){
-  const items = [
-    { key:'tasks',    label:'Production Tasks', href:'Production Tasks.html', icon:'i-list',  count:12 },
-    { key:'dashboard',label:'Dashboard',         href:'Dashboard.html',        icon:'i-grid'   },
-    { key:'team',     label:'Team',              href:'Team.html',             icon:'i-users'  },
-    { key:'admin',    label:'Admin Panel',       href:'Admin.html',            icon:'i-activity' },
+window.renderSidebar = function(active) {
+  const role = (window.CURRENT_USER && window.CURRENT_USER.user_role) || 'member';
+
+  const allItems = [
+    { key:'dashboard', label:'Dashboard',        href:'Dashboard.html',        icon:'i-grid',     roles:['admin','pm'] },
+    { key:'tasks',     label:'Production Tasks', href:'Production Tasks.html', icon:'i-list',     roles:['admin','pm','member'] },
+    { key:'team',      label:'Team',             href:'Team.html',             icon:'i-users',    roles:['admin','pm'] },
+    { key:'admin',     label:'Admin Panel',      href:'Admin.html',            icon:'i-activity', roles:['admin'] },
+    { key:'notifs',    label:'Notifications',    href:'Notifications.html',    icon:'i-bell',     roles:['admin','pm','member'] },
   ];
+
+  const items = allItems.filter(it => it.roles.includes(role));
+
+  const activeTasks = (window.TASKS || []).filter(t => {
+    if (t.status === 'completed') return false;
+    if (role === 'member') {
+      return t.oi === (window.CURRENT_USER || {}).oi ||
+             t.owner === (window.CURRENT_USER || {}).name;
+    }
+    return true;
+  }).length;
+
+  const cu = window.CURRENT_USER || {};
+  const roleLabel = role === 'admin' ? 'Admin' : role === 'pm' ? 'Project Manager' : 'Team Member';
+
   return `
     <aside class="sidebar">
       <div class="brand">
@@ -15,10 +33,10 @@ window.renderSidebar = function(active){
       <div class="nav-section-label">Workspace</div>
       <nav class="nav">
         ${items.map(it => `
-          <a class="nav-item ${it.key===active?'active':''}" href="${it.href}">
+          <a class="nav-item ${it.key === active ? 'active' : ''}" href="${it.href}">
             <svg class="icon"><use href="#${it.icon}"/></svg>
             <span>${it.label}</span>
-            ${it.count?`<span class="count">${it.count}</span>`:''}
+            ${it.key === 'tasks' ? `<span class="count">${activeTasks}</span>` : ''}
           </a>
         `).join('')}
       </nav>
@@ -28,13 +46,15 @@ window.renderSidebar = function(active){
           <span>Settings</span>
         </a>
         <div class="user-chip">
-          <div class="avatar">SA</div>
+          <div class="avatar">${cu.oi || 'ME'}</div>
           <div class="user-info">
-            <span class="name">Sooraj Ahmed</span>
-            <span class="role">Studio Lead</span>
+            <span class="name">${cu.name || 'Loading…'}</span>
+            <span class="role">${roleLabel}</span>
           </div>
-          <button class="icon-btn" onclick="handleLogout()" title="Sign Out" style="margin-left:auto; border:0; background:none; cursor:pointer; color:var(--muted)">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <button class="icon-btn" onclick="handleLogout()" title="Sign Out"
+            style="margin-left:auto;border:0;background:none;cursor:pointer;color:var(--muted)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
             </svg>
           </button>
@@ -45,7 +65,7 @@ window.renderSidebar = function(active){
 };
 
 // Shared topbar
-window.renderTopbar = function(title, subtitle){
+window.renderTopbar = function(title, subtitle) {
   return `
     <header class="topbar">
       <div class="greeting">
@@ -53,11 +73,16 @@ window.renderTopbar = function(title, subtitle){
         <p>${subtitle}</p>
       </div>
       <div class="topbar-right">
-        <a class="icon-btn" aria-label="Notifications" href="Notifications.html">
+        <a class="icon-btn" aria-label="Notifications" href="Notifications.html"
+          style="position:relative" id="notif-btn">
           <svg width="16" height="16"><use href="#i-bell"/></svg>
+          <span id="notif-badge" style="display:none;position:absolute;top:-5px;right:-5px;
+            background:#EF4444;color:#fff;font-size:9px;font-weight:700;border-radius:999px;
+            min-width:16px;height:16px;padding:0 3px;align-items:center;
+            justify-content:center;border:2px solid #fff">0</span>
         </a>
         <div class="account">
-          <div class="avatar">SO</div>
+          <div class="avatar">${(window.CURRENT_USER && window.CURRENT_USER.oi) || 'ME'}</div>
           <svg width="14" height="14" class="caret"><use href="#i-chev-down"/></svg>
         </div>
       </div>
@@ -168,20 +193,44 @@ if (typeof supabase === 'undefined' && typeof window.supabase !== 'undefined') {
   // supabase is defined by db.js, which should be included before sidebar.js
 }
 
-/**
- * Global Auth Gate: Redirects to Login.html if no session is found.
- */
-async function checkAuth() {
-  await initializeDashboardData(); // Load data before checking session
-  
-  if (typeof supabase !== 'undefined' && supabase) {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session && !window.location.pathname.includes('Login.html')) {
-        window.location.href = 'Login.html';
-    }
+window.authReady = (async function () {
+  if (typeof supabase === 'undefined' || !supabase) return;
+
+  const { data: { session } } = await supabase.auth.getSession();
+  const isLoginPage = window.location.pathname.includes('Login.html') ||
+                      window.location.href.includes('Login.html');
+
+  if (!session) {
+    if (!isLoginPage) window.location.href = 'Login.html';
+    return;
   }
-}
-checkAuth();
+
+  await initializeDashboardData();
+
+  // Match session email to a profiles row to get role + id
+  const profile = (window.OWNERS || []).find(p => p.email === session.user.email);
+  window.CURRENT_USER = profile
+    ? { ...profile, user_role: profile.user_role || 'member' }
+    : {
+        id:        session.user.id,
+        email:     session.user.email,
+        user_role: 'member',
+        name:      session.user.email.split('@')[0],
+        oi:        session.user.email.slice(0, 2).toUpperCase(),
+      };
+
+  // Update notification badge
+  if (typeof window.fetchNotifications === 'function') {
+    window.fetchNotifications().then(notifs => {
+      const count = (notifs || []).filter(n => !n.read).length;
+      const badge = document.getElementById('notif-badge');
+      if (badge && count > 0) {
+        badge.textContent = count > 99 ? '99+' : count;
+        badge.style.display = 'flex';
+      }
+    }).catch(() => {});
+  }
+})();
 
 /**
  * Global Logout handler.
