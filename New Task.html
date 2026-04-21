@@ -180,20 +180,66 @@
         </form>
         <footer class="form-footer">
           <a href="Production Tasks.html" class="btn btn-ghost">Cancel</a>
-          <button type="submit" class="btn btn-primary" onclick="alert('Task created successfully! (Mockup only)'); window.location.href='Production Tasks.html'">Create Task</button>
+          <button type="button" class="btn btn-primary" onclick="handleSubmitTask()">Create Task</button>
         </footer>
       </div>
     </div>
   </main>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="db.js"></script>
 <script src="sidebar.js"></script>
 <script>
   fetch('icons.html').then(r=>r.text()).then(t=>document.getElementById('icons').innerHTML=t).then(init).catch(init);
 
-  function init(){
+  async function init(){
     document.getElementById('sidebar-slot').outerHTML = renderSidebar('tasks');
     document.getElementById('topbar-slot').outerHTML = renderTopbar('New Task', 'Initialize a new production item.');
+    
+    // Wait for owners to load
+    if (window.OWNERS.length === 0) {
+        await initializeDashboardData();
+    }
+    
+    // Populate assignee dropdown
+    const select = document.getElementById('assignee');
+    select.innerHTML = '<option value="">Select individual...</option>' + 
+      window.OWNERS.map(o => `<option value="${o.id}">${o.name}</option>`).join('');
+  }
+
+  async function handleSubmitTask() {
+    const title = document.getElementById('task-title').value;
+    const oi = document.getElementById('assignee').value;
+    const prio = document.getElementById('priority').value;
+    const due_date = document.getElementById('due-date').value;
+    const kind = document.getElementById('category').value;
+    const description = document.getElementById('description').value;
+
+    if (!title || !oi || !due_date) {
+        return alert('Please fill in clinical fields (Title, Assignee, and Due Date).');
+    }
+
+    const owner = window.OWNERS.find(o => o.id === oi)?.name || 'Unknown';
+
+    const taskData = {
+        title,
+        oi,
+        owner,
+        prio,
+        due_date,
+        kind,
+        status: 'in-progress',
+        notes: 0
+    };
+
+    try {
+        await createTask(taskData);
+        alert('Task created successfully!');
+        window.location.href = 'Production Tasks.html';
+    } catch (e) {
+        alert('Error creating task: ' + e.message);
+    }
   }
 </script>
 </body>

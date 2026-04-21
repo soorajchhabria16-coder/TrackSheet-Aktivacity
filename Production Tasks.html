@@ -213,8 +213,13 @@
           <div class="kpi-head">
             <div class="kpi-icon amber"><svg width="16" height="16"><use href="#i-clock"/></svg></div>
             <div class="spark">
-              <span style="height:40%"></span><span style="height:60%"></span><span style="height:50%"></span>
-              <span style="height:80%"></span><span style="height:65%"></span><span style="height:90%"></span><span style="height:75%"></span>
+              <span class="spark-col" style="height:40%"></span>
+              <span class="spark-col" style="height:60%"></span>
+              <span class="spark-col" style="height:50%"></span>
+              <span class="spark-col" style="height:80%"></span>
+              <span class="spark-col" style="height:65%"></span>
+              <span class="spark-col" style="height:90%"></span>
+              <span class="spark-col" style="height:75%"></span>
             </div>
           </div>
           <div class="kpi-label">In progress</div>
@@ -257,9 +262,9 @@
         <div class="table-top">
           <div class="t-count"><b>12</b> tasks · <b>9</b> overdue · <b>3</b> completed</div>
           <div class="t-tools">
-            <button class="icon-btn-sm"><svg width="14" height="14"><use href="#i-filter"/></svg></button>
-            <button class="icon-btn-sm"><svg width="14" height="14"><use href="#i-download"/></svg></button>
-            <button class="icon-btn-sm"><svg width="14" height="14"><use href="#i-more"/></svg></button>
+            <button class="icon-btn-sm" title="Advanced Filter"><svg width="14" height="14"><use href="#i-filter"/></svg></button>
+            <button class="icon-btn-sm" title="Download TSV"><svg width="14" height="14"><use href="#i-download"/></svg></button>
+            <button class="icon-btn-sm" title="More Actions"><svg width="14" height="14"><use href="#i-more"/></svg></button>
           </div>
         </div>
         <div class="table-scroll">
@@ -358,7 +363,7 @@
               <div class="sub-col">
                 <span>${t.title}</span>
                 <span class="t-meta">
-                  <span class="avatar" style="width:16px;height:16px;font-size:9px;background:${OWNER_COLORS[t.oi]};flex-basis:16px;">${t.oi}</span>
+                  <span class="avatar avatar-${t.oi.toLowerCase()}" style="width:16px;height:16px;font-size:9px;flex-basis:16px;">${t.oi}</span>
                   ${t.owner}
                 </span>
               </div>

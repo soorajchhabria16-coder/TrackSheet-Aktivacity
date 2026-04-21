@@ -268,3 +268,26 @@ a{color:inherit; text-decoration:none}
   .content{padding:16px 16px 40px}
   .kpi-row{grid-template-columns:1fr !important}
 }
+/* Utility Classes */
+.h-100 { height: 100%; }
+.w-full { width: 100%; }
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.gap-8 { gap: 8px; }
+.gap-12 { gap: 12px; }
+
+/* Status Spark Utilities */
+.spark-col { width: 3px; background: var(--warning); border-radius: 1px; opacity: 0.75; }
+
+/* Accessible button titles are handled in HTML attributes */
+[title] { cursor: help; }
+
+/* Avatar background variants */
+.avatar-sh { background: linear-gradient(135deg, #F472B6, #DB2777); }
+.avatar-sb { background: linear-gradient(135deg, #FBBF24, #D97706); }
+.avatar-tm { background: linear-gradient(135deg, #34D399, #059669); }
+.avatar-in { background: linear-gradient(135deg, #60A5FA, #2563EB); }
+.avatar-za { background: linear-gradient(135deg, #A78BFA, #6D28D9); }
+.avatar-mk { background: linear-gradient(135deg, #F87171, #B91C1C); }
