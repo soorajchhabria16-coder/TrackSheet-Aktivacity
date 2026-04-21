@@ -217,8 +217,13 @@
     const description = document.getElementById('description').value;
 
     if (!title || !oi || !due_date) {
-        return alert('Please fill in clinical fields (Title, Assignee, and Due Date).');
+        return alert('Please fill in required fields (Title, Assignee, and Due Date).');
     }
+
+    const btn = document.querySelector('.btn-primary');
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Creating…';
 
     const owner = window.OWNERS.find(o => (o.oi || o.id) === oi)?.name || 'Unknown';
 
@@ -237,9 +242,12 @@
 
     try {
         await createTask(taskData);
-        window.location.href = 'Production Tasks.html';
+        btn.textContent = 'Created!';
+        setTimeout(() => { window.location.href = 'Production Tasks.html'; }, 400);
     } catch (e) {
         alert('Error creating task: ' + e.message);
+        btn.disabled = false;
+        btn.textContent = originalText;
     }
   }
 </script>

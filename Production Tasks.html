@@ -591,6 +591,48 @@ table.cr-t tbody tr:hover td { background:rgba(107,127,215,.07)!important; }
   .cards-row { flex-direction:column; }
   .tcard { width:100%; }
 }
+
+/* ================================================================
+   ACCESSIBILITY & UX POLISH
+   ================================================================ */
+
+/* Reduced motion: disable all animations when user prefers it */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus rings for keyboard nav — visible on dark theme */
+:focus-visible {
+  outline: 2px solid var(--cr-blue);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Explicit cursor: pointer on all interactive elements */
+.f-token, .d-opt, .mc-btn, .new-btn, .rst-btn,
+.tcard, table.cr-t tbody tr, .t-ibtn,
+.nav-item, .settings, .icon-btn { cursor: pointer; }
+
+/* Skeleton loading shimmer */
+.skel {
+  background: linear-gradient(90deg, var(--cr-s2) 25%, var(--cr-s3) 50%, var(--cr-s2) 75%);
+  background-size: 200% 100%;
+  animation: skel-shim 1.4s ease infinite;
+  border-radius: 6px;
+}
+@keyframes skel-shim {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.skel-card {
+  width: 256px; height: 96px; flex-shrink: 0;
+  border-radius: 12px;
+}
+.skel-row { height: 56px; border-radius: 0; width: 100%; }
 </style>
 </head>
 <body>
@@ -1183,9 +1225,28 @@ fetch('icons.html')
   .catch(()=>{})
   .finally(init);
 
+function showSkeletons(){
+  const lanesRoot = document.getElementById('lanes-root');
+  lanesRoot.innerHTML = ['Overdue','Today','This Week'].map(label=>`
+    <div class="lane">
+      <div class="lane-head">
+        <span class="lane-name" style="color:var(--cr-muted2)">${label}</span>
+      </div>
+      <div class="cards-row">
+        ${[1,2,3].map(()=>`<div class="skel skel-card"></div>`).join('')}
+      </div>
+    </div>`).join('');
+
+  const tbody = document.getElementById('cr-tbody');
+  tbody.innerHTML = [1,2,3,4,5].map(()=>`
+    <tr><td colspan="6"><div class="skel skel-row"></div></td></tr>`).join('');
+}
+
 async function init(){
   document.getElementById('sidebar-slot').outerHTML = renderSidebar('tasks');
   document.getElementById('topbar-slot').outerHTML  = renderTopbar('Production Tasks','Control room — sorted by urgency.');
+
+  showSkeletons();
 
   if(window.TASKS.length===0) await initializeDashboardData();
   if(window.TASKS.length===0) window.TASKS = mockTasks();
