@@ -98,8 +98,6 @@
         <div class="inbox-tabs">
           <div class="inbox-tab active">All Notifications</div>
           <div class="inbox-tab">Unread</div>
-          <div class="inbox-tab">Mentions</div>
-          <div class="inbox-tab">System</div>
         </div>
         
         <div id="notification-list">
@@ -110,40 +108,87 @@
   </main>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="db.js"></script>
 <script src="sidebar.js"></script>
 <script>
-  fetch('icons.html').then(r=>r.text()).then(t=>document.getElementById('icons').innerHTML=t).then(init).catch(init);
+fetch('icons.html').then(r=>r.text()).then(t=>document.getElementById('icons').innerHTML=t)
+  .catch(()=>{}).finally(init);
 
-  const NOTIFS = [
-    { user: 'SB', name: 'Sibghat Nawaz', text: 'mentioned you in <b>Social Media Content (AQUA VENOM)</b>', desc: '"Should we use the motion graphic version for this or just a static carousel?"', time: '12m ago', unread: true },
-    { user: 'ZA', name: 'Zainab Qureshi', text: 'approved the moodboard for <b>Synary Website Redesign</b>', desc: '"Warmer variant looks much better. Proceeding with indigo accent."', time: '2h ago', unread: true },
-    { user: 'SO', name: 'System', text: '<b>9 tasks</b> were marked as <b>Overdue</b> after the weekend deadline', desc: 'Please review the production timeline.', time: '4h ago', unread: false },
-    { user: 'TM', name: 'Timothy Chen', text: 'uploaded 3 new assets to <b>AD Creative Images</b>', desc: 'Final render exports for feedback.', time: 'Yesterday', unread: false },
-    { user: 'MK', name: 'Moiz Kiyani', text: 'marked <b>Portfolio Design</b> as <b>Completed</b>', desc: 'Design lead handoff successful.', time: '2 days ago', unread: false }
-  ];
+async function init() {
+  await window.authReady;
+  document.getElementById('sidebar-slot').outerHTML = renderSidebar('notifs');
+  document.getElementById('topbar-slot').outerHTML  = renderTopbar('Notifications', 'Stay updated with studio activity.');
+  await renderNotifs(false);
 
-  function init(){
-    document.getElementById('sidebar-slot').outerHTML = renderSidebar('dashboard');
-    document.getElementById('topbar-slot').outerHTML = renderTopbar('Notifications', 'Stay updated with studio activity and comments.');
-    renderNotifs();
+  document.querySelectorAll('.inbox-tab').forEach((tab, i) => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.inbox-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      renderNotifs(i === 1);
+    });
+  });
+}
+
+function fmtRelTime(isoStr) {
+  if (!isoStr) return '';
+  const diff = Date.now() - new Date(isoStr).getTime();
+  const m = Math.floor(diff / 60000);
+  if (m < 1)  return 'just now';
+  if (m < 60) return m + 'm ago';
+  const h = Math.floor(m / 60);
+  if (h < 24) return h + 'h ago';
+  return Math.floor(h / 24) + 'd ago';
+}
+
+async function renderNotifs(unreadOnly) {
+  const list = document.getElementById('notification-list');
+  list.innerHTML = '<div style="padding:24px;color:var(--muted);font-size:13px">Loading…</div>';
+
+  const all   = await window.fetchNotifications();
+  const items = unreadOnly ? all.filter(n => !n.read) : all;
+  const unreadCount = all.filter(n => !n.read).length;
+
+  if (!items.length) {
+    list.innerHTML = '<div style="padding:40px 24px;text-align:center;color:var(--muted);font-size:13px">No notifications yet.</div>';
+    return;
   }
 
-  function renderNotifs() {
-    const html = NOTIFS.map(n => `
-      <div class="inbox-item ${n.unread ? 'unread' : ''}">
-        <div class="avatar" style="background:${OWNER_COLORS[n.user] || '#eee'}">${n.user}</div>
-        <div class="content-body">
-          <p class="title"><b>${n.name}</b> ${n.text}</p>
-          <p class="desc">${n.desc}</p>
+  list.innerHTML =
+    (unreadCount > 0
+      ? `<div style="padding:10px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:flex-end">
+           <button onclick="markAll()"
+             style="font-size:12px;color:var(--primary);font-weight:600;background:none;border:0;cursor:pointer">
+             Mark all as read
+           </button>
+         </div>`
+      : '') +
+    items.map(n => `
+      <div class="inbox-item ${n.read ? '' : 'unread'}"
+        onclick="openNotif('${n.id}','${n.task_id}')">
+        <div style="display:flex;align-items:flex-start;flex:1;gap:12px">
+          <div style="width:8px;height:8px;border-radius:50%;margin-top:6px;flex-shrink:0;
+            background:${n.read ? 'transparent' : 'var(--primary)'}"></div>
+          <div class="content-body">
+            <p class="title">${n.message}</p>
+            <p class="desc">${fmtRelTime(n.created_at)}</p>
+          </div>
         </div>
-        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px">
-          <span class="time">${n.time}</span>
-          ${n.unread ? '<div class="dot-unread"></div>' : ''}
-        </div>
-      </div>
-    `).join('');
-    document.getElementById('notification-list').innerHTML = html;
-  }
+      </div>`
+    ).join('');
+}
+
+async function openNotif(notifId, taskId) {
+  await window.markNotificationRead(notifId);
+  window.location.href = 'Task Detail.html?id=' + taskId;
+}
+
+async function markAll() {
+  await window.markAllNotificationsRead();
+  await renderNotifs(false);
+  const badge = document.getElementById('notif-badge');
+  if (badge) badge.style.display = 'none';
+}
 </script>
 </body>
 </html>

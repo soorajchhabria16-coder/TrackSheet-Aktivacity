@@ -357,14 +357,14 @@
             <div class="c-write">
               <div class="avatar" style="background:linear-gradient(135deg,#818CF8,#4F46E5)">SO</div>
               <div class="box">
-                <textarea placeholder="Write a comment… Use @ to mention someone."></textarea>
+                <textarea id="comment-input" placeholder="Write a comment…"></textarea>
                 <div class="row">
                   <div class="tools">
                     <button title="Attach"><svg width="16" height="16"><use href="#i-paperclip"/></svg></button>
                     <button title="Mention"><svg width="16" height="16"><use href="#i-user"/></svg></button>
                     <button title="Emoji"><svg width="16" height="16"><use href="#i-sparkle"/></svg></button>
                   </div>
-                  <button class="btn btn-primary btn-sm">Add comment</button>
+                  <button class="btn btn-primary btn-sm" id="comment-btn" onclick="postComment()">Add comment</button>
                 </div>
               </div>
             </div>
@@ -379,11 +379,16 @@
           </div>
 
           <div class="field">
-            <div class="lbl">Status <span class="tiny">auto</span></div>
-            <div class="select">
-              <span class="status overdue"><svg class="icon"><use href="#i-alert"/></svg> Overdue</span>
-              <svg width="14" height="14" style="color:var(--muted)"><use href="#i-chev-down"/></svg>
-            </div>
+            <div class="lbl">Status</div>
+            <select id="status-select" onchange="changeStatus(this.value)"
+              style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;
+              font-size:13px;font-weight:600;font-family:inherit;background:#FBFCFD;
+              color:var(--text);cursor:pointer">
+              <option value="pending">To Do</option>
+              <option value="in-progress">In Progress</option>
+              <option value="review">Review</option>
+              <option value="completed">Done</option>
+            </select>
           </div>
 
           <div class="field">
@@ -433,13 +438,10 @@
 
           <div class="field act">
             <div class="lbl">Activity</div>
-            <ul>
-              <li><b>Sooraj</b> added a comment<small>4 hours ago</small></li>
-              <li><b>Soheera</b> uploaded hero-concept-01.png<small>yesterday · 16:42</small></li>
-              <li>Status changed to <b>Overdue</b> (auto)<small>18 Apr · 00:00</small></li>
-              <li><b>Zainab</b> completed the <b>Moodboard</b> subtask<small>15 Apr · 11:20</small></li>
-              <li><b>Sooraj</b> created this task<small>17 Apr · 09:05</small></li>
-            </ul>
+            <div id="activity-feed" style="display:flex;flex-direction:column;gap:10px;
+              max-height:280px;overflow-y:auto;padding-right:2px">
+              <div style="font-size:12px;color:var(--muted-2)">Loading…</div>
+            </div>
           </div>
         </aside>
       </div>
@@ -518,6 +520,107 @@
     if (effStatus === 'completed') {
       const btn = document.querySelector('.side-actions .btn-primary');
       if (btn) { btn.textContent = '✓ Completed'; btn.disabled = true; btn.style.opacity = '.6'; }
+    }
+
+    // Set status dropdown to current task value
+    const sel = document.getElementById('status-select');
+    if (sel) {
+      const sv = t.status === 'completed' ? 'completed'
+               : t.status === 'in-progress' ? 'in-progress'
+               : t.status === 'review' ? 'review'
+               : 'pending';
+      sel.value = sv;
+      const role  = (window.CURRENT_USER || {}).user_role || 'member';
+      const isOwn = t.oi === (window.CURRENT_USER || {}).oi ||
+                    t.owner === (window.CURRENT_USER || {}).name;
+      if (role === 'member' && !isOwn) sel.disabled = true;
+    }
+
+    // Load activity feed
+    await loadActivity(t.id);
+  }
+
+  function fmtRelTime(isoStr) {
+    if (!isoStr) return '';
+    const diff = Date.now() - new Date(isoStr).getTime();
+    const m = Math.floor(diff / 60000);
+    if (m < 1)  return 'just now';
+    if (m < 60) return m + 'm ago';
+    const h = Math.floor(m / 60);
+    if (h < 24) return h + 'h ago';
+    return Math.floor(h / 24) + 'd ago';
+  }
+
+  function commentAvatarGrad(oi) {
+    const G = {
+      SH:'linear-gradient(135deg,#F472B6,#DB2777)',SB:'linear-gradient(135deg,#FBBF24,#D97706)',
+      TM:'linear-gradient(135deg,#34D399,#059669)',IN:'linear-gradient(135deg,#60A5FA,#2563EB)',
+      ZA:'linear-gradient(135deg,#A78BFA,#6D28D9)',MK:'linear-gradient(135deg,#F87171,#B91C1C)',
+    };
+    return G[oi] || 'linear-gradient(135deg,#818CF8,#4F46E5)';
+  }
+
+  async function loadActivity(taskId) {
+    const feed = document.getElementById('activity-feed');
+    if (!feed || typeof window.fetchComments !== 'function') return;
+    const comments = await window.fetchComments(taskId);
+    if (!comments.length) {
+      feed.innerHTML = '<div style="font-size:12px;color:var(--muted-2)">No activity yet.</div>';
+      return;
+    }
+    feed.innerHTML = comments.map(c => {
+      const name = c.profiles?.name || 'Unknown';
+      const oi   = name.split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2);
+      return `
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <div style="width:26px;height:26px;border-radius:7px;flex-shrink:0;display:flex;
+            align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:9px;
+            background:${commentAvatarGrad(oi)}">${oi}</div>
+          <div style="flex:1">
+            <div style="font-size:12px;color:var(--text)"><strong>${name}</strong></div>
+            <div style="font-size:12px;color:var(--muted);background:#F8FAFC;border:1px solid var(--border);
+              border-radius:7px;padding:7px 10px;margin-top:3px;line-height:1.5">${c.content}</div>
+            <div style="font-size:11px;color:var(--muted-2);margin-top:3px">${fmtRelTime(c.created_at)}</div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  async function changeStatus(newStatus) {
+    const id  = getId();
+    const sel = document.getElementById('status-select');
+    sel.disabled = true;
+    try {
+      await window.updateTask(id, { status: newStatus });
+      const task     = (window.TASKS || []).find(t => String(t.id) === String(id));
+      const taskName = task ? (task.title || task.name || 'a task') : 'a task';
+      const labels   = { pending:'To Do', 'in-progress':'In Progress', review:'Review', completed:'Done' };
+      if ((window.CURRENT_USER || {}).user_role === 'member' &&
+          typeof window.notifyManagers === 'function') {
+        await window.notifyManagers(id, 'status_change',
+          `${window.CURRENT_USER.name} changed "${taskName}" to ${labels[newStatus] || newStatus}`);
+      }
+    } catch(e) {
+      alert('Could not update status: ' + e.message);
+    } finally {
+      sel.disabled = false;
+    }
+  }
+
+  async function postComment() {
+    const input   = document.getElementById('comment-input');
+    const btn     = document.getElementById('comment-btn');
+    const content = input?.value?.trim();
+    if (!content) return;
+    btn.disabled = true; btn.textContent = 'Posting…';
+    try {
+      await window.createComment(getId(), content);
+      input.value = '';
+      await loadActivity(getId());
+    } catch(e) {
+      alert('Could not post comment: ' + e.message);
+    } finally {
+      btn.disabled = false; btn.textContent = 'Add comment';
     }
   }
 
