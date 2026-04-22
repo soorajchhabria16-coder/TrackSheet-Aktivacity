@@ -145,7 +145,7 @@
           <div class="settings-nav-item" onclick="showTab(event, 'workspace')">Workspace Settings</div>
           <div class="settings-nav-item" onclick="showTab(event, 'notifications')">Notifications</div>
           <div class="settings-nav-item" onclick="showTab(event, 'team')">Team Management</div>
-          <div class="settings-nav-item" style="color:var(--danger)">Security & Privacy</div>
+          <div class="settings-nav-item" onclick="showTab(event, 'security')">Security &amp; Privacy</div>
         </aside>
 
         <div class="settings-card">
@@ -155,33 +155,28 @@
             <p>Update your personal information and how you appear in the dashboard.</p>
             
             <div class="profile-edit">
-              <div class="avatar">SO</div>
+              <div class="avatar" id="profile-avatar">—</div>
               <div class="actions">
-                <button class="btn btn-primary btn-sm">Change photo</button>
-                <button class="btn btn-ghost btn-sm" style="margin-left:8px">Remove</button>
+                <button class="btn btn-ghost btn-sm" disabled title="Avatar upload coming soon">Change photo</button>
               </div>
             </div>
 
             <div class="form-grid">
               <div class="form-group">
-                <label>Full Name</label>
-                <input type="text" value="Sooraj Ahmed">
+                <label for="prof-name">Full Name</label>
+                <input type="text" id="prof-name" placeholder="Your full name">
               </div>
               <div class="form-group">
-                <label>Email Address</label>
-                <input type="email" value="sooraj@aktivacity.studio">
+                <label for="prof-email">Email Address</label>
+                <input type="email" id="prof-email" placeholder="your@email.com" disabled title="Email cannot be changed here">
               </div>
               <div class="form-group">
-                <label>Role</label>
-                <input type="text" value="Studio Lead">
+                <label for="prof-role">Job Title</label>
+                <input type="text" id="prof-role" placeholder="e.g. Studio Lead">
               </div>
               <div class="form-group">
-                <label>Timezone</label>
-                <select>
-                  <option>Karachi (GMT+5)</option>
-                  <option>Dubai (GMT+4)</option>
-                  <option>London (GMT+0)</option>
-                </select>
+                <label for="prof-dept">Department</label>
+                <input type="text" id="prof-dept" placeholder="e.g. Design">
               </div>
             </div>
           </section>
@@ -252,9 +247,22 @@
             </div>
           </section>
 
+          <!-- Security Section -->
+          <section id="security" class="settings-section tab-content" style="display:none">
+            <h3>Security & Privacy</h3>
+            <p>Manage your account security and authentication sessions.</p>
+            <div class="toggle-group">
+              <div class="toggle-info">
+                <h4>Global Sign Out</h4>
+                <p>Revoke access from all devices, including this one.</p>
+              </div>
+              <button class="btn btn-ghost" onclick="handleSecuritySignOut()" style="color:var(--danger)">Sign Out Everywhere</button>
+            </div>
+          </section>
+
           <footer id="settings-footer" style="display:flex; justify-content:flex-end; gap:12px; margin-top:20px; padding-top:20px; border-top:1px solid var(--border)">
-            <button class="btn btn-ghost">Discard Changes</button>
-            <button class="btn btn-primary" onclick="alert('Profile settings saved locally and synced to Supabase!')">Save Settings</button>
+            <button class="btn btn-ghost" onclick="loadProfile()">Discard Changes</button>
+            <button class="btn btn-primary" id="save-btn" onclick="saveProfile()">Save Settings</button>
           </footer>
         </div>
       </div>
@@ -279,9 +287,9 @@
       <div class="form-group">
         <label>Role</label>
         <select id="new-user-role">
-          <option>Lead Designer</option>
-          <option>Junior Designer</option>
-          <option>Project Manager</option>
+          <option value="lead">Lead Designer</option>
+          <option value="junior">Junior Designer</option>
+          <option value="pm">Project Manager</option>
         </select>
       </div>
     </div>
@@ -296,24 +304,75 @@
 <script src="db.js"></script>
 <script src="sidebar.js"></script>
 <script>
+  function esc(s) {
+    if (!s) return '';
+    return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+
   fetch('icons.html').then(r=>r.text()).then(t=>document.getElementById('icons').innerHTML=t).then(init).catch(init);
 
   async function init(){
     await window.authReady;
     document.getElementById('sidebar-slot').outerHTML = renderSidebar('settings');
     document.getElementById('topbar-slot').outerHTML = renderTopbar('Settings', 'Manage your profile and studio preferences.');
+    loadProfile();
     await renderUsers();
+  }
+
+  function loadProfile() {
+    const u = window.CURRENT_USER || {};
+    document.getElementById('profile-avatar').textContent = u.oi || '—';
+    document.getElementById('prof-name').value  = u.name  || '';
+    document.getElementById('prof-email').value = u.email || '';
+    document.getElementById('prof-role').value  = u.role  || u.position || '';
+    document.getElementById('prof-dept').value  = u.department || '';
+  }
+
+  async function saveProfile() {
+    const u = window.CURRENT_USER;
+    if (!u || !u.id) { alert('Not signed in.'); return; }
+
+    const name = document.getElementById('prof-name').value.trim().slice(0, 100);
+    const role = document.getElementById('prof-role').value.trim().slice(0, 100);
+    const dept = document.getElementById('prof-dept').value.trim().slice(0, 100);
+    if (!name) { alert('Full name is required.'); return; }
+
+    const btn = document.getElementById('save-btn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+    try {
+      await window.updateProfile(u.id, { name, role, department: dept });
+      window.CURRENT_USER = { ...u, name, role, department: dept };
+      document.getElementById('profile-avatar').textContent =
+        (name.split(' ').map(p => p[0]).join('').toUpperCase().slice(0, 2)) || u.oi || '—';
+      btn.textContent = 'Saved ✓';
+      setTimeout(() => { btn.textContent = 'Save Settings'; btn.disabled = false; }, 2000);
+    } catch(e) {
+      console.error('[saveProfile]', e);
+      alert('Could not save profile. Please try again.');
+      btn.textContent = 'Save Settings';
+      btn.disabled = false;
+    }
+  }
+
+  async function handleSecuritySignOut() {
+    if (!confirm('This will sign you out of all devices. Continue?')) return;
+    if (typeof supabase !== 'undefined' && supabase) {
+      await supabase.auth.signOut({ scope: 'global' });
+    }
+    window.location.href = 'Login.html';
   }
 
   function showTab(e, tabId) {
     document.querySelectorAll('.tab-content').forEach(s => s.style.display = 'none');
     document.querySelectorAll('.settings-nav-item').forEach(i => i.classList.remove('active'));
     document.getElementById(tabId).style.display = 'block';
-    if (tabId === 'team') {
-        document.getElementById('settings-footer').style.display = 'none';
-        renderUsers();
+    const noFooter = ['team', 'security'];
+    if (noFooter.includes(tabId)) {
+      document.getElementById('settings-footer').style.display = 'none';
+      if (tabId === 'team') renderUsers();
     } else {
-        document.getElementById('settings-footer').style.display = 'flex';
+      document.getElementById('settings-footer').style.display = 'flex';
     }
     e.target.classList.add('active');
   }
@@ -321,59 +380,75 @@
   async function renderUsers() {
     const users = await fetchProfiles();
     const html = users.map(o => {
-      const oi = o.oi || (o.name || '?').split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,2);
+      const oi = esc(o.oi || (o.name || '?').split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,2));
       const roleLabel = o.user_role === 'admin' ? 'Admin' : o.user_role === 'pm' ? 'Project Manager' : 'Member';
+      const isSelf = o.email === (window.CURRENT_USER || {}).email;
       return `
       <tr style="border-top:1px solid var(--border)">
         <td style="padding:12px 16px">
           <div style="display:flex; align-items:center; gap:10px">
-            <div style="width:32px; height:32px; font-size:12px; flex-basis:32px; border-radius:50%; display:grid; place-items:center; color:#fff; background:${(window.OWNER_COLORS||{})[oi]||'linear-gradient(135deg,#6B7FD7,#4B5EAA)'}">${oi}</div>
+            <div style="width:32px; height:32px; font-size:12px; flex-basis:32px; border-radius:50%; display:grid; place-items:center; color:#fff; background:${(window.OWNER_COLORS||{})[o.oi]||'linear-gradient(135deg,#6B7FD7,#4B5EAA)'}">${oi}</div>
             <div style="min-width:0">
-              <div style="font-weight:600; color:var(--text)">${o.name}</div>
-              <div style="font-size:11px; color:var(--muted)">${o.email}</div>
+              <div style="font-weight:600; color:var(--text)">${esc(o.name)}</div>
+              <div style="font-size:11px; color:var(--muted)">${esc(o.email)}</div>
             </div>
           </div>
         </td>
-        <td style="padding:12px 16px; color:var(--muted)">${roleLabel}</td>
+        <td style="padding:12px 16px; color:var(--muted)">${esc(roleLabel)}</td>
         <td style="padding:12px 16px"><span class="pc-status green"><span class="sw"></span> Active</span></td>
         <td style="padding:12px 16px; text-align:right">
-          <button class="icon-btn-sm" title="Edit User" style="display:inline-flex; border:0; background:none; cursor:pointer" onclick="alert('Editing ${o.name} is not permitted for your current access level.')"><svg width="14" height="14"><use href="#i-edit"/></svg></button>
-          <button class="icon-btn-sm" title="Remove User" style="display:inline-flex; border:0; background:none; cursor:pointer; color:var(--danger)" onclick="confirmRemoveUser('${o.id}', '${o.name}')"><svg width="14" height="14"><use href="#i-archive"/></svg></button>
+          ${isSelf ? '<span style="font-size:11px;color:var(--muted)">You</span>' : `
+          <button class="icon-btn-sm" title="Remove User"
+            style="display:inline-flex; border:0; background:none; cursor:pointer; color:var(--danger)"
+            data-action="remove-settings-user" data-id="${esc(o.id)}" data-name="${esc(o.name)}">
+            <svg width="14" height="14"><use href="#i-archive"/></svg>
+          </button>`}
         </td>
       </tr>
     `}).join('');
-    document.getElementById('user-table-body').innerHTML = html;
+    const container = document.getElementById('user-table-body');
+    container.innerHTML = html;
+    container.onclick = e => {
+      const el = e.target.closest('[data-action="remove-settings-user"]');
+      if (el) confirmRemoveUser(el.dataset.id, el.dataset.name);
+    };
   }
 
   function openAddUserModal() { document.getElementById('add-user-modal').style.display = 'flex'; }
   function closeAddUserModal() { document.getElementById('add-user-modal').style.display = 'none'; }
 
   async function submitAddUser() {
-    const name = document.getElementById('new-user-name').value;
-    const email = document.getElementById('new-user-email').value;
-    const role = document.getElementById('new-user-role').value;
-    if(!name || !email) return alert('Please fill in all fields');
-    
-    const initials = name.split(' ').map(n => n[0]).join('').toUpperCase();
-    
+    const name  = document.getElementById('new-user-name').value.trim().slice(0, 100);
+    const email = document.getElementById('new-user-email').value.trim().toLowerCase();
+    const role  = document.getElementById('new-user-role').value;
+
+    if (!name)                       { alert('Full name is required.'); return; }
+    if (!window.isValidEmail(email)) { alert('Please enter a valid email address.'); return; }
+
+    const parts    = name.split(/\s+/);
+    const oi       = ((parts[0]?.[0] || '') + (parts[1]?.[0] || parts[0]?.[1] || '')).toUpperCase();
     try {
-      await inviteUser({ id: initials, name, email, role });
-      alert('User invited successfully!');
+      await window.inviteUser({ oi, name, email, role, status: 'pending' });
+      const { error } = await window.sendMagicLink(email);
+      if (error) throw error;
+      alert('Invite sent successfully!');
       closeAddUserModal();
       renderUsers();
     } catch(e) {
-      alert('Error: ' + e.message);
+      console.error('[submitAddUser]', e);
+      alert('Could not send invite. Please check the details and try again.');
     }
   }
 
   async function confirmRemoveUser(id, name) {
-    if(confirm(`Are you sure you want to remove ${name} from the studio?`)) {
-        try {
-            await removeUser(id);
-            renderUsers();
-        } catch(e) {
-            alert('Error: ' + e.message);
-        }
+    if (confirm(`Remove ${name} from the studio? They will lose access immediately.`)) {
+      try {
+        await window.removeUser(id);
+        renderUsers();
+      } catch(e) {
+        console.error('[confirmRemoveUser]', e);
+        alert('Could not remove user. Please try again.');
+      }
     }
   }
 </script>

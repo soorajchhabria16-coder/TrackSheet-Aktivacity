@@ -231,20 +231,20 @@
     const recent = their.slice(0,3).map(t => `
       <div class="tsk">
         <span class="dot ${t.status==='overdue'?'red':'green'}"></span>
-        <span class="title">${t.title}</span>
+        <span class="title">${esc(t.title)}</span>
         <span class="date">17 Apr</span>
       </div>
     `).join('');
     return `
       <article class="person-card">
         <div class="pc-top">
-          <div class="avatar" style="background:${OWNER_COLORS[o.id]}">${o.id}</div>
+          <div class="avatar" style="background:${OWNER_COLORS[o.id]}">${esc(o.id)}</div>
           <div style="flex:1; min-width:0">
-            <div class="name">${o.name}</div>
-            <div class="role">${o.role}</div>
-            <div class="email"><svg width="11" height="11"><use href="#i-mail"/></svg> ${o.email}</div>
+            <div class="name">${esc(o.name)}</div>
+            <div class="role">${esc(o.role)}</div>
+            <div class="email"><svg width="11" height="11"><use href="#i-mail"/></svg> ${esc(o.email || '')}</div>
           </div>
-          <span class="pc-status ${statusCls}"><span class="sw"></span> ${statusTxt}</span>
+          <span class="pc-status ${statusCls}"><span class="sw"></span> ${esc(statusTxt)}</span>
           <button class="more"><svg width="16" height="16"><use href="#i-more"/></svg></button>
         </div>
         <div class="pc-stats">

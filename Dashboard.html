@@ -629,8 +629,8 @@
       return `
         <div class="row">
           <div class="person">
-            <div class="avatar" style="background:${grad}">${key}</div>
-            <div><div>${o.name.split(' ')[0]}</div><small>${o.role||''}</small></div>
+            <div class="avatar" style="background:${grad}">${esc(key)}</div>
+            <div><div>${esc(o.name.split(' ')[0])}</div><small>${esc(o.role||'')}</small></div>
           </div>
           <div class="wbar">
             ${c.overdue   ? `<div class="seg red"   style="width:${c.overdue*scale}%"></div>`   : ''}
@@ -663,12 +663,12 @@
         : 0;
       return `
         <li>
-          <div class="icon-pill"><svg width="16" height="16"><use href="#${KIND_ICON[t.kind]||'i-list'}"/></svg></div>
+          <div class="icon-pill"><svg width="16" height="16"><use href="#${esc(KIND_ICON[t.kind]||'i-list')}"/></svg></div>
           <div class="body">
-            <div class="title">${t.title}</div>
+            <div class="title">${esc(t.title)}</div>
             <div class="meta">
-              <span class="avatar" style="background:${grad}; width:14px; height:14px; font-size:8px; flex-basis:14px">${oi}</span>
-              ${t.owner} · Due ${dueDate} · <span style="color:var(--danger); font-weight:600">${diffDays}d overdue</span>
+              <span class="avatar" style="background:${grad}; width:14px; height:14px; font-size:8px; flex-basis:14px">${esc(oi)}</span>
+              ${esc(t.owner)} · Due ${esc(dueDate)} · <span style="color:var(--danger); font-weight:600">${diffDays}d overdue</span>
             </div>
           </div>
           <span class="prio high"><span class="pdot"></span> High</span>

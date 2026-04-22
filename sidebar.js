@@ -33,9 +33,9 @@ window.renderSidebar = function(active) {
       <div class="nav-section-label">Workspace</div>
       <nav class="nav">
         ${items.map(it => `
-          <a class="nav-item ${it.key === active ? 'active' : ''}" href="${it.href}">
-            <svg class="icon"><use href="#${it.icon}"/></svg>
-            <span>${it.label}</span>
+          <a class="nav-item ${it.key === active ? 'active' : ''}" href="${esc(it.href)}">
+            <svg class="icon"><use href="#${esc(it.icon)}"/></svg>
+            <span>${esc(it.label)}</span>
             ${it.key === 'tasks' ? `<span class="count">${activeTasks}</span>` : ''}
           </a>
         `).join('')}
@@ -46,10 +46,10 @@ window.renderSidebar = function(active) {
           <span>Settings</span>
         </a>
         <div class="user-chip">
-          <div class="avatar">${cu.oi || 'ME'}</div>
+          <div class="avatar">${esc(cu.oi || 'ME')}</div>
           <div class="user-info">
-            <span class="name">${cu.name || 'Loading…'}</span>
-            <span class="role">${roleLabel}</span>
+            <span class="name">${esc(cu.name || 'Loading…')}</span>
+            <span class="role">${esc(roleLabel)}</span>
           </div>
           <button class="icon-btn" onclick="handleLogout()" title="Sign Out"
             style="margin-left:auto;border:0;background:none;cursor:pointer;color:var(--muted)">
@@ -69,8 +69,8 @@ window.renderTopbar = function(title, subtitle) {
   return `
     <header class="topbar">
       <div class="greeting">
-        <h1 class="display">${title}</h1>
-        <p>${subtitle}</p>
+        <h1 class="display">${esc(title)}</h1>
+        <p>${esc(subtitle)}</p>
       </div>
       <div class="topbar-right">
         <a class="icon-btn" aria-label="Notifications" href="Notifications.html"
@@ -82,7 +82,7 @@ window.renderTopbar = function(title, subtitle) {
             justify-content:center;border:2px solid #fff">0</span>
         </a>
         <div class="account">
-          <div class="avatar">${(window.CURRENT_USER && window.CURRENT_USER.oi) || 'ME'}</div>
+          <div class="avatar">${esc((window.CURRENT_USER && window.CURRENT_USER.oi) || 'ME')}</div>
           <svg width="14" height="14" class="caret"><use href="#i-chev-down"/></svg>
         </div>
       </div>

@@ -19,7 +19,8 @@ window.getFilteredTasks = function() {
     const matchesSearch = t.title.toLowerCase().includes(FilterState.search.toLowerCase()) ||
                           t.owner.toLowerCase().includes(FilterState.search.toLowerCase());
     
-    const matchesDept = FilterState.department === 'Any' || true; // Currently all are 'Design'
+    const matchesDept = FilterState.department === 'Any' ||
+                        (t.department || '').toLowerCase() === FilterState.department.toLowerCase();
     
     // Status Logic
     let matchesStatus = true;

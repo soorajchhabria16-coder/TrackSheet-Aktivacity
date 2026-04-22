@@ -1,18 +1,52 @@
 /**
  * Supabase Database Integration for Aktivacity.
- * Live Credentials provided by user.
+ *
+ * SECURITY NOTE: SUPABASE_KEY is the anon/public key, which is intentionally
+ * exposed client-side. It is safe ONLY if Row Level Security (RLS) is enabled
+ * and correctly configured on every Supabase table. Never use the service_role
+ * key here.
  */
 
 const SUPABASE_URL = 'https://wgtqmpbigyscnfihnabm.supabase.co';
+/** @public Supabase anon key — safe client-side only with RLS enforced on all tables */
 const SUPABASE_KEY = 'sb_publishable_MRS6VObelNdJgqGoh6g-0g_zxcjQMXR';
+
+/**
+ * Escapes a string for safe insertion into HTML.
+ * Use for all user-controlled data rendered via innerHTML.
+ * @param {*} s
+ * @returns {string}
+ */
+window.esc = function(s) {
+  return String(s ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+};
+
+/**
+ * Basic email format validation.
+ * @param {string} email
+ * @returns {boolean}
+ */
+window.isValidEmail = function(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || '').trim());
+};
 
 // Initialize the client
 let supabase = null;
+window.supabaseClient = null;
 if (typeof window.supabase !== 'undefined') {
   supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  console.log('Aktivacity: Supabase connected with live credentials.');
+  window.supabaseClient = supabase;
+  // Only log connection info in local development
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    console.log('Aktivacity: Supabase connected.');
+  }
 } else {
-  console.warn('Aktivacity: Supabase CDN not loaded yet.');
+  console.warn('Aktivacity: Supabase CDN not loaded.');
 }
 
 /**
@@ -109,9 +143,11 @@ window.updateProfile = async function(id, updates) {
 
 window.sendMagicLink = async function(email) {
   if (!supabase) return { error: new Error('Supabase not available') };
+  // Use the same base URL the app is served from; cleanUrls means /Login works everywhere
+  const redirectBase = window.location.origin + '/Login';
   return await supabase.auth.signInWithOtp({
     email,
-    options: { emailRedirectTo: window.location.origin + '/Login.html' }
+    options: { emailRedirectTo: redirectBase }
   });
 };
 

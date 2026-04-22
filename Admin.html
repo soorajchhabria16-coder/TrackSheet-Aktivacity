@@ -237,8 +237,8 @@ async function renderUserTable() {
         <div style="width:160px;flex-shrink:0">
           ${isSelf
             ? `<span style="font-size:12px;font-weight:700;background:#ede9fe;color:#4c1d95;
-                padding:3px 10px;border-radius:999px">${rlLabel(uRole)}</span>`
-            : `<select onchange="changeRole('${esc(p.id)}',this.value)"
+                padding:3px 10px;border-radius:999px">${esc(rlLabel(uRole))}</span>`
+            : `<select data-action="change-role" data-id="${esc(p.id)}"
                 style="font-size:12px;font-weight:600;border:1px solid var(--border);
                 border-radius:6px;padding:4px 8px;background:#f8fafc;color:var(--text);cursor:pointer">
                 <option value="admin"  ${uRole==='admin' ?'selected':''}>Admin</option>
@@ -255,7 +255,7 @@ async function renderUserTable() {
         </div>
         <div style="width:70px;flex-shrink:0;text-align:right">
           ${isSelf ? '' : `
-            <button onclick="removeUser('${esc(p.id)}')"
+            <button data-action="remove-user" data-id="${esc(p.id)}"
               style="font-size:12px;color:var(--danger);background:none;border:0;cursor:pointer;font-weight:500">
               ${isPend ? 'Revoke' : 'Remove'}
             </button>`
@@ -263,6 +263,16 @@ async function renderUserTable() {
         </div>
       </div>`;
   }).join('');
+
+  // Event delegation — avoids inline onclick attribute injection
+  document.getElementById('user-table-body').addEventListener('change', async e => {
+    const el = e.target.closest('[data-action="change-role"]');
+    if (el) changeRole(el.dataset.id, el.value);
+  });
+  document.getElementById('user-table-body').addEventListener('click', async e => {
+    const el = e.target.closest('[data-action="remove-user"]');
+    if (el) removeUser(el.dataset.id);
+  });
 }
 
 async function changeRole(id, newRole) {
@@ -271,7 +281,8 @@ async function changeRole(id, newRole) {
     const p = (window.OWNERS || []).find(o => String(o.id) === String(id));
     if (p) p.user_role = newRole;
   } catch(e) {
-    alert('Could not update role: ' + e.message);
+    console.error('[changeRole]', e);
+    alert('Could not update role. Please try again.');
     await renderUserTable();
   }
 }
@@ -283,7 +294,8 @@ async function removeUser(id) {
     window.OWNERS = (window.OWNERS || []).filter(o => String(o.id) !== String(id));
     await renderUserTable();
   } catch(e) {
-    alert('Could not remove user: ' + e.message);
+    console.error('[removeUser]', e);
+    alert('Could not remove user. Please try again.');
   }
 }
 
@@ -295,18 +307,19 @@ function closeInviteModal() {
 }
 
 async function submitInvite() {
-  const name  = document.getElementById('inv-name').value.trim();
-  const email = document.getElementById('inv-email').value.trim();
-  const dept  = document.getElementById('inv-dept').value.trim();
+  const name  = document.getElementById('inv-name').value.trim().slice(0, 100);
+  const email = document.getElementById('inv-email').value.trim().toLowerCase();
+  const dept  = document.getElementById('inv-dept').value.trim().slice(0, 100);
   const role  = document.getElementById('inv-role').value;
 
-  if (!name || !email) { alert('Name and email are required.'); return; }
+  if (!name)                    { alert('Full name is required.'); return; }
+  if (!window.isValidEmail(email)) { alert('Please enter a valid email address.'); return; }
 
   const btn = document.getElementById('inv-submit');
   btn.disabled = true; btn.textContent = 'Sending…';
 
   try {
-    const parts = name.trim().split(/\s+/);
+    const parts = name.split(/\s+/);
     const oi    = ((parts[0]?.[0] || '') + (parts[1]?.[0] || parts[0]?.[1] || '')).toUpperCase();
     await window.inviteUser({ name, email, department: dept, user_role: role, status: 'pending', oi });
     const { error } = await window.sendMagicLink(email);
@@ -315,7 +328,8 @@ async function submitInvite() {
     await renderUserTable();
     alert(`Invite sent to ${email}. They will receive a magic-link email.`);
   } catch(e) {
-    alert('Could not send invite: ' + e.message);
+    console.error('[submitInvite]', e);
+    alert('Could not send invite. Please check the details and try again.');
   } finally {
     btn.disabled = false; btn.textContent = 'Send Invite';
   }

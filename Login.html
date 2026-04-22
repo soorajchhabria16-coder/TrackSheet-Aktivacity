@@ -310,7 +310,7 @@
     btn.disabled = true;
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error } = await window.supabaseClient.auth.signInWithPassword({ email, password });
       if (error) throw error;
       window.location.href = 'Dashboard.html';
     } catch (err) {
@@ -344,7 +344,7 @@
     btns[0].textContent = 'Sending…';
 
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      const { error } = await window.supabaseClient.auth.resetPasswordForEmail(email, {
         redirectTo: window.location.origin + '/Login'
       });
       if (error) throw error;
