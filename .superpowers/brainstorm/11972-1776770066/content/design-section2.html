@@ -1,0 +1,72 @@
+<h2>Section 2 of 5 — Database Changes</h2>
+<p class="subtitle">Three small changes to the Supabase tables to support roles, comments, and notifications.</p>
+
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:8px">
+
+  <!-- profiles update -->
+  <div style="border:1px solid #e2e8f0;border-radius:12px;overflow:hidden">
+    <div style="background:#f8fafc;padding:10px 14px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between">
+      <span style="font-weight:700;font-size:13px;font-family:monospace">profiles</span>
+      <span style="font-size:11px;color:#f59e0b;font-weight:600;background:#fef3c7;padding:2px 8px;border-radius:999px">UPDATE</span>
+    </div>
+    <div style="padding:14px;font-size:12px;font-family:monospace">
+      <div style="color:#94a3b8;margin-bottom:8px">existing columns...</div>
+      <div style="background:#fef3c7;padding:6px 10px;border-radius:6px;border-left:3px solid #f59e0b;margin-bottom:4px">
+        <span style="color:#92400e;font-weight:600">+ role</span><br>
+        <span style="color:#78350f">text DEFAULT 'member'</span><br>
+        <span style="color:#a16207;font-style:italic">('admin' | 'pm' | 'member')</span>
+      </div>
+    </div>
+    <div style="padding:0 14px 14px;font-size:12px;color:#64748b">
+      One new column. Every user gets a role. Admins can change it from the Admin Panel.
+    </div>
+  </div>
+
+  <!-- comments table -->
+  <div style="border:1px solid #e2e8f0;border-radius:12px;overflow:hidden">
+    <div style="background:#f8fafc;padding:10px 14px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between">
+      <span style="font-weight:700;font-size:13px;font-family:monospace">comments</span>
+      <span style="font-size:11px;color:#22c55e;font-weight:600;background:#dcfce7;padding:2px 8px;border-radius:999px">NEW</span>
+    </div>
+    <div style="padding:14px;font-size:12px;font-family:monospace;display:flex;flex-direction:column;gap:5px">
+      <div><span style="color:#6366f1;font-weight:600">id</span> <span style="color:#94a3b8">uuid PK</span></div>
+      <div><span style="color:#0ea5e9;font-weight:600">task_id</span> <span style="color:#94a3b8">uuid → tasks</span></div>
+      <div><span style="color:#0ea5e9;font-weight:600">user_id</span> <span style="color:#94a3b8">uuid → profiles</span></div>
+      <div><span style="color:#334155;font-weight:600">content</span> <span style="color:#94a3b8">text NOT NULL</span></div>
+      <div><span style="color:#334155;font-weight:600">created_at</span> <span style="color:#94a3b8">timestamptz</span></div>
+    </div>
+    <div style="padding:0 14px 14px;font-size:12px;color:#64748b">
+      Stores all comments on tasks. Both PMs and Team Members can post. Read access scoped by role.
+    </div>
+  </div>
+
+  <!-- notifications table -->
+  <div style="border:1px solid #e2e8f0;border-radius:12px;overflow:hidden">
+    <div style="background:#f8fafc;padding:10px 14px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between">
+      <span style="font-weight:700;font-size:13px;font-family:monospace">notifications</span>
+      <span style="font-size:11px;color:#22c55e;font-weight:600;background:#dcfce7;padding:2px 8px;border-radius:999px">NEW</span>
+    </div>
+    <div style="padding:14px;font-size:12px;font-family:monospace;display:flex;flex-direction:column;gap:5px">
+      <div><span style="color:#6366f1;font-weight:600">id</span> <span style="color:#94a3b8">uuid PK</span></div>
+      <div><span style="color:#0ea5e9;font-weight:600">user_id</span> <span style="color:#94a3b8">uuid → profiles</span></div>
+      <div><span style="color:#0ea5e9;font-weight:600">task_id</span> <span style="color:#94a3b8">uuid → tasks</span></div>
+      <div><span style="color:#334155;font-weight:600">type</span> <span style="color:#94a3b8">text</span><br><span style="color:#a16207;font-style:italic;font-size:11px">('assigned' | 'status_change' | 'comment')</span></div>
+      <div><span style="color:#334155;font-weight:600">message</span> <span style="color:#94a3b8">text</span></div>
+      <div><span style="color:#334155;font-weight:600">read</span> <span style="color:#94a3b8">bool DEFAULT false</span></div>
+      <div><span style="color:#334155;font-weight:600">created_at</span> <span style="color:#94a3b8">timestamptz</span></div>
+    </div>
+    <div style="padding:0 14px 14px;font-size:12px;color:#64748b">
+      One row per notification. The bell icon count = unread rows for the current user.
+    </div>
+  </div>
+
+</div>
+
+<div style="margin-top:20px;padding:14px 16px;background:#f1f5f9;border-radius:10px;font-size:13px;color:#475569">
+  <strong>What triggers a notification:</strong>
+  <ul style="margin:8px 0 0 16px;display:flex;flex-direction:column;gap:4px">
+    <li>Task assigned → Team Member gets <em>"assigned"</em> notification</li>
+    <li>Team Member changes status → PM gets <em>"status_change"</em> notification</li>
+    <li>Anyone comments on a task → the other party gets a <em>"comment"</em> notification</li>
+  </ul>
+</div>

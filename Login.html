@@ -310,6 +310,9 @@
     btn.disabled = true;
 
     try {
+      if (!window.supabaseClient && typeof initSupabase === 'function') {
+        initSupabase();
+      }
       if (!window.supabaseClient) {
         throw new Error('Database connection is not available. Please refresh and try again.');
       }

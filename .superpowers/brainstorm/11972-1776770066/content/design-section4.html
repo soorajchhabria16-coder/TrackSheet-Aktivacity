@@ -1,0 +1,87 @@
+<h2>Section 4 of 5 — Task Detail: Comments & Status</h2>
+<p class="subtitle">The right column of the Task Detail page gets a live activity feed and comment box. Status change is a single dropdown.</p>
+
+<div class="mockup" style="max-width:860px;margin:0 auto">
+  <div class="mockup-header">Task Detail — Right Panel (new section)</div>
+  <div class="mockup-body" style="padding:20px;background:#f8fafc;display:grid;grid-template-columns:1fr 340px;gap:16px">
+
+    <!-- Left: existing task info (abbreviated) -->
+    <div>
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin-bottom:12px">
+        <div style="font-size:11px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Status</div>
+        <select style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;font-weight:600;color:#0f172a;background:#f8fafc;cursor:pointer">
+          <option>To Do</option>
+          <option selected>In Progress</option>
+          <option>Review</option>
+          <option>Done</option>
+        </select>
+        <div style="font-size:11px;color:#94a3b8;margin-top:6px">Changing status notifies the Project Manager.</div>
+      </div>
+
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px 18px">
+        <div style="font-size:15px;font-weight:700;color:#0f172a;margin-bottom:4px">Edit Video — Episode 12</div>
+        <div style="font-size:12px;color:#94a3b8">Assigned to you · Due Apr 28</div>
+        <p style="font-size:13px;color:#475569;margin-top:10px;line-height:1.6">Cut and colour-grade the raw footage for episode 12. Export at 4K, 24fps. Deliver to shared drive by due date.</p>
+      </div>
+    </div>
+
+    <!-- Right: activity feed -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+
+      <!-- Activity feed -->
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden">
+        <div style="padding:12px 14px;border-bottom:1px solid #f1f5f9;font-weight:700;font-size:13px;color:#0f172a">Activity</div>
+        <div style="padding:10px 14px;display:flex;flex-direction:column;gap:10px;max-height:260px;overflow-y:auto">
+
+          <div style="display:flex;gap:10px;align-items:flex-start">
+            <div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#60A5FA,#2563EB);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:10px;flex-shrink:0">TM</div>
+            <div>
+              <div style="font-size:12px;color:#0f172a"><strong>Temi</strong> assigned this task to <strong>Zara</strong></div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:2px">Apr 20 · 9:14am</div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:10px;align-items:flex-start">
+            <div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#34D399,#059669);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:10px;flex-shrink:0">ZA</div>
+            <div>
+              <div style="font-size:12px;color:#0f172a"><strong>Zara</strong> changed status to <span style="background:#dbeafe;color:#1e40af;padding:1px 7px;border-radius:999px;font-size:11px;font-weight:600">In Progress</span></div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:2px">Apr 21 · 10:02am</div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:10px;align-items:flex-start">
+            <div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#60A5FA,#2563EB);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:10px;flex-shrink:0">TM</div>
+            <div>
+              <div style="font-size:12px;color:#0f172a"><strong>Temi</strong> commented:</div>
+              <div style="font-size:12px;color:#475569;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;margin-top:4px;line-height:1.5">Hey Zara, make sure the colour grade matches Episode 11's warmth. Check the reference file.</div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:4px">Apr 21 · 11:30am</div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:10px;align-items:flex-start">
+            <div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#34D399,#059669);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:10px;flex-shrink:0">ZA</div>
+            <div>
+              <div style="font-size:12px;color:#0f172a"><strong>Zara</strong> commented:</div>
+              <div style="font-size:12px;color:#475569;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;margin-top:4px;line-height:1.5">Got it, will match Ep 11. Should be ready for review by Thursday.</div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:4px">Apr 21 · 12:05pm</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Comment input -->
+        <div style="padding:10px 14px;border-top:1px solid #f1f5f9">
+          <textarea style="width:100%;padding:9px 11px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;resize:none;min-height:68px;font-family:inherit;color:#0f172a;background:#fbfcfd;box-sizing:border-box" placeholder="Add a comment..."></textarea>
+          <div style="display:flex;justify-content:flex-end;margin-top:6px">
+            <button style="background:#6366f1;color:#fff;border:0;padding:7px 14px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer">Post</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div style="max-width:860px;margin:12px auto 0;padding:12px 14px;background:#f1f5f9;border-radius:10px;font-size:13px;color:#475569">
+  <strong>Status changes and comments</strong> both appear in the same chronological feed. Every event auto-saves to Supabase and triggers a notification to the other party.
+</div>

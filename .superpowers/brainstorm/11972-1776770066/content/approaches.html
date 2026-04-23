@@ -1,0 +1,61 @@
+<h2>How should we approach this?</h2>
+<p class="subtitle">Three paths to a complete app — pick the one that matches your timeline and goals.</p>
+
+<div class="options">
+
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Fix + Complete — Recommended</h3>
+      <p>Fix everything broken, then build the full role system, comments, and notifications. Ships as a production-ready app.</p>
+      <table style="width:100%;margin-top:12px;font-size:13px;border-collapse:collapse">
+        <tr><td style="padding:5px 8px">🔧</td><td style="padding:5px 8px">Fix sidebar navigation &amp; all broken links</td></tr>
+        <tr style="background:#f8fafc"><td style="padding:5px 8px">🔧</td><td style="padding:5px 8px">Fix filters (search, department, status, priority)</td></tr>
+        <tr><td style="padding:5px 8px">🔧</td><td style="padding:5px 8px">Fix invite user flow (send real Supabase auth invite)</td></tr>
+        <tr style="background:#f8fafc"><td style="padding:5px 8px">🏗️</td><td style="padding:5px 8px">Role-based access: Admin / PM / Team Member</td></tr>
+        <tr><td style="padding:5px 8px">🏗️</td><td style="padding:5px 8px">Admin panel: real user management + role assignment</td></tr>
+        <tr style="background:#f8fafc"><td style="padding:5px 8px">🏗️</td><td style="padding:5px 8px">Task comments &amp; activity feed</td></tr>
+        <tr><td style="padding:5px 8px">🏗️</td><td style="padding:5px 8px">In-app notifications (assignment + status changes)</td></tr>
+        <tr style="background:#f8fafc"><td style="padding:5px 8px">🏗️</td><td style="padding:5px 8px">Team Member view: only their assigned tasks</td></tr>
+      </table>
+      <p style="margin-top:10px;font-size:12px;color:#64748b"><strong>Best if</strong> you want to hand this off to your team right away and have it actually work end-to-end.</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Fix + Roles Only</h3>
+      <p>Fix all broken parts and add the role system. Skip comments and notifications for now — add them in a second pass.</p>
+      <table style="width:100%;margin-top:12px;font-size:13px;border-collapse:collapse">
+        <tr><td style="padding:5px 8px">🔧</td><td style="padding:5px 8px">Fix sidebar navigation &amp; all broken links</td></tr>
+        <tr style="background:#f8fafc"><td style="padding:5px 8px">🔧</td><td style="padding:5px 8px">Fix filters</td></tr>
+        <tr><td style="padding:5px 8px">🔧</td><td style="padding:5px 8px">Fix invite user flow</td></tr>
+        <tr style="background:#f8fafc"><td style="padding:5px 8px">🏗️</td><td style="padding:5px 8px">Role-based access: Admin / PM / Team Member</td></tr>
+        <tr><td style="padding:5px 8px">🏗️</td><td style="padding:5px 8px">Admin panel: user management + role assignment</td></tr>
+        <tr style="background:#f8fafc"><td style="padding:5px 8px">⏳</td><td style="padding:5px 8px">Comments — later</td></tr>
+        <tr><td style="padding:5px 8px">⏳</td><td style="padding:5px 8px">Notifications — later</td></tr>
+      </table>
+      <p style="margin-top:10px;font-size:12px;color:#64748b"><strong>Best if</strong> you want a working app faster and are comfortable adding collaboration features later.</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Fixes Only</h3>
+      <p>Patch what's broken. No new features — just get the existing UI working as intended.</p>
+      <table style="width:100%;margin-top:12px;font-size:13px;border-collapse:collapse">
+        <tr><td style="padding:5px 8px">🔧</td><td style="padding:5px 8px">Fix sidebar navigation &amp; all broken links</td></tr>
+        <tr style="background:#f8fafc"><td style="padding:5px 8px">🔧</td><td style="padding:5px 8px">Fix filters</td></tr>
+        <tr><td style="padding:5px 8px">🔧</td><td style="padding:5px 8px">Fix invite user flow</td></tr>
+        <tr style="background:#f8fafc"><td style="padding:5px 8px">⏳</td><td style="padding:5px 8px">Roles — later</td></tr>
+        <tr><td style="padding:5px 8px">⏳</td><td style="padding:5px 8px">Admin panel functions — later</td></tr>
+        <tr style="background:#f8fafc"><td style="padding:5px 8px">⏳</td><td style="padding:5px 8px">Comments — later</td></tr>
+        <tr><td style="padding:5px 8px">⏳</td><td style="padding:5px 8px">Notifications — later</td></tr>
+      </table>
+      <p style="margin-top:10px;font-size:12px;color:#64748b"><strong>Best if</strong> you just need the app functional today and will revisit features separately.</p>
+    </div>
+  </div>
+
+</div>

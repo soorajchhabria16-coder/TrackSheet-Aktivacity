@@ -1,0 +1,70 @@
+<h2>Section 1 of 5 — Navigation & Role Views</h2>
+<p class="subtitle">Each role sees a different version of the app after logging in. Does this look right?</p>
+
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:8px">
+
+  <!-- Admin -->
+  <div style="border:2px solid #6366f1;border-radius:12px;overflow:hidden">
+    <div style="background:#6366f1;color:#fff;padding:10px 14px;font-weight:700;font-size:13px;letter-spacing:.04em">ADMIN</div>
+    <div style="padding:14px;background:#fafafa">
+      <div style="font-size:12px;color:#64748b;margin-bottom:10px;font-weight:600">FULL ACCESS</div>
+      <ul style="list-style:none;padding:0;margin:0;font-size:13px;display:flex;flex-direction:column;gap:6px">
+        <li style="display:flex;align-items:center;gap:8px"><span style="color:#22c55e;font-size:16px">●</span> Dashboard</li>
+        <li style="display:flex;align-items:center;gap:8px"><span style="color:#22c55e;font-size:16px">●</span> Production Tasks (all)</li>
+        <li style="display:flex;align-items:center;gap:8px"><span style="color:#22c55e;font-size:16px">●</span> Team</li>
+        <li style="display:flex;align-items:center;gap:8px"><span style="color:#22c55e;font-size:16px">●</span> Admin Panel ★</li>
+        <li style="display:flex;align-items:center;gap:8px"><span style="color:#22c55e;font-size:16px">●</span> Notifications</li>
+        <li style="display:flex;align-items:center;gap:8px"><span style="color:#22c55e;font-size:16px">●</span> Settings</li>
+      </ul>
+      <div style="margin-top:12px;padding:10px;background:#ede9fe;border-radius:8px;font-size:12px;color:#4c1d95">
+        <strong>Admin Panel unlocks:</strong><br>
+        Invite users, change roles, remove users
+      </div>
+    </div>
+  </div>
+
+  <!-- Project Manager -->
+  <div style="border:2px solid #0ea5e9;border-radius:12px;overflow:hidden">
+    <div style="background:#0ea5e9;color:#fff;padding:10px 14px;font-weight:700;font-size:13px;letter-spacing:.04em">PROJECT MANAGER</div>
+    <div style="padding:14px;background:#fafafa">
+      <div style="font-size:12px;color:#64748b;margin-bottom:10px;font-weight:600">TASK CONTROL</div>
+      <ul style="list-style:none;padding:0;margin:0;font-size:13px;display:flex;flex-direction:column;gap:6px">
+        <li style="display:flex;align-items:center;gap:8px"><span style="color:#22c55e;font-size:16px">●</span> Dashboard</li>
+        <li style="display:flex;align-items:center;gap:8px"><span style="color:#22c55e;font-size:16px">●</span> Production Tasks (all)</li>
+        <li style="display:flex;align-items:center;gap:8px"><span style="color:#22c55e;font-size:16px">●</span> Team (view only)</li>
+        <li style="display:flex;align-items:center;gap:8px"><span style="color:#94a3b8;font-size:16px">●</span> Admin Panel <span style="color:#94a3b8;font-size:11px">(hidden)</span></li>
+        <li style="display:flex;align-items:center;gap:8px"><span style="color:#22c55e;font-size:16px">●</span> Notifications</li>
+        <li style="display:flex;align-items:center;gap:8px"><span style="color:#22c55e;font-size:16px">●</span> Settings</li>
+      </ul>
+      <div style="margin-top:12px;padding:10px;background:#e0f2fe;border-radius:8px;font-size:12px;color:#0c4a6e">
+        <strong>Can do:</strong><br>
+        Create tasks, assign to team, update any task, view all reports
+      </div>
+    </div>
+  </div>
+
+  <!-- Team Member -->
+  <div style="border:2px solid #f59e0b;border-radius:12px;overflow:hidden">
+    <div style="background:#f59e0b;color:#fff;padding:10px 14px;font-weight:700;font-size:13px;letter-spacing:.04em">TEAM MEMBER</div>
+    <div style="padding:14px;background:#fafafa">
+      <div style="font-size:12px;color:#64748b;margin-bottom:10px;font-weight:600">OWN TASKS ONLY</div>
+      <ul style="list-style:none;padding:0;margin:0;font-size:13px;display:flex;flex-direction:column;gap:6px">
+        <li style="display:flex;align-items:center;gap:8px"><span style="color:#94a3b8;font-size:16px">●</span> Dashboard <span style="color:#94a3b8;font-size:11px">(hidden)</span></li>
+        <li style="display:flex;align-items:center;gap:8px"><span style="color:#22c55e;font-size:16px">●</span> My Tasks (assigned only)</li>
+        <li style="display:flex;align-items:center;gap:8px"><span style="color:#94a3b8;font-size:16px">●</span> Team <span style="color:#94a3b8;font-size:11px">(hidden)</span></li>
+        <li style="display:flex;align-items:center;gap:8px"><span style="color:#94a3b8;font-size:16px">●</span> Admin Panel <span style="color:#94a3b8;font-size:11px">(hidden)</span></li>
+        <li style="display:flex;align-items:center;gap:8px"><span style="color:#22c55e;font-size:16px">●</span> Notifications</li>
+        <li style="display:flex;align-items:center;gap:8px"><span style="color:#22c55e;font-size:16px">●</span> Settings</li>
+      </ul>
+      <div style="margin-top:12px;padding:10px;background:#fef3c7;border-radius:8px;font-size:12px;color:#78350f">
+        <strong>Can do:</strong><br>
+        View assigned tasks, change status (To Do → In Progress → Review → Done), leave comments
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div style="margin-top:20px;padding:14px 16px;background:#f1f5f9;border-radius:10px;font-size:13px;color:#475569">
+  <strong>On login:</strong> The app reads the user's role from Supabase and shows only the pages and data that role is allowed to access. Team Members who try to access Admin or Dashboard directly are redirected back.
+</div>

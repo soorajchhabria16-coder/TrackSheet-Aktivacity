@@ -11,11 +11,10 @@ const SUPABASE_URL = 'https://wgtqmpbigyscnfihnabm.supabase.co';
 /** @public Supabase anon key — safe client-side only with RLS enforced on all tables */
 const SUPABASE_KEY = 'sb_publishable_MRS6VObelNdJgqGoh6g-0g_zxcjQMXR';
 
+console.log('Aktivacity: db.js loading...');
+
 /**
  * Escapes a string for safe insertion into HTML.
- * Use for all user-controlled data rendered via innerHTML.
- * @param {*} s
- * @returns {string}
  */
 window.esc = function(s) {
   return String(s ?? '')
@@ -28,8 +27,6 @@ window.esc = function(s) {
 
 /**
  * Basic email format validation.
- * @param {string} email
- * @returns {boolean}
  */
 window.isValidEmail = function(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || '').trim());
@@ -38,16 +35,41 @@ window.isValidEmail = function(email) {
 // Initialize the client
 let supabase = null;
 window.supabaseClient = null;
-if (typeof window.supabase !== 'undefined') {
-  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  window.supabaseClient = supabase;
-  // Only log connection info in local development
-  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-    console.log('Aktivacity: Supabase connected.');
+
+/**
+ * Attempts to initialize the Supabase client.
+ * Returns true if successful.
+ */
+function initSupabase() {
+  console.log('Aktivacity: initSupabase called');
+  try {
+    const lib = window.supabase || (typeof supabase !== 'undefined' ? supabase : null);
+    if (lib && typeof lib.createClient === 'function') {
+      console.log('Aktivacity: Supabase library found, creating client...');
+      window.supabaseClient = lib.createClient(SUPABASE_URL, SUPABASE_KEY);
+      supabase = window.supabaseClient;
+      
+      console.log('Aktivacity: Supabase client initialized:', !!window.supabaseClient);
+      return true;
+    } else {
+      console.warn('Aktivacity: window.supabase is not defined or createClient is missing');
+    }
+  } catch (e) {
+    console.error('Aktivacity: Supabase initialization error:', e);
   }
-} else {
-  console.warn('Aktivacity: Supabase CDN not loaded.');
+  return false;
 }
+
+// Initial attempt
+console.log('Aktivacity: Running initial initSupabase...');
+if (!initSupabase()) {
+  console.warn('Aktivacity: Supabase CDN not yet ready, setting retry...');
+  setTimeout(() => {
+    console.log('Aktivacity: Retrying initSupabase...');
+    initSupabase();
+  }, 500);
+}
+
 
 /**
  * Fetches tasks from the 'tasks' table.
