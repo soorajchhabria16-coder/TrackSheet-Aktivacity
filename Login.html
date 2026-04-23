@@ -310,6 +310,9 @@
     btn.disabled = true;
 
     try {
+      if (!window.supabaseClient) {
+        throw new Error('Database connection is not available. Please refresh and try again.');
+      }
       const { data, error } = await window.supabaseClient.auth.signInWithPassword({ email, password });
       if (error) throw error;
       window.location.href = 'Dashboard.html';
@@ -344,6 +347,9 @@
     btns[0].textContent = 'Sending…';
 
     try {
+      if (!window.supabaseClient) {
+        throw new Error('Database connection is not available. Please refresh and try again.');
+      }
       const { error } = await window.supabaseClient.auth.resetPasswordForEmail(email, {
         redirectTo: window.location.origin + '/Login'
       });

@@ -194,11 +194,18 @@ if (typeof supabase === 'undefined' && typeof window.supabase !== 'undefined') {
 }
 
 window.authReady = (async function () {
-  if (typeof supabase === 'undefined' || !supabase) return;
+  // Use window.supabaseClient — exported by db.js and accessible across all scripts.
+  // The local `supabase` variable from db.js is NOT in scope here.
+  const client = window.supabaseClient;
+  if (!client) return;
 
-  const { data: { session } } = await supabase.auth.getSession();
-  const isLoginPage = window.location.pathname.includes('Login.html') ||
-                      window.location.href.includes('Login.html');
+  const { data: { session } } = await client.auth.getSession();
+
+  // Detect the login page under both Vercel clean URLs (/Login) and direct file access (Login.html).
+  const path = window.location.pathname;
+  const isLoginPage = path === '/Login' ||
+                      path.endsWith('/Login') ||
+                      path.includes('Login.html');
 
   if (!session) {
     if (!isLoginPage) window.location.href = 'Login.html';
@@ -236,8 +243,8 @@ window.authReady = (async function () {
  * Global Logout handler.
  */
 async function handleLogout() {
-  if (typeof supabase !== 'undefined' && supabase) {
-    await supabase.auth.signOut();
+  if (window.supabaseClient) {
+    await window.supabaseClient.auth.signOut();
   }
   window.location.href = 'Login.html';
 }
