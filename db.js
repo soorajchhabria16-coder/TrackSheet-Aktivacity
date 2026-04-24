@@ -8,7 +8,7 @@
  */
 
 const SUPABASE_URL = 'https://wgtqmpbigyscnfihnabm.supabase.co';
-/** @public Supabase anon key — safe client-side only with RLS enforced on all tables */
+/** @public Supabase anon key - safe client-side only with RLS enforced on all tables */
 const SUPABASE_KEY = 'sb_publishable_MRS6VObelNdJgqGoh6g-0g_zxcjQMXR';
 
 console.log('Aktivacity: db.js loading...');
@@ -33,7 +33,7 @@ window.isValidEmail = function(email) {
 };
 
 // Initialize the client
-let supabase = null;
+let _supabase = null;
 window.supabaseClient = null;
 
 /**
@@ -43,11 +43,11 @@ window.supabaseClient = null;
 function initSupabase() {
   console.log('Aktivacity: initSupabase called');
   try {
-    const lib = window.supabase || (typeof supabase !== 'undefined' ? supabase : null);
+    const lib = window.supabase;
     if (lib && typeof lib.createClient === 'function') {
       console.log('Aktivacity: Supabase library found, creating client...');
       window.supabaseClient = lib.createClient(SUPABASE_URL, SUPABASE_KEY);
-      supabase = window.supabaseClient;
+      _supabase = window.supabaseClient;
       
       console.log('Aktivacity: Supabase client initialized:', !!window.supabaseClient);
       return true;
@@ -75,8 +75,8 @@ if (!initSupabase()) {
  * Fetches tasks from the 'tasks' table.
  */
 window.fetchTasks = async function() {
-  if (!supabase) return window.TASKS;
-  const { data, error } = await supabase.from('tasks').select('*').order('due_date', { ascending: true });
+  if (!_supabase) return window.TASKS;
+  const { data, error } = await _supabase.from('tasks').select('*').order('due_date', { ascending: true });
   return error ? window.TASKS : data;
 };
 
@@ -84,9 +84,9 @@ window.fetchTasks = async function() {
  * Fetches profiles from the 'profiles' table.
  */
 window.fetchProfiles = async function() {
-  if (!supabase) return window.OWNERS;
+  if (!_supabase) return window.OWNERS;
   
-  const { data, error } = await supabase
+  const { data, error } = await _supabase
     .from('profiles')
     .select('*')
     .order('name', { ascending: true });
@@ -102,12 +102,12 @@ window.fetchProfiles = async function() {
  * Invites/Adds a new user to the studio.
  */
 window.inviteUser = async function(userData) {
-  if (!supabase) {
+  if (!_supabase) {
     alert('Database not connected. Adding to local session only.');
     return { ...userData, id: 'NEW' };
   }
   
-  const { data, error } = await supabase
+  const { data, error } = await _supabase
     .from('profiles')
     .insert([userData])
     .select();
@@ -120,8 +120,8 @@ window.inviteUser = async function(userData) {
  * Deletes a user profile.
  */
 window.removeUser = async function(userId) {
-  if (!supabase) return true;
-  const { error } = await supabase.from('profiles').delete().eq('id', userId);
+  if (!_supabase) return true;
+  const { error } = await _supabase.from('profiles').delete().eq('id', userId);
   if (error) throw error;
   return true;
 };
@@ -131,12 +131,12 @@ window.removeUser = async function(userId) {
  * Falls back to updating the local TASKS array if Supabase is unavailable.
  */
 window.createTask = async function(taskData) {
-  if (!supabase) {
+  if (!_supabase) {
     const newTask = { ...taskData, id: Date.now() };
     window.TASKS = [...(window.TASKS || []), newTask];
     return newTask;
   }
-  const { data, error } = await supabase.from('tasks').insert([taskData]).select();
+  const { data, error } = await _supabase.from('tasks').insert([taskData]).select();
   if (error) throw error;
   if (data?.[0]) window.TASKS = [...(window.TASKS || []), data[0]];
   return data[0];
@@ -149,33 +149,33 @@ window.createTask = async function(taskData) {
 window.updateTask = async function(id, updates) {
   const idx = (window.TASKS || []).findIndex(t => String(t.id) === String(id));
   if (idx > -1) window.TASKS[idx] = { ...window.TASKS[idx], ...updates };
-  if (!supabase) return (window.TASKS || [])[idx];
-  const { data, error } = await supabase.from('tasks').update(updates).eq('id', id).select();
+  if (!_supabase) return (window.TASKS || [])[idx];
+  const { data, error } = await _supabase.from('tasks').update(updates).eq('id', id).select();
   if (error) throw error;
   return data?.[0];
 };
 
 window.updateProfile = async function(id, updates) {
-  if (!supabase) return null;
-  const { data, error } = await supabase
+  if (!_supabase) return null;
+  const { data, error } = await _supabase
     .from('profiles').update(updates).eq('id', id).select();
   if (error) throw error;
   return data?.[0] || null;
 };
 
 window.sendMagicLink = async function(email) {
-  if (!supabase) return { error: new Error('Supabase not available') };
+  if (!_supabase) return { error: new Error('Supabase not available') };
   // Use the same base URL the app is served from; cleanUrls means /Login works everywhere
   const redirectBase = window.location.origin + '/Login';
-  return await supabase.auth.signInWithOtp({
+  return await _supabase.auth.signInWithOtp({
     email,
     options: { emailRedirectTo: redirectBase }
   });
 };
 
 window.fetchComments = async function(taskId) {
-  if (!supabase) return [];
-  const { data, error } = await supabase
+  if (!_supabase) return [];
+  const { data, error } = await _supabase
     .from('comments')
     .select('*, profiles(id, name)')
     .eq('task_id', taskId)
@@ -184,8 +184,8 @@ window.fetchComments = async function(taskId) {
 };
 
 window.createComment = async function(taskId, content) {
-  if (!supabase || !window.CURRENT_USER) return null;
-  const { data, error } = await supabase
+  if (!_supabase || !window.CURRENT_USER) return null;
+  const { data, error } = await _supabase
     .from('comments')
     .insert([{ task_id: taskId, user_id: window.CURRENT_USER.id, content }])
     .select('*, profiles(id, name)');
@@ -212,8 +212,8 @@ window.createComment = async function(taskId, content) {
 };
 
 window.createNotification = async function(userId, taskId, type, message) {
-  if (!supabase || !userId) return;
-  const { error } = await supabase
+  if (!_supabase || !userId) return;
+  const { error } = await _supabase
     .from('notifications')
     .insert([{ user_id: userId, task_id: taskId, type, message }]);
   if (error) console.warn('createNotification failed:', error);
@@ -229,8 +229,8 @@ window.notifyManagers = async function(taskId, type, message) {
 };
 
 window.fetchNotifications = async function() {
-  if (!supabase || !window.CURRENT_USER) return [];
-  const { data, error } = await supabase
+  if (!_supabase || !window.CURRENT_USER) return [];
+  const { data, error } = await _supabase
     .from('notifications')
     .select('*, tasks(title)')
     .eq('user_id', window.CURRENT_USER.id)
@@ -239,13 +239,13 @@ window.fetchNotifications = async function() {
 };
 
 window.markNotificationRead = async function(id) {
-  if (!supabase) return;
-  await supabase.from('notifications').update({ read: true }).eq('id', id);
+  if (!_supabase) return;
+  await _supabase.from('notifications').update({ read: true }).eq('id', id);
 };
 
 window.markAllNotificationsRead = async function() {
-  if (!supabase || !window.CURRENT_USER) return;
-  await supabase
+  if (!_supabase || !window.CURRENT_USER) return;
+  await _supabase
     .from('notifications')
     .update({ read: true })
     .eq('user_id', window.CURRENT_USER.id)

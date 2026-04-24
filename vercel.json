@@ -1,7 +1,7 @@
 {
-  "cleanUrls": true,
+  "cleanUrls": false,
   "redirects": [
-    { "source": "/", "destination": "/Login", "permanent": false }
+    { "source": "/", "destination": "/Login.html", "permanent": false }
   ],
   "headers": [
     {
