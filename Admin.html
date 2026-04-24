@@ -7,8 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="shared.css">
-<style>
+<link rel="stylesheet" href="shared.css"><style>
   .admin-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -18,63 +17,108 @@
   .stat-card {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 16px;
+    border-radius: 20px;
     padding: 24px;
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-md);
   }
-  .stat-card .lbl { font-size: 13px; color: var(--muted); font-weight: 500; margin-bottom: 8px; }
-  .stat-card .val { font-family: 'Space Grotesk', sans-serif; font-size: 32px; font-weight: 700; letter-spacing: -0.02em; }
-  .stat-card .trend { font-size: 12px; margin-top: 8px; display: flex; align-items: center; gap: 4px; }
-  .stat-card .trend.up { color: var(--success); }
-  .stat-card .trend.down { color: var(--danger); }
-
-  .chart-row {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 20px;
-    margin-bottom: 24px;
-  }
-  .chart-box {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 24px;
-    min-height: 300px;
-  }
-  .chart-box h3 { font-family: 'Space Grotesk', sans-serif; font-size: 16px; margin: 0 0 20px; }
-
+  .stat-card .lbl { font-size: 13px; color: var(--muted); font-weight: 600; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .stat-card .val { font-family: 'Space Grotesk', sans-serif; font-size: 36px; font-weight: 700; letter-spacing: -0.02em; color: var(--text); }
+  
   .audit-log {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 16px;
+    border-radius: 20px;
     overflow: hidden;
+    box-shadow: var(--shadow-md);
   }
   .audit-header {
-    padding: 16px 24px;
+    padding: 20px 24px;
     border-bottom: 1px solid var(--border);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #F8FAFC;
+    background: rgba(255, 255, 255, 0.02);
   }
   .audit-item {
     display: flex;
     gap: 16px;
-    padding: 14px 24px;
+    padding: 16px 24px;
     border-bottom: 1px solid var(--border);
-    font-size: 13.5px;
+    font-size: 14px;
+    transition: background 0.1s;
   }
+  .audit-item:hover { background: rgba(255, 255, 255, 0.01); }
   .audit-item:last-child { border-bottom: 0; }
-  .audit-item .time { color: var(--muted-2); font-size: 12px; width: 60px; flex-shrink: 0; }
-  .audit-item .action b { color: var(--text); font-weight: 600; }
   
-  .badge-prio { padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
-  .badge-prio.high { background: var(--danger-50); color: var(--danger); }
-  .badge-prio.low { background: #F1F5F9; color: var(--muted); }
+  select {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s;
+  }
+  select:focus { border-color: var(--primary); background: rgba(255, 255, 255, 0.08); }
+
+  .stat-val-success { color: var(--success); }
+  .stat-val-warning { color: var(--warning); }
+  .table-container { margin-bottom: 24px; }
+  .table-title { font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700; color: var(--text); }
+  .user-item { align-items: center; }
+  .user-avatar { width: 36px; height: 36px; font-size: 12px; font-weight: 700; }
+  .user-info { flex: 1; min-width: 0; padding: 0 16px; }
+  .user-name { font-weight: 600; color: var(--text); font-size: 14px; }
+  .user-email { font-size: 12px; color: var(--muted-2); margin-top: 2px; }
+  .user-dept { width: 120px; flex-shrink: 0; color: var(--muted); font-size: 13px; font-weight: 500; }
+  .user-role-cell { width: 160px; flex-shrink: 0; }
+  .user-status-cell { width: 100px; flex-shrink: 0; }
+  .user-action-cell { width: 80px; flex-shrink: 0; text-align: right; }
+  .role-badge { background: var(--primary-50); color: var(--primary); text-transform: none; letter-spacing: 0; }
+  .status-indicator { font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+  .status-indicator.pending { color: var(--warning); }
+  .status-indicator.active { color: var(--success); }
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .status-dot.pending { background: var(--warning); box-shadow: 0 0 8px var(--warning); }
+  .status-dot.active { background: var(--success); box-shadow: 0 0 8px var(--success); }
+  .remove-btn { color: var(--danger); border-color: var(--danger-50); }
+
+  /* Modal */
+  #invite-modal {
+    display:none; position:fixed; inset:0; 
+    background:rgba(11, 15, 25, 0.85);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    align-items:center; justify-content:center; z-index:1000;
+  }
+  .modal-content {
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 24px;
+    padding: 32px;
+    width: 440px;
+    max-width: 90vw;
+    box-shadow: var(--shadow-lg);
+  }
+  .modal-content h3 { font-family: 'Space Grotesk', sans-serif; font-size: 20px; margin: 0 0 24px; color: var(--text); }
+  .form-group { margin-bottom: 16px; }
+  .form-group label {
+    display: block; font-size: 11px; font-weight: 700; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 6px; letter-spacing: 0.05em;
+  }
+  .form-group input, .form-group select {
+    width: 100%; padding: 12px; background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border); border-radius: 10px;
+    font-size: 14px; color: var(--text); font-family: inherit;
+    outline: none; transition: border-color 0.15s;
+  }
+  .form-group input:focus, .form-group select:focus { border-color: var(--primary); }
 
   @media (max-width: 1000px) {
     .admin-grid { grid-template-columns: 1fr; }
-    .chart-row { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -95,22 +139,20 @@
         </div>
         <div class="stat-card">
           <div class="lbl">Active</div>
-          <div class="val" id="stat-active" style="color:var(--success)">—</div>
+          <div class="val stat-val-success" id="stat-active">—</div>
         </div>
         <div class="stat-card">
           <div class="lbl">Pending Invite</div>
-          <div class="val" id="stat-pending" style="color:#B45309">—</div>
+          <div class="val stat-val-warning" id="stat-pending">—</div>
         </div>
       </div>
 
       <!-- User table -->
-      <div class="audit-log" style="margin-bottom:24px">
+      <div class="audit-log table-container">
         <div class="audit-header">
-          <span style="font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700">Team Members</span>
-          <button class="btn btn-primary btn-sm" onclick="openInviteModal()"
-            style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:var(--primary);
-            color:#fff;border:0;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">
-            + Invite User
+          <span class="table-title">Team Members</span>
+          <button class="btn btn-primary btn-sm" onclick="openInviteModal()">
+            <svg class="icon"><use href="#i-plus"/></svg> Invite User
           </button>
         </div>
         <div id="user-table-body"></div>
@@ -121,52 +163,32 @@
 </div>
 
 <!-- Invite Modal -->
-<div id="invite-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);
-  align-items:center;justify-content:center;z-index:1000">
-  <div style="background:#fff;border-radius:16px;padding:28px 32px;width:420px;max-width:90vw;
-    box-shadow:0 20px 60px rgba(0,0,0,.25)">
-    <h3 style="font-family:'Space Grotesk',sans-serif;font-size:18px;margin:0 0 20px">Invite Team Member</h3>
-    <div style="display:flex;flex-direction:column;gap:14px">
-      <div>
-        <label style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);
-          display:block;margin-bottom:4px">Full Name</label>
-        <input id="inv-name" type="text" placeholder="e.g. Zara Ali"
-          style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;
-          font-size:14px;font-family:inherit;box-sizing:border-box"/>
-      </div>
-      <div>
-        <label style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);
-          display:block;margin-bottom:4px">Email</label>
-        <input id="inv-email" type="email" placeholder="e.g. zara@studio.com"
-          style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;
-          font-size:14px;font-family:inherit;box-sizing:border-box"/>
-      </div>
-      <div>
-        <label style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);
-          display:block;margin-bottom:4px">Department</label>
-        <input id="inv-dept" type="text" placeholder="e.g. Design"
-          style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;
-          font-size:14px;font-family:inherit;box-sizing:border-box"/>
-      </div>
-      <div>
-        <label style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);
-          display:block;margin-bottom:4px">Role</label>
-        <select id="inv-role"
-          style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;
-          font-size:14px;font-family:inherit;box-sizing:border-box">
-          <option value="member">Team Member</option>
-          <option value="pm">Project Manager</option>
-          <option value="admin">Admin</option>
-        </select>
-      </div>
+<div id="invite-modal">
+  <div class="modal-content">
+    <h3>Invite Team Member</h3>
+    <div class="form-group">
+      <label>Full Name</label>
+      <input id="inv-name" type="text" placeholder="e.g. Zara Ali"/>
     </div>
-    <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:22px">
-      <button onclick="closeInviteModal()"
-        style="padding:9px 16px;background:#F1F5F9;border:1px solid var(--border);
-        border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">Cancel</button>
-      <button id="inv-submit" onclick="submitInvite()"
-        style="padding:9px 16px;background:var(--primary);color:#fff;border:0;
-        border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">Send Invite</button>
+    <div class="form-group">
+      <label>Email</label>
+      <input id="inv-email" type="email" placeholder="e.g. zara@studio.com"/>
+    </div>
+    <div class="form-group">
+      <label>Department</label>
+      <input id="inv-dept" type="text" placeholder="e.g. Design"/>
+    </div>
+    <div class="form-group">
+      <label>Role</label>
+      <select id="inv-role">
+        <option value="member">Team Member</option>
+        <option value="pm">Project Manager</option>
+        <option value="admin">Admin</option>
+      </select>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:12px;margin-top:24px">
+      <button onclick="closeInviteModal()" class="btn btn-ghost">Cancel</button>
+      <button id="inv-submit" onclick="submitInvite()" class="btn btn-primary">Send Invite</button>
     </div>
   </div>
 </div>
@@ -193,16 +215,9 @@ function esc(s) {
   return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-function avatarGrad(oi) {
-  const G = {
-    SH:'linear-gradient(135deg,#F472B6,#DB2777)',
-    SB:'linear-gradient(135deg,#FBBF24,#D97706)',
-    TM:'linear-gradient(135deg,#34D399,#059669)',
-    IN:'linear-gradient(135deg,#60A5FA,#2563EB)',
-    ZA:'linear-gradient(135deg,#A78BFA,#6D28D9)',
-    MK:'linear-gradient(135deg,#F87171,#B91C1C)',
-  };
-  return G[oi] || 'linear-gradient(135deg,#6B7FD7,#4B5EAA)';
+function avatarClass(oi) {
+  const classes = { SH:'sh', SB:'sb', TM:'tm', IN:'in', ZA:'za', MK:'mk' };
+  return classes[oi] ? `avatar-${classes[oi]}` : '';
 }
 
 async function renderUserTable() {
@@ -223,40 +238,34 @@ async function renderUserTable() {
     const uRole    = p.user_role || 'member';
 
     return `
-      <div class="audit-item" style="align-items:center">
-        <div style="width:36px;height:36px;border-radius:10px;background:${avatarGrad(oi)};
-          display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;
-          font-size:12px;flex-shrink:0">${esc(oi)}</div>
-        <div style="flex:1;min-width:0;padding:0 12px">
-          <div style="font-weight:600;color:var(--text)">${esc(p.name || p.email)}</div>
-          <div style="font-size:11px;color:var(--muted-2)">${esc(p.email || '')}</div>
+      <div class="audit-item user-item">
+        <div class="avatar user-avatar ${avatarClass(oi)}">${esc(oi)}</div>
+        <div class="user-info">
+          <div class="user-name">${esc(p.name || p.email)}</div>
+          <div class="user-email">${esc(p.email || '')}</div>
         </div>
-        <div style="width:110px;flex-shrink:0;color:var(--muted);font-size:13px">
+        <div class="user-dept">
           ${esc(p.department || '—')}
         </div>
-        <div style="width:160px;flex-shrink:0">
+        <div class="user-role-cell">
           ${isSelf
-            ? `<span style="font-size:12px;font-weight:700;background:#ede9fe;color:#4c1d95;
-                padding:3px 10px;border-radius:999px">${esc(rlLabel(uRole))}</span>`
-            : `<select data-action="change-role" data-id="${esc(p.id)}"
-                style="font-size:12px;font-weight:600;border:1px solid var(--border);
-                border-radius:6px;padding:4px 8px;background:#f8fafc;color:var(--text);cursor:pointer">
+            ? `<span class="badge role-badge">${esc(rlLabel(uRole))}</span>`
+            : `<select data-action="change-role" data-id="${esc(p.id)}" title="Change role for ${esc(p.name || p.email)}">
                 <option value="admin"  ${uRole==='admin' ?'selected':''}>Admin</option>
                 <option value="pm"     ${uRole==='pm'    ?'selected':''}>Project Manager</option>
                 <option value="member" ${uRole==='member'?'selected':''}>Member</option>
               </select>`
           }
         </div>
-        <div style="width:80px;flex-shrink:0">
+        <div class="user-status-cell">
           ${isPend
-            ? `<span style="color:#B45309;font-size:12px;font-weight:600">● Pending</span>`
-            : `<span style="color:var(--success);font-size:12px;font-weight:600">● Active</span>`
+            ? `<span class="status-indicator pending"><span class="status-dot pending"></span> Pending</span>`
+            : `<span class="status-indicator active"><span class="status-dot active"></span> Active</span>`
           }
         </div>
-        <div style="width:70px;flex-shrink:0;text-align:right">
+        <div class="user-action-cell">
           ${isSelf ? '' : `
-            <button data-action="remove-user" data-id="${esc(p.id)}"
-              style="font-size:12px;color:var(--danger);background:none;border:0;cursor:pointer;font-weight:500">
+            <button data-action="remove-user" data-id="${esc(p.id)}" class="btn btn-ghost btn-xs remove-btn" title="${isPend ? 'Revoke invite' : 'Remove user'}">
               ${isPend ? 'Revoke' : 'Remove'}
             </button>`
           }

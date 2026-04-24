@@ -11,25 +11,25 @@
 <style>
   .settings-layout {
     display: grid;
-    grid-template-columns: 240px 1fr;
-    gap: 32px;
+    grid-template-columns: 260px 1fr;
+    gap: 40px;
   }
   .settings-nav {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
   }
   .settings-nav-item {
-    padding: 10px 14px;
-    border-radius: 8px;
+    padding: 12px 16px;
+    border-radius: 12px;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     color: var(--muted);
     cursor: pointer;
-    transition: background 0.2s, color 0.2s;
+    transition: all 0.2s;
   }
   .settings-nav-item:hover {
-    background: #F1F5F9;
+    background: rgba(255, 255, 255, 0.05);
     color: var(--text);
   }
   .settings-nav-item.active {
@@ -39,94 +39,111 @@
   .settings-card {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 16px;
-    box-shadow: var(--shadow-sm);
-    padding: 32px;
+    border-radius: 24px;
+    box-shadow: var(--shadow-lg);
+    padding: 40px;
   }
   .settings-section {
-    margin-bottom: 40px;
+    margin-bottom: 48px;
   }
   .settings-section:last-child {
     margin-bottom: 0;
   }
   .settings-section h3 {
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 700;
-    margin: 0 0 8px;
+    margin: 0 0 10px;
+    color: var(--text);
   }
   .settings-section p {
     color: var(--muted);
-    font-size: 13px;
-    margin: 0 0 20px;
+    font-size: 14px;
+    margin: 0 0 24px;
+    line-height: 1.5;
   }
   .profile-edit {
     display: flex;
     align-items: center;
-    gap: 24px;
-    margin-bottom: 24px;
+    gap: 28px;
+    margin-bottom: 32px;
   }
   .profile-edit .avatar {
-    width: 80px;
-    height: 80px;
-    font-size: 24px;
+    width: 88px;
+    height: 88px;
+    font-size: 28px;
+    border: 2px solid var(--border);
   }
   .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    gap: 24px;
   }
   .form-group {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
   }
   .form-group.full { grid-column: span 2; }
   .form-group label {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
     color: var(--muted);
+    letter-spacing: 0.05em;
   }
   .form-group input, .form-group select {
-    padding: 10px 12px;
+    padding: 12px 14px;
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 14px;
-    background: #FBFCFD;
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text);
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.15s;
   }
+  .form-group input:focus, .form-group select:focus {
+    border-color: var(--primary);
+  }
+  .form-group input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
   .toggle-group {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 14px 0;
+    padding: 16px 0;
     border-bottom: 1px solid var(--border);
   }
   .toggle-group:last-child { border-bottom: 0; }
-  .toggle-info h4 { font-size: 14px; margin: 0; }
-  .toggle-info p { font-size: 12px; color: var(--muted); margin: 2px 0 0; }
+  .toggle-info h4 { font-size: 15px; margin: 0; color: var(--text); }
+  .toggle-info p { font-size: 13px; color: var(--muted); margin: 4px 0 0; }
   
   .switch {
     position: relative;
     display: inline-block;
-    width: 40px;
-    height: 22px;
+    width: 44px;
+    height: 24px;
   }
   .switch input { opacity: 0; width: 0; height: 0; }
   .slider {
     position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-    background-color: #E2E8F0; transition: .4s; border-radius: 34px;
+    background-color: rgba(255, 255, 255, 0.1); transition: .3s; border-radius: 34px;
   }
   .slider:before {
-    position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px;
-    background-color: white; transition: .4s; border-radius: 50%;
+    position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+    background-color: #fff; transition: .3s; border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
   }
   input:checked + .slider { background-color: var(--primary); }
-  input:checked + .slider:before { transform: translateX(18px); }
+  input:checked + .slider:before { transform: translateX(20px); }
 
   @media (max-width: 900px) {
     .settings-layout { grid-template-columns: 1fr; }
-    .settings-nav { flex-direction: row; overflow-x: auto; padding-bottom: 8px; }
+    .settings-nav { flex-direction: row; overflow-x: auto; padding-bottom: 12px; gap: 12px; }
     .settings-nav-item { white-space: nowrap; }
   }
 </style>
@@ -270,12 +287,11 @@
   </main>
 </div>
 
-<!-- Add User Modal Layer -->
-<div id="add-user-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(4px)">
-  <div style="background:#fff; padding:32px; border-radius:20px; width:100%; max-width:400px; box-shadow:0 20px 25px -5px rgba(0,0,0,0.1)">
-    <h3 style="margin:0 0 8px; font-family:'Space Grotesk',sans-serif">Invite Member</h3>
-    <p style="font-size:14px; color:var(--muted); margin-bottom:24px">Send a workspace invite to a new designer.</p>
-    <div style="display:flex; flex-direction:column; gap:16px">
+<div id="add-user-modal">
+  <div class="modal-content">
+    <h3>Invite Member</h3>
+    <p>Send a workspace invite to a new designer.</p>
+    <div style="display:flex; flex-direction:column; gap:20px">
       <div class="form-group">
         <label>Full Name</label>
         <input type="text" id="new-user-name" placeholder="e.g. John Doe">
@@ -285,8 +301,8 @@
         <input type="email" id="new-user-email" placeholder="john@aktivacity.studio">
       </div>
       <div class="form-group">
-        <label>Role</label>
-        <select id="new-user-role">
+        <label for="new-user-role">Role</label>
+        <select id="new-user-role" title="Select role for new member">
           <option value="lead">Lead Designer</option>
           <option value="junior">Junior Designer</option>
           <option value="pm">Project Manager</option>
@@ -383,25 +399,31 @@
       const oi = esc(o.oi || (o.name || '?').split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,2));
       const roleLabel = o.user_role === 'admin' ? 'Admin' : o.user_role === 'pm' ? 'Project Manager' : 'Member';
       const isSelf = o.email === (window.CURRENT_USER || {}).email;
+      const avatarClass = { SH:'sh', SB:'sb', TM:'tm', IN:'in', ZA:'za', MK:'mk' }[oi] || '';
       return `
       <tr style="border-top:1px solid var(--border)">
-        <td style="padding:12px 16px">
-          <div style="display:flex; align-items:center; gap:10px">
-            <div style="width:32px; height:32px; font-size:12px; flex-basis:32px; border-radius:50%; display:grid; place-items:center; color:#fff; background:${(window.OWNER_COLORS||{})[o.oi]||'linear-gradient(135deg,#6B7FD7,#4B5EAA)'}">${oi}</div>
+        <td style="padding:16px 20px">
+          <div style="display:flex; align-items:center; gap:12px">
+            <div class="avatar ${avatarClass ? 'avatar-'+avatarClass : ''}" style="width:32px; height:32px; font-size:11px; font-weight:700">${oi}</div>
             <div style="min-width:0">
-              <div style="font-weight:600; color:var(--text)">${esc(o.name)}</div>
-              <div style="font-size:11px; color:var(--muted)">${esc(o.email)}</div>
+              <div style="font-weight:600; color:var(--text); font-size:14px">${esc(o.name)}</div>
+              <div style="font-size:12px; color:var(--muted)">${esc(o.email)}</div>
             </div>
           </div>
         </td>
-        <td style="padding:12px 16px; color:var(--muted)">${esc(roleLabel)}</td>
-        <td style="padding:12px 16px"><span class="pc-status green"><span class="sw"></span> Active</span></td>
-        <td style="padding:12px 16px; text-align:right">
-          ${isSelf ? '<span style="font-size:11px;color:var(--muted)">You</span>' : `
-          <button class="icon-btn-sm" title="Remove User"
-            style="display:inline-flex; border:0; background:none; cursor:pointer; color:var(--danger)"
+        <td style="padding:16px 20px; color:var(--muted); font-weight:500">${esc(roleLabel)}</td>
+        <td style="padding:16px 20px">
+          <span style="color:var(--success); font-size:12px; font-weight:700; display:flex; align-items:center; gap:6px">
+            <span style="width:6px; height:6px; border-radius:50%; background:var(--success); box-shadow:0 0 8px var(--success)"></span>
+            Active
+          </span>
+        </td>
+        <td style="padding:16px 20px; text-align:right">
+          ${isSelf ? '<span class="badge" style="background:var(--primary-50); color:var(--primary); text-transform:none; letter-spacing:0">You</span>' : `
+          <button class="btn btn-ghost btn-xs" title="Remove User"
+            style="color:var(--danger); border-color:var(--danger-50)"
             data-action="remove-settings-user" data-id="${esc(o.id)}" data-name="${esc(o.name)}">
-            <svg width="14" height="14"><use href="#i-archive"/></svg>
+            <svg class="icon"><use href="#i-archive"/></svg>
           </button>`}
         </td>
       </tr>

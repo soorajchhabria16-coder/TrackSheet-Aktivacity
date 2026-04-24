@@ -10,205 +10,214 @@
 <link rel="stylesheet" href="shared.css">
 <style>
   body {
-    background: #0F172A; /* Darker navy for login */
+    background: var(--bg);
     display: flex;
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    padding: 20px;
-    color: #fff;
+    padding: 24px;
+    color: var(--text);
+  }
+  .bg-pattern {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    opacity: 0.6;
+    background: 
+      radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+      radial-gradient(circle at 90% 80%, rgba(245, 158, 11, 0.1) 0%, transparent 40%);
   }
   .login-wrap {
     width: 100%;
-    max-width: 440px;
-    background: #FFFFFF;
-    color: var(--text);
-    border-radius: 20px;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    max-width: 460px;
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 28px;
+    box-shadow: var(--shadow-lg);
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    animation: login-in .6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes login-in {
+    from { opacity: 0; transform: translateY(20px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
   }
   .login-hero {
     background: radial-gradient(120% 120% at 0% 0%, #6366F1 0%, #4F46E5 55%, #312E81 100%);
-    padding: 40px 40px 30px;
+    padding: 48px 40px 40px;
     text-align: center;
     color: #fff;
     position: relative;
   }
-  .login-hero::after {
-    content: "";
-    position: absolute;
-    bottom: -20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 40px;
-    height: 40px;
-    background: #fff;
-    border-radius: 50%;
-  }
   .brand-lg {
     display: inline-flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 20px;
+    gap: 14px;
+    margin-bottom: 24px;
   }
   .brand-lg .brand-mark {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
     background: rgba(255,255,255,0.15);
-    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
     display: grid;
     place-items:center;
     border: 1px solid rgba(255,255,255,0.3);
   }
   .brand-lg .brand-name {
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 24px;
+    font-size: 28px;
     font-weight: 700;
     letter-spacing: -0.02em;
   }
   .login-hero h1 {
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 20px;
-    font-weight: 700;
+    font-size: 18px;
+    font-weight: 600;
     margin: 0;
-    opacity: 0.9;
+    opacity: 0.8;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
   }
   .login-body {
-    padding: 50px 40px 40px;
+    padding: 40px;
   }
   .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
   }
   .form-group label {
     display: block;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
     color: var(--muted);
-    margin-bottom: 8px;
+    margin-bottom: 10px;
   }
   .form-group input {
     width: 100%;
-    padding: 12px 14px;
+    padding: 14px 16px;
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: 12px;
     font-family: inherit;
     font-size: 15px;
-    background: #F8FAFC;
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text);
     transition: all 0.2s;
+    outline: none;
   }
   .form-group input:focus {
-    outline: none;
     border-color: var(--primary);
-    background: #fff;
-    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
   }
   .forgot {
     display: flex;
     justify-content: flex-end;
-    margin-top: -12px;
-    margin-bottom: 24px;
+    margin-top: -16px;
+    margin-bottom: 32px;
   }
   .forgot a {
     font-size: 13px;
     color: var(--primary);
     font-weight: 600;
+    text-decoration: none;
   }
+  .forgot a:hover { text-decoration: underline; }
+  
   .btn-login {
     width: 100%;
-    padding: 14px;
+    padding: 16px;
     background: var(--primary);
     color: #fff;
     border: 0;
-    border-radius: 12px;
+    border-radius: 14px;
     font-weight: 700;
     font-size: 16px;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+    box-shadow: 0 8px 24px rgba(79, 70, 229, 0.2);
     transition: all 0.2s;
   }
   .btn-login:hover {
-    background: var(--primary-600);
-    transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(79, 70, 229, 0.3);
+    background: #5A52E5;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(79, 70, 229, 0.3);
   }
-  .btn-login:active {
-    transform: translateY(1px);
-  }
+  .btn-login:active { transform: translateY(0); }
+  .btn-login:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
   .login-foot {
     text-align: center;
     font-size: 14px;
     color: var(--muted);
-    margin-top: 24px;
+    margin-top: 32px;
   }
   .login-foot a {
     color: var(--text);
     font-weight: 700;
+    text-decoration: none;
   }
+  .login-foot a:hover { color: var(--primary); }
+
   .msg {
-    border-radius: 10px;
-    padding: 12px 14px;
-    font-size: 13.5px;
-    margin-bottom: 18px;
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 14px;
+    margin-bottom: 24px;
     display: none;
+    font-weight: 500;
   }
-  .msg.error   { background: #FEF2F2; color: #B91C1C; border: 1px solid #FECACA; }
-  .msg.success { background: #F0FDF4; color: #166534; border: 1px solid #BBF7D0; }
+  .msg.error   { background: var(--danger-50); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); }
+  .msg.success { background: var(--success-50); color: var(--success); border: 1px solid rgba(34, 197, 94, 0.2); }
+  
   .panel {
     display: none;
     flex-direction: column;
-    gap: 14px;
-    padding: 20px;
-    background: #F8FAFC;
+    gap: 16px;
+    padding: 24px;
+    background: rgba(255, 255, 255, 0.02);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    margin-bottom: 20px;
+    border-radius: 16px;
+    margin-bottom: 24px;
   }
   .panel.open { display: flex; }
-  .panel p { margin: 0; font-size: 13.5px; color: var(--muted); line-height: 1.5; }
-  .panel .panel-title { font-size: 14px; font-weight: 700; color: var(--text); margin: 0; }
+  .panel p { margin: 0; font-size: 14px; color: var(--muted); line-height: 1.5; }
+  .panel .panel-title { font-size: 16px; font-weight: 700; color: var(--text); margin: 0; font-family: 'Space Grotesk', sans-serif; }
+
   /* Overlay modal */
   .overlay {
     display: none;
     position: fixed; inset: 0;
-    background: rgba(0,0,0,.5);
+    background: rgba(11, 15, 25, 0.85);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
     align-items: center; justify-content: center;
-    z-index: 100;
+    z-index: 1000;
   }
   .overlay.open { display: flex; }
   .modal-box {
-    background: #fff;
-    border-radius: 16px;
-    padding: 32px;
-    max-width: 380px;
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 24px;
+    padding: 40px;
+    max-width: 420px;
     width: 90%;
     text-align: center;
-    box-shadow: 0 25px 50px rgba(0,0,0,.25);
+    box-shadow: var(--shadow-lg);
   }
   .modal-box .ico {
-    width: 52px; height: 52px;
+    width: 60px; height: 60px;
     background: var(--primary-50);
-    border-radius: 14px;
+    border-radius: 16px;
     display: grid; place-items: center;
-    margin: 0 auto 16px;
+    margin: 0 auto 24px;
     color: var(--primary);
   }
-  .modal-box h3 { font-family: 'Space Grotesk',sans-serif; font-size: 18px; font-weight: 700; margin: 0 0 8px; }
-  .modal-box p  { font-size: 14px; color: var(--muted); margin: 0 0 20px; line-height: 1.55; }
-  /* Decorative background */
-  .bg-pattern {
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    opacity: 0.4;
-    background: 
-      radial-gradient(circle at 10% 20%, rgba(79, 70, 229, 0.15) 0%, transparent 40%),
-      radial-gradient(circle at 90% 80%, rgba(245, 158, 11, 0.1) 0%, transparent 40%);
-  }
+  .modal-box h3 { font-family: 'Space Grotesk',sans-serif; font-size: 20px; font-weight: 700; margin: 0 0 12px; color: var(--text); }
+  .modal-box p  { font-size: 15px; color: var(--muted); margin: 0 0 28px; line-height: 1.6; }
 </style>
 </head>
 <body>
