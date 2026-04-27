@@ -4,55 +4,50 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Aktivacity TrackSheet** is a static HTML5 + vanilla JavaScript studio task dashboard backed by Supabase (PostgreSQL + Auth). There is no build step, no framework, and no package.json.
+**Aktivacity TrackSheet** is a production-ready Next.js 14+ application for studio task management, backed by Supabase (PostgreSQL + Auth). It has been migrated from a vanilla HTML/JS prototype to a modern framework architecture.
 
 ## Running Locally
 
 ```bash
-python3 -m http.server 3000
-# or
-npx serve .
+npm install
+npm run dev
 ```
 
-Open `http://localhost:3000` — Vercel config redirects `/` to `Login.html`.
+Open `http://localhost:3000`.
 
 ## Architecture
 
 ### Stack
-- **Frontend**: Pure HTML5, CSS3, ES6+ JavaScript (no framework)
-- **Backend**: Supabase (PostgreSQL + Auth), loaded via CDN
-- **Deployment**: Vercel with clean URLs (`vercel.json`)
+- **Framework**: Next.js 14+ (App Router)
+- **Language**: TypeScript
+- **Styling**: Vanilla CSS Modules (maintaining the original Dark Premium aesthetic)
+- **Backend**: Supabase (PostgreSQL + Auth)
+- **Deployment**: Vercel
 
-### Page Routing
-Static HTML files. Navigation is handled by direct `window.location.href` links. Pages: `Login.html`, `Dashboard.html`, `Production Tasks.html`, `Team.html`, `Task Detail.html`, `Admin.html`, `Settings.html`, `Notifications.html`, `New Task.html`.
+### Core Structure
+- `src/app`: App Router pages and layouts.
+- `src/components`: Reusable UI components (Sidebar, Topbar, Icons).
+- `src/lib`: Shared utilities (Supabase clients, contexts).
+- `_legacy_html`: Archive of the original vanilla HTML/JS prototype.
 
-### Shared Modules (loaded on every page)
-- **`db.js`** — Initializes Supabase client; exposes `window.fetchTasks()`, `window.fetchProfiles()`, `window.inviteUser()`, `window.removeUser()`
-- **`sidebar.js`** — Renders sidebar (`window.renderSidebar(activePage)`) and topbar (`window.renderTopbar(title, subtitle)`); runs `checkAuth()` (redirects to Login if no session) and `initializeDashboardData()` (populates `window.TASKS` and `window.OWNERS`)
-- **`logic.js`** — Client-side filter engine: `window.getFilteredTasks()`, `window.setFilter(key, value, cb)`, `window.debounce()`
-- **`shared.css`** — Design tokens (CSS variables: `--primary`, `--border`, `--success`, etc.)
-- **`icons.html`** — Inline SVG sprite; each page includes `<div id="icons"></div>` which sidebar.js populates
-
-### Global State
-All shared state lives on `window`:
-- `window.TASKS[]` — current task list from Supabase
-- `window.OWNERS[]` — team members; `window.OWNER_COLORS` — gradient map
-- `window.FilterState` — `{ search, department, status, priority, assignee }`
-
-### Auth Pattern
-Every page calls `checkAuth()` (inside `sidebar.js`) on load. It calls `supabase.auth.getSession()` and redirects to `Login.html` if no active session. Logout: `window.handleLogout()`.
-
-### Data Flow
-1. Page loads → `sidebar.js` fires `initializeDashboardData()` → calls `db.js` functions → populates `window.TASKS` / `window.OWNERS`
-2. Rendering functions read from those globals and write to DOM directly
-3. Filters call `window.setFilter()` → triggers re-render callback
-4. Fallback to static mock data if Supabase is unreachable
+### State Management
+- **Auth**: Handled via `src/lib/auth-context.tsx` and Supabase SSR.
+- **Navigation**: Managed through `src/lib/mobile-nav-context.tsx`.
+- **Data Fetching**: Primarily server-side components with client-side interactivity where needed.
 
 ### Design System
-- Layout: 240px fixed sidebar + `1fr` main content
-- Fonts: Inter (body), Space Grotesk (display headings) via Google Fonts
-- All color/spacing tokens are in `shared.css` CSS variables — never hardcode colors
+- **Theme**: Dark Premium (glassmorphism, vibrant gradients).
+- **Typography**: Inter (body), Space Grotesk (display).
+- **Icons**: Centralized SVG component in `src/components/Icons.tsx`.
 
-## Supabase Tables
-- `tasks` — production tasks with status, priority, assignee, department
-- `profiles` — team members (users)
+## Deployment
+
+The project is configured for deployment on **Vercel**.
+
+### Required Environment Variables
+- `NEXT_PUBLIC_SUPABASE_URL`: Your Supabase project URL.
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`: Your Supabase publishable key (sb_publishable_...).
+
+## Data Schema
+- `tasks`: Task management data (status, priority, assignee, etc.).
+- `profiles`: User profile data.
