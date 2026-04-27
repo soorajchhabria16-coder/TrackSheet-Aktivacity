@@ -74,18 +74,23 @@ async function importData() {
   console.log(`📝 Importing ${taskLines.length} tasks...`);
 
   const tasksToInsert = taskLines.map(line => {
-    // Match columns from Tasks.csv: 
-    // Task Title, Detailed Description, Department, Date Assigned, Due Date, Status, Priority, Notes, Assignee, Name, Email
     const parts = line.split(',');
-    
+    const title = parts[0]?.trim() || '';
+    let kind = 'web';
+    if (title.toLowerCase().includes('portfolio')) kind = 'portfolio';
+    else if (title.toLowerCase().includes('banner')) kind = 'banner';
+    else if (title.toLowerCase().includes('ad creative') || title.toLowerCase().includes('images (')) kind = 'ads';
+    else if (title.toLowerCase().includes('social media')) kind = 'social';
+
     return {
-      title: parts[0]?.trim(),
-      notes: parts[1]?.trim(),
+      title: title,
+      description: parts[1]?.trim(), // Mapped to description column in DB
       department: parts[2]?.trim(),
       due_date: parts[4]?.trim() || null,
       status: parts[5]?.trim()?.toLowerCase().replace(' ', '-') || 'pending',
       priority: parts[6]?.trim()?.toLowerCase() || 'medium',
-      owner: parts[10]?.trim() // Using email as owner identifier
+      owner: parts[10]?.trim(), // Using email as owner identifier
+      kind: kind
     };
   });
 
