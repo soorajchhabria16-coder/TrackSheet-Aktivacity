@@ -17,24 +17,40 @@ async function addSibghat() {
 
   console.log(`🚀 Creating user: ${email}`);
 
-  const { data: userData, error: authError } = await supabase.auth.admin.createUser({
+  let { data: userData, error: authError } = await supabase.auth.admin.createUser({
     email,
     email_confirm: true,
     user_metadata: { name },
     password
   });
 
+  let userId = userData?.user?.id;
+
   if (authError) {
-    console.error('Error creating user:', authError.message);
+    if (authError.message.includes('already been registered')) {
+      console.log('ℹ️ User already exists in Auth. Fetching ID...');
+      const { data: existingUser, error: fetchError } = await supabase.auth.admin.listUsers();
+      const user = existingUser?.users.find(u => u.email === email);
+      if (user) {
+        userId = user.id;
+        console.log(`✅ Found existing user ID: ${userId}`);
+      } else {
+        console.error('❌ Could not find existing user in list.');
+        return;
+      }
+    } else {
+      console.error('❌ Error creating user:', authError.message);
+      return;
+    }
   } else {
     console.log('✅ User created in Auth.');
   }
 
-  // Create profile
+  // Create/Update profile
   const { error: profileError } = await supabase
     .from('profiles')
     .upsert([{
-      id: userData?.user?.id,
+      id: userId,
       email,
       name,
       user_role: 'admin',
