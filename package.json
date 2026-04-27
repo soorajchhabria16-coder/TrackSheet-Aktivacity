@@ -1,13 +1,26 @@
 {
-  "name": "tracksheet",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "tracks",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
-    "start": "npx -y serve -p 3000",
-    "dev": "npx -y serve -p 3000",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
-  "author": "",
-  "license": "ISC"
+  "dependencies": {
+    "@supabase/ssr": "^0.10.2",
+    "@supabase/supabase-js": "^2.104.1",
+    "next": "^16.2.4",
+    "react": "^18",
+    "react-dom": "^18"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "^16.2.4",
+    "typescript": "^5"
+  }
 }

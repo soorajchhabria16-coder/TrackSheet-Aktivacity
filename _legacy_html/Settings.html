@@ -141,6 +141,31 @@
   input:checked + .slider { background-color: var(--primary); }
   input:checked + .slider:before { transform: translateX(20px); }
 
+  .hidden { display: none; }
+  .flex-between-start { display: flex; justify-content: space-between; align-items: flex-start; }
+  .btn-icon-mr { margin-right: 6px; }
+  .table-container { margin-top: 20px; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .table-main { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  .table-head { background: rgba(255, 255, 255, 0.02); border-bottom: 1px solid var(--border); }
+  .th-cell { padding: 12px 16px; text-align: left; color: var(--muted); font-size: 11px; text-transform: uppercase; }
+  .th-cell.right { text-align: right; }
+  .td-cell { padding: 16px 20px; }
+  .td-cell.right { text-align: right; }
+  .tr-row { border-top: 1px solid var(--border); }
+  .td-user-info { display: flex; align-items: center; gap: 12px; }
+  .td-avatar { width: 32px; height: 32px; font-size: 11px; font-weight: 700; }
+  .td-name { font-weight: 600; color: var(--text); font-size: 14px; }
+  .td-email { font-size: 12px; color: var(--muted); }
+  .td-role { color: var(--muted); font-weight: 500; }
+  .td-status { color: var(--success); font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+  .status-dot-green { width: 6px; height: 6px; border-radius: 50%; background: var(--success); box-shadow: 0 0 8px var(--success); }
+  .td-action-btn { color: var(--danger); border-color: var(--danger-50); }
+  .td-you-badge { background: var(--primary-50); color: var(--primary); text-transform: none; letter-spacing: 0; }
+  .btn-danger-text { color: var(--danger); }
+  .settings-footer { display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border); }
+  .modal-form-col { display: flex; flex-direction: column; gap: 20px; }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 32px; }
+
   @media (max-width: 900px) {
     .settings-layout { grid-template-columns: 1fr; }
     .settings-nav { flex-direction: row; overflow-x: auto; padding-bottom: 12px; gap: 12px; }
@@ -199,23 +224,23 @@
           </section>
 
           <!-- Team Management Section -->
-          <section id="team" class="settings-section tab-content" style="display:none">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start">
+          <section id="team" class="settings-section tab-content hidden">
+            <div class="flex-between-start">
               <div>
                 <h3>Team Management</h3>
                 <p>Add, edit, or remove studio members and their access levels.</p>
               </div>
-              <button class="btn btn-primary btn-sm" onclick="openAddUserModal()"><svg width="14" height="14" style="margin-right:6px"><use href="#i-plus"/></svg> Add User</button>
+              <button class="btn btn-primary btn-sm" onclick="openAddUserModal()"><svg width="14" height="14" class="btn-icon-mr"><use href="#i-plus"/></svg> Add User</button>
             </div>
 
-            <div style="margin-top:20px; border:1px solid var(--border); border-radius:12px; overflow:hidden">
-              <table style="width:100%; border-collapse:collapse; font-size:13.5px">
-                <thead style="background:#F8FAFC; border-bottom:1px solid var(--border)">
+            <div class="table-container">
+              <table class="table-main">
+                <thead class="table-head">
                   <tr>
-                    <th style="padding:12px 16px; text-align:left; color:var(--muted); font-size:11px; text-transform:uppercase">User</th>
-                    <th style="padding:12px 16px; text-align:left; color:var(--muted); font-size:11px; text-transform:uppercase">Role</th>
-                    <th style="padding:12px 16px; text-align:left; color:var(--muted); font-size:11px; text-transform:uppercase">Status</th>
-                    <th style="padding:12px 16px; text-align:right; color:var(--muted); font-size:11px; text-transform:uppercase">Actions</th>
+                    <th class="th-cell">User</th>
+                    <th class="th-cell">Role</th>
+                    <th class="th-cell">Status</th>
+                    <th class="th-cell right">Actions</th>
                   </tr>
                 </thead>
                 <tbody id="user-table-body">
@@ -226,7 +251,7 @@
           </section>
 
           <!-- Notifications Section -->
-          <section id="notifications" class="settings-section tab-content" style="display:none">
+          <section id="notifications" class="settings-section tab-content hidden">
             <h3>Notifications</h3>
             <p>Configure which alerts you want to receive via email and in-app bubble.</p>
             
@@ -265,7 +290,7 @@
           </section>
 
           <!-- Security Section -->
-          <section id="security" class="settings-section tab-content" style="display:none">
+          <section id="security" class="settings-section tab-content hidden">
             <h3>Security & Privacy</h3>
             <p>Manage your account security and authentication sessions.</p>
             <div class="toggle-group">
@@ -273,11 +298,11 @@
                 <h4>Global Sign Out</h4>
                 <p>Revoke access from all devices, including this one.</p>
               </div>
-              <button class="btn btn-ghost" onclick="handleSecuritySignOut()" style="color:var(--danger)">Sign Out Everywhere</button>
+              <button class="btn btn-ghost btn-danger-text" onclick="handleSecuritySignOut()">Sign Out Everywhere</button>
             </div>
           </section>
 
-          <footer id="settings-footer" style="display:flex; justify-content:flex-end; gap:12px; margin-top:20px; padding-top:20px; border-top:1px solid var(--border)">
+          <footer id="settings-footer" class="settings-footer">
             <button class="btn btn-ghost" onclick="loadProfile()">Discard Changes</button>
             <button class="btn btn-primary" id="save-btn" onclick="saveProfile()">Save Settings</button>
           </footer>
@@ -291,7 +316,7 @@
   <div class="modal-content">
     <h3>Invite Member</h3>
     <p>Send a workspace invite to a new designer.</p>
-    <div style="display:flex; flex-direction:column; gap:20px">
+    <div class="modal-form-col">
       <div class="form-group">
         <label>Full Name</label>
         <input type="text" id="new-user-name" placeholder="e.g. John Doe">
@@ -309,7 +334,7 @@
         </select>
       </div>
     </div>
-    <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:32px">
+    <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeAddUserModal()">Cancel</button>
       <button class="btn btn-primary" onclick="submitAddUser()">Send Invite</button>
     </div>
@@ -401,30 +426,29 @@
       const isSelf = o.email === (window.CURRENT_USER || {}).email;
       const avatarClass = { SH:'sh', SB:'sb', TM:'tm', IN:'in', ZA:'za', MK:'mk' }[oi] || '';
       return `
-      <tr style="border-top:1px solid var(--border)">
-        <td style="padding:16px 20px">
-          <div style="display:flex; align-items:center; gap:12px">
-            <div class="avatar ${avatarClass ? 'avatar-'+avatarClass : ''}" style="width:32px; height:32px; font-size:11px; font-weight:700">${oi}</div>
+      <tr class="tr-row">
+        <td class="td-cell">
+          <div class="td-user-info">
+            <div class="avatar ${avatarClass ? 'avatar-'+avatarClass : ''} td-avatar">${oi}</div>
             <div style="min-width:0">
-              <div style="font-weight:600; color:var(--text); font-size:14px">${esc(o.name)}</div>
-              <div style="font-size:12px; color:var(--muted)">${esc(o.email)}</div>
+              <div class="td-name">${esc(o.name)}</div>
+              <div class="td-email">${esc(o.email)}</div>
             </div>
           </div>
         </td>
-        <td style="padding:16px 20px; color:var(--muted); font-weight:500">${esc(roleLabel)}</td>
-        <td style="padding:16px 20px">
-          <span style="color:var(--success); font-size:12px; font-weight:700; display:flex; align-items:center; gap:6px">
-            <span style="width:6px; height:6px; border-radius:50%; background:var(--success); box-shadow:0 0 8px var(--success)"></span>
-            Active
+        <td class="td-cell td-role">${esc(roleLabel)}</td>
+        <td class="td-cell">
+          <span class="td-status">
+            <span class="status-dot-green"></span> Active
           </span>
         </td>
-        <td style="padding:16px 20px; text-align:right">
-          ${isSelf ? '<span class="badge" style="background:var(--primary-50); color:var(--primary); text-transform:none; letter-spacing:0">You</span>' : `
-          <button class="btn btn-ghost btn-xs" title="Remove User"
-            style="color:var(--danger); border-color:var(--danger-50)"
-            data-action="remove-settings-user" data-id="${esc(o.id)}" data-name="${esc(o.name)}">
-            <svg class="icon"><use href="#i-archive"/></svg>
-          </button>`}
+        <td class="td-cell td-cell right">
+          ${isSelf ? '<span class="badge td-you-badge">You</span>' : `
+            <button class="btn btn-ghost btn-xs td-action-btn" title="Remove User"
+              data-action="remove-settings-user" data-id="${esc(o.id)}" data-name="${esc(o.name)}">
+              <svg class="icon"><use href="#i-archive"/></svg>
+            </button>
+          `}
         </td>
       </tr>
     `}).join('');

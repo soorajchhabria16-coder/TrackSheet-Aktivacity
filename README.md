@@ -1,41 +1,36 @@
-# Aktivacity TrackSheet Dashboard
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-A premium, production-ready tracking dashboard for design studios. Built with a focus on high-fidelity aesthetics, real-time workload visualization, and seamless task management.
+## Getting Started
 
-## 🚀 Overview
-
-Aktivacity TrackSheet is a static, lightweight dashboard designed for high-performance creative teams. It provides a centralized view of studio operations, task health, and team capacity.
-
-### Key Features
-
-- **Dynamic Dashboard**: Real-time overview of studio pulse, completion rates, and highlights.
-- **Production Tasks**: Comprehensive table-based task management with priority and status tracking.
-- **Team Roster**: Workload balancing and capacity visualization per team member.
-- **Deep Task Integration**: Detailed task views including subtasks, attachments, and activity feeds.
-- **Activity Inbox**: Integrated notification system for mentions and studio updates.
-- **Studio Settings**: Fully functional profile and workspace preference management.
-
-## 🛠️ Technology Stack
-
-- **Frontend**: Pure HTML5, CSS3 (Vanilla), and ES6+ JavaScript.
-- **Styling**: Custom design system using CSS Variables and Flexbox/Grid.
-- **Icons**: Inline SVG sprite system for zero-latency icon loading.
-- **Typography**: Inter & Space Grotesk (via Google Fonts).
-
-## 📦 Getting Started
-
-Since this is a static project, you can run it using any simple HTTP server:
+First, run the development server:
 
 ```bash
-# Using Python
-python3 -m http.server 3000
-
-# Using Node.js (npx)
-npx serve .
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-Then open `http://localhost:3000/Login.html` in your browser.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
----
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-*Designed for high-performance design studios.*
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## Learn More
+
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

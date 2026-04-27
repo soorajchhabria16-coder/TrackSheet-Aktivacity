@@ -262,13 +262,12 @@
     <div class="panel" id="forgot-panel">
       <p class="panel-title">Reset your password</p>
       <p>Enter your email and we'll send you a link to reset your password.</p>
-      <div class="form-group" style="margin:0">
-        <input type="email" id="reset-email" placeholder="you@studio.com" style="width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:10px;font-family:inherit;font-size:14px;background:#fff;box-sizing:border-box">
+      <div class="form-group m-0">
+        <input type="email" id="reset-email" class="reset-input" placeholder="you@studio.com">
       </div>
-      <div style="display:flex;gap:8px">
-        <button onclick="sendReset()" class="btn-login" style="flex:1;padding:11px;font-size:14px">Send reset link</button>
-        <button onclick="toggleForgot()" type="button"
-          style="padding:11px 16px;border:1px solid var(--border);border-radius:12px;background:#fff;font-size:14px;font-weight:600;cursor:pointer;color:var(--muted)">Cancel</button>
+      <div class="flex-gap-8">
+        <button onclick="sendReset()" class="btn-login btn-reset">Send reset link</button>
+        <button onclick="toggleForgot()" type="button" class="btn-cancel">Cancel</button>
       </div>
     </div>
 
@@ -289,7 +288,7 @@
     </div>
     <h3>Invite-only access</h3>
     <p>Aktivacity is a private studio workspace. Ask your studio admin to invite you — you'll receive a magic-link email to get started.</p>
-    <button onclick="closeRequestModal()" class="btn-login" style="font-size:14px;padding:12px">Got it</button>
+    <button onclick="closeRequestModal()" class="btn-login btn-gotit">Got it</button>
   </div>
 </div>
 

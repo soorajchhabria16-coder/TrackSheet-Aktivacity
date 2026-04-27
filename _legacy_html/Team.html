@@ -131,6 +131,12 @@
   .no-tasks { font-size: 12.5px; color: var(--muted-2); padding: 4px 0; }
   .load-danger { color: var(--danger); }
   .load-success { color: var(--success); }
+  .ml-auto-flex { margin-left: auto; display: flex; gap: 8px; }
+  .text-danger { color: var(--danger); }
+  .text-success { color: var(--success); }
+  .flex-1-min-0 { flex: 1; min-width: 0; }
+  .empty-assigned { font-size: 12.5px; color: var(--muted-2); padding: 4px 0; }
+  .mt-8 { margin-top: 8px; }
 
   @media (max-width: 1100px){ .grid{grid-template-columns:repeat(2,1fr)} .team-summary{grid-template-columns:repeat(2,1fr)} }
   @media (max-width: 640px){ .grid{grid-template-columns:1fr} .team-summary{grid-template-columns:1fr} }
@@ -151,7 +157,7 @@
           <input placeholder="Search people, roles, skills…"/>
         </div>
         <div class="seg"><button class="on">All</button><button>Designers</button><button>Leads</button></div>
-        <div style="margin-left:auto; display:flex; gap:8px">
+        <div class="ml-auto-flex">
           <button class="btn btn-ghost"><svg class="icon"><use href="#i-filter"/></svg> Filter</button>
           <a class="btn btn-primary" href="Settings.html"><svg class="icon"><use href="#i-plus"/></svg> Invite member</a>
         </div>
@@ -170,12 +176,12 @@
         </div>
         <div class="mini-kpi">
           <div class="lbl">Highest load</div>
-          <div class="val" style="color:var(--danger)">Zainab · 2</div>
+          <div class="val text-danger">Zainab · 2</div>
           <div class="cap">Both currently overdue</div>
         </div>
         <div class="mini-kpi">
           <div class="lbl">Completed this week</div>
-          <div class="val" style="color:var(--success)">3</div>
+          <div class="val text-success">3</div>
           <div class="cap">Moiz · Inam · Sibghat</div>
         </div>
       </div>
@@ -246,7 +252,7 @@
       <article class="person-card">
         <div class="pc-top">
           <div class="avatar" style="background:${OWNER_COLORS[o.id]}">${esc(o.id)}</div>
-          <div style="flex:1; min-width:0">
+          <div class="flex-1-min-0">
             <div class="name">${esc(o.name)}</div>
             <div class="role">${esc(o.role)}</div>
             <div class="email"><svg width="11" height="11"><use href="#i-mail"/></svg> ${esc(o.email || '')}</div>
@@ -268,7 +274,7 @@
         </div>
         <div class="pc-recent">
           <h4>Current tasks</h4>
-          ${recent || '<div style="font-size:12.5px; color:var(--muted-2); padding:4px 0">Nothing assigned.</div>'}
+          ${recent || '<div class="empty-assigned">Nothing assigned.</div>'}
         </div>
         <div class="pc-foot">
           <button class="btn btn-ghost btn-sm"><svg class="icon"><use href="#i-mail"/></svg> Message</button>
@@ -285,7 +291,7 @@
         <div class="ic"><svg width="22" height="22"><use href="#i-plus"/></svg></div>
         <h3>Invite a new member</h3>
         <p>Send an invite link to add designers, writers, or freelancers to Aktivacity.</p>
-        <button class="btn btn-primary btn-sm" style="margin-top:8px">
+        <button class="btn btn-primary btn-sm mt-8">
           <svg class="icon"><use href="#i-mail"/></svg> Send invite
         </button>
       </div>

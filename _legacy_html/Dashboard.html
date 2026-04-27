@@ -226,6 +226,21 @@
   .risk .body .meta{font-size:11px; color:var(--muted); display:flex; gap:8px; align-items:center; margin-top:4px}
   .risk .body .meta .avatar{width:14px; height:14px; font-size:8px; flex-basis:14px}
 
+  .subtitle { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+  .kpi-unit { font-size: 16px; color: var(--muted); }
+  .kpi-fraction { font-size: 13px; color: var(--muted); font-weight: 500; }
+  .seg-sm { padding: 2px; }
+  .bg-danger-light { background: #FFF7F7; }
+  .text-danger { color: var(--danger); }
+  .text-danger-sm { font-size: 10px; color: var(--danger); font-weight: 700; margin-top: 6px; }
+  .text-primary { color: var(--primary); }
+  .text-muted { color: var(--muted-2); }
+  .border-bottom-0 { border-bottom: 0; }
+  .card-head-clean { padding: 0 0 14px; border: 0; }
+  .empty-state { padding: 16px 18px; color: var(--muted); font-size: 13px; }
+  .timeline-now { color: var(--danger); font-weight: 700; }
+  .sw-default { background: #CBD5E1; }
+
   @media (max-width: 1100px){
     .hero, .grid{grid-template-columns:1fr}
     .kpi-row{grid-template-columns:repeat(2,1fr)}
@@ -271,7 +286,7 @@
           </div>
           <div>
             <h2 class="today-title">At a glance</h2>
-            <p style="margin:2px 0 0; color:var(--muted); font-size:13px">A snapshot of the team's current load.</p>
+            <p class="subtitle">A snapshot of the team's current load.</p>
           </div>
           <div class="today-row">
             <div class="today-stat"><div class="today-num" id="d-total">—</div><small>Total tasks</small></div>
@@ -285,7 +300,7 @@
       <div class="kpi-row">
         <div class="mini-kpi">
           <div class="lbl">Completion rate</div>
-          <div class="val" id="kpi-complete-rate">—<span style="font-size:16px; color:var(--muted)">%</span></div>
+          <div class="val" id="kpi-complete-rate">—<span class="kpi-unit">%</span></div>
           <span class="delta" id="kpi-complete-delta"></span>
         </div>
         <div class="mini-kpi">
@@ -295,7 +310,7 @@
         </div>
         <div class="mini-kpi">
           <div class="lbl">On-time rate</div>
-          <div class="val" id="kpi-ontime-rate">—<span style="font-size:16px; color:var(--muted)">%</span></div>
+          <div class="val" id="kpi-ontime-rate">—<span class="kpi-unit">%</span></div>
           <span class="delta" id="kpi-ontime-delta"></span>
         </div>
         <div class="mini-kpi">
@@ -327,7 +342,7 @@
                 <h3>Upcoming deadlines</h3>
                 <div class="sub">This week. All current items cluster on Friday.</div>
               </div>
-              <div class="seg" style="padding:2px">
+              <div class="seg seg-sm">
                 <button class="on">Week</button>
                 <button>Month</button>
               </div>
@@ -347,13 +362,13 @@
               <div class="t-day past">
                 <div class="dnum">16</div>
               </div>
-              <div class="t-day past" style="background:#FFF7F7">
-                <div class="dnum" style="color:var(--danger)">17</div>
+              <div class="t-day past bg-danger-light">
+                <div class="dnum text-danger">17</div>
                 <span class="pip red"></span>
                 <span class="pip red"></span>
                 <span class="pip red" style="width:85%"></span>
                 <span class="pip red" style="width:60%"></span>
-                <div style="font-size:10px; color:var(--danger); font-weight:700; margin-top:6px">9 overdue</div>
+                <div class="text-danger-sm">9 overdue</div>
               </div>
               <div class="t-day past">
                 <div class="dnum">18</div>
@@ -362,9 +377,9 @@
                 <div class="dnum">19</div>
               </div>
             </div>
-            <div class="t-days" style="border-bottom:0">
+            <div class="t-days border-bottom-0">
               <div class="t-day today">
-                <div class="dnum" style="color:var(--primary)">20</div>
+                <div class="dnum text-primary">20</div>
               </div>
               <div class="t-day">
                 <div class="dnum">21</div>
@@ -383,10 +398,10 @@
                 <span class="pip" style="width:80%"></span>
               </div>
               <div class="t-day">
-                <div class="dnum" style="color:var(--muted-2)">25</div>
+                <div class="dnum text-muted">25</div>
               </div>
               <div class="t-day">
-                <div class="dnum" style="color:var(--muted-2)">26</div>
+                <div class="dnum text-muted">26</div>
               </div>
             </div>
           </div>
@@ -426,12 +441,12 @@
 
           <!-- Throughput -->
           <div class="card throughput">
-            <div class="card-head" style="padding:0 0 14px; border:0">
+            <div class="card-head card-head-clean">
               <div>
                 <h3>Throughput</h3>
                 <div class="sub">Tasks completed per week · last 8 weeks</div>
               </div>
-              <div class="seg" style="padding:2px">
+              <div class="seg seg-sm">
                 <button class="on">8w</button>
                 <button>12w</button>
               </div>
@@ -469,7 +484,7 @@
               </svg>
             </div>
             <div class="chart-axis">
-              <span>W9</span><span>W10</span><span>W11</span><span>W12</span><span>W13</span><span>W14</span><span>W15</span><span>W16</span><span style="color:var(--danger); font-weight:700">Now</span>
+              <span>W9</span><span>W10</span><span>W11</span><span>W12</span><span>W13</span><span>W14</span><span>W15</span><span>W16</span><span class="timeline-now">Now</span>
             </div>
           </div>
 
@@ -557,7 +572,7 @@
     const completeRate = Math.round(done / total * 100);
     const ontimeRate   = Math.round((done / total) * 100); // simplified: done out of total
 
-    document.getElementById('kpi-complete-rate').innerHTML = `${completeRate}<span style="font-size:16px; color:var(--muted)">%</span>`;
+    document.getElementById('kpi-complete-rate').innerHTML = `${completeRate}<span class="kpi-unit">%</span>`;
     document.getElementById('kpi-complete-delta').innerHTML = completeRate >= 50
       ? `<svg width="11" height="11"><use href="#i-trend-up"/></svg>${completeRate}% tasks done`
       : `${completeRate}% tasks done`;
@@ -570,11 +585,11 @@
     const active2 = TASKS.filter(t => t.status !== 'completed').length;
     const ontime  = active2 - overdue;
     const ontimeP = active2 > 0 ? Math.round(ontime / active2 * 100) : 100;
-    document.getElementById('kpi-ontime-rate').innerHTML = `${ontimeP}<span style="font-size:16px; color:var(--muted)">%</span>`;
+    document.getElementById('kpi-ontime-rate').innerHTML = `${ontimeP}<span class="kpi-unit">%</span>`;
     document.getElementById('kpi-ontime-delta').textContent = ontimeP >= 70 ? 'Good pace' : 'Needs improvement';
     document.getElementById('kpi-ontime-delta').className = `delta ${ontimeP >= 70 ? '' : 'red'}`;
 
-    document.getElementById('kpi-assignees').innerHTML = `${active} <span style="font-size:13px; color:var(--muted); font-weight:500">/ ${teamSize}</span>`;
+    document.getElementById('kpi-assignees').innerHTML = `${active} <span class="kpi-fraction">/ ${teamSize}</span>`;
     document.getElementById('kpi-assignees-delta').textContent = active === teamSize ? 'Full team active' : `${teamSize - active} inactive`;
     document.getElementById('kpi-assignees-delta').className = `delta ${active === teamSize ? '' : 'red'}`;
   }
@@ -610,7 +625,7 @@
 
     const colorClass = { '#DC2626':'red', '#16A34A':'green', '#F59E0B':'amber', '#CBD5E1':'' };
     document.getElementById('donut-legend').innerHTML = segments.map(s =>
-      `<div class="li"><span class="sw ${colorClass[s.color]||''}" style="${!colorClass[s.color]?'background:#CBD5E1':''}"></span> ${s.label} <b>${s.count}</b></div>`
+      `<div class="li"><span class="sw ${colorClass[s.color]||'sw-default'}"></span> ${s.label} <b>${s.count}</b></div>`
     ).join('');
   }
 
@@ -651,7 +666,7 @@
         </div>
       `;
     }).join('');
-    document.getElementById('workload-rows').innerHTML = rows || '<div style="padding:16px 18px; color:var(--muted); font-size:13px">No team data available.</div>';
+    document.getElementById('workload-rows').innerHTML = rows || '<div class="empty-state">No team data available.</div>';
   }
 
   function renderRisk(){
@@ -684,7 +699,7 @@
           <span class="prio high"><span class="pdot"></span> High</span>
         </li>
       `;
-    }).join('') || '<li style="padding:14px 18px; color:var(--muted); font-size:13px">No high-priority overdue tasks.</li>';
+    }).join('') || '<li class="empty-state">No high-priority overdue tasks.</li>';
     document.getElementById('risk-list').innerHTML = html;
   }
 

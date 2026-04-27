@@ -216,6 +216,16 @@
   .avatar-sh-watcher { background: linear-gradient(135deg, #F472B6, #DB2777); width: 24px; height: 24px; font-size: 10px; flex-basis: 24px; border: 2px solid var(--surface); margin-left: -6px; }
   .watcher-add-btn { margin-left: auto; padding: 4px 8px; }
 
+  .sub-count { font-size: 12px; color: var(--muted); font-weight: 500; }
+  .feed-wrap { display: flex; flex-direction: column; gap: 12px; }
+  .feed-msg { font-size: 13px; color: var(--muted-2); }
+  .feed-empty { font-size: 12px; color: var(--muted-2); }
+  .prio-med-text { color: #64748B; }
+  .prio-med-dot { background: #94A3B8; }
+  .icon-danger { color: var(--danger); }
+  .icon-muted { color: var(--muted); }
+  .avatar-dynamic { width: 26px; height: 26px; font-size: 10px; flex-basis: 26px; }
+
   @media (max-width: 1100px){
     .layout{grid-template-columns:1fr}
     .dh-meta{grid-template-columns:repeat(2,1fr); gap:20px 0}
@@ -335,7 +345,7 @@
 
           <!-- Attachments -->
           <section class="attach">
-            <h3>Attachments <span style="font-size:12px; color:var(--muted); font-weight:500">· 3</span></h3>
+            <h3>Attachments <span class="sub-count">· 3</span></h3>
             <div class="files">
               <div class="file">
                 <div class="ic"><svg width="16" height="16"><use href="#i-file"/></svg></div>
@@ -364,7 +374,7 @@
           <!-- Comments -->
           <section class="comments">
             <div class="head">
-              <h3>Comments <span style="font-size:12px; color:var(--muted); font-weight:500">· 4</span></h3>
+              <h3>Comments <span class="sub-count">· 4</span></h3>
               <div class="seg">
                 <button class="active">Newest</button>
                 <button>Oldest</button>
@@ -481,9 +491,8 @@
 
           <div class="field act">
             <div class="lbl">Activity</div>
-            <div id="activity-feed" style="display:flex;flex-direction:column;gap:12px;
-              max-height:320px;overflow-y:auto;padding-right:4px">
-              <div style="font-size:13px;color:var(--muted-2)">Loading…</div>
+            <div id="activity-feed" class="feed-wrap">
+              <div class="feed-msg">Loading…</div>
             </div>
           </div>
         </aside>
@@ -536,12 +545,12 @@
     document.getElementById('headPrio').innerHTML = prio === 'high'
       ? '<span class="prio high"><span class="pdot"></span> High</span>'
       : prio === 'low'
-      ? '<span class="prio medium" style="color:#64748B"><span class="pdot" style="background:#94A3B8"></span> Low</span>'
+      ? '<span class="prio medium prio-med-text"><span class="pdot prio-med-dot"></span> Low</span>'
       : '<span class="prio medium"><span class="pdot"></span> Medium</span>';
 
     const owner = OWNERS.find(o => o.oi === t.oi || o.id === t.oi) || {};
     document.getElementById('headAssignee').innerHTML = `
-      <span class="avatar" style="background:${OWNER_COLORS[t.oi]||'linear-gradient(135deg,#6B7FD7,#4B5EAA)'}; width:26px; height:26px; font-size:10px; flex-basis:26px">${t.oi}</span>
+      <span class="avatar avatar-dynamic" style="background:${OWNER_COLORS[t.oi]||'linear-gradient(135deg,#6B7FD7,#4B5EAA)'}">${t.oi}</span>
       <span>${t.owner}<small>${owner.role||''}</small></span>
     `;
 
@@ -556,7 +565,7 @@
       else if (diffDays === 1) relTxt = `<small>Due tomorrow</small>`;
       else if (diffDays > 0)   relTxt = `<small>In ${diffDays}d</small>`;
       dueEl.style.color = isOverdue ? 'var(--danger)' : '';
-      dueEl.innerHTML = `<svg width="14" height="14" style="color:${isOverdue?'var(--danger)':'var(--muted)'}"><use href="#i-calendar"/></svg> ${dueFmt} ${relTxt}`;
+      dueEl.innerHTML = `<svg width="14" height="14" class="${isOverdue?'icon-danger':'icon-muted'}"><use href="#i-calendar"/></svg> ${dueFmt} ${relTxt}`;
     }
 
     // If already completed, disable the mark-complete button
@@ -608,7 +617,7 @@
     if (!feed || typeof window.fetchComments !== 'function') return;
     const comments = await window.fetchComments(taskId);
     if (!comments.length) {
-      feed.innerHTML = '<div style="font-size:12px;color:var(--muted-2)">No activity yet.</div>';
+      feed.innerHTML = '<div class="feed-empty">No activity yet.</div>';
       return;
     }
     feed.innerHTML = comments.map(c => {

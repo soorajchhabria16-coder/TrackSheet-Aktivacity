@@ -292,6 +292,13 @@ table.cr-t tbody tr:hover td { background:rgba(255,255,255,0.02); }
 @media(max-width:900px){
   .hero-bar,.tl-section,.tbl-section,.filter-zone { padding-left:20px; padding-right:20px; }
 }
+  .inline-flex-gap4 { display: inline-flex; align-items: center; gap: 4px; }
+  .text-cr-muted2 { color: var(--cr-muted2); }
+  .text-emerald { color: var(--cr-emerald); }
+  .due-label { margin-left: auto; font-size: 10px; }
+  .text-red { color: var(--cr-red); }
+  .text-muted-norm { color: var(--cr-muted); }
+  .td-right-muted { text-align: right; color: var(--cr-muted); font-size: 11.5px; }
 </style>
 </head>
 <body>
@@ -681,11 +688,11 @@ function renderCard(t, i){
         <div class="card-exp-inner">
           <div class="card-exp-row">
             <span>Dept:</span><b>${h(t.department)}</b>
-            ${t.due_date?`<span style="margin-left:auto;font-size:10px;color:${e==='overdue'?'var(--cr-red)':'var(--cr-muted)'};">${relLabel(t.due_date)}</span>`:''}
+            ${t.due_date?`<span class="due-label ${e==='overdue'?'text-red':'text-muted-norm'}">${relLabel(t.due_date)}</span>`:''}
           </div>
           ${t.notes?`<div class="card-exp-row"><span>Notes:</span><b>${t.notes}</b></div>`:''}
           ${isComplete
-            ? `<div class="card-exp-row" style="color:var(--cr-emerald)">
+            ? `<div class="card-exp-row text-emerald">
                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20,6 9,17 4,12"/></svg>
                  Completed
                </div>`
@@ -774,13 +781,13 @@ function renderTable(tasks){
         </td>
         <td>${sc}</td>
         <td>${pc}</td>
-        <td style="text-align:right;color:var(--cr-muted);font-size:11.5px;">
+        <td class="td-right-muted">
           ${t.notes>0
-            ?`<span style="display:inline-flex;align-items:center;gap:4px;">
+            ?`<span class="inline-flex-gap4">
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
                 ${t.notes}
               </span>`
-            :`<span style="color:var(--cr-muted2)">—</span>`}
+            :`<span class="text-cr-muted2">—</span>`}
         </td>
       </tr>`;
   }).join('');
@@ -889,7 +896,7 @@ function showSkeletons(){
   lanesRoot.innerHTML = ['Overdue','Today','This Week'].map(label=>`
     <div class="lane">
       <div class="lane-head">
-        <span class="lane-name" style="color:var(--cr-muted2)">${label}</span>
+        <span class="lane-name text-cr-muted2">${label}</span>
       </div>
       <div class="cards-row">
         ${[1,2,3].map(()=>`<div class="skel skel-card"></div>`).join('')}

@@ -1,0 +1,412 @@
+.avatar {
+  width: 80px; height: 80px; border-radius: 20px;
+  display: grid; place-items: center;
+  font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 700; color: #fff;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+}
+
+.tdAvatar {
+  width: 32px; height: 32px; border-radius: 8px;
+  display: grid; place-items: center;
+  font-size: 12px; font-weight: 700; color: #fff;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+}
+
+.logoEdit {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: 16px;
+  margin-bottom: 24px;
+}
+
+.logoPreview {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.logoPreview img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.logoPlaceholder {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--muted);
+}
+
+.logoHint {
+  font-size: 11px;
+  color: var(--muted-2);
+  margin-top: 6px;
+}
+
+.avatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.settingsLayout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 40px;
+  padding: 0 36px 80px;
+}
+
+.settingsNav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.settingsNavItem {
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  background: none;
+  border: none;
+  text-align: left;
+  font-family: inherit;
+}
+
+.tdUserInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tdName {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.tdEmail {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.tdActionCell {
+  text-align: right;
+  padding: 12px 16px;
+}
+
+.removeBtn {
+  color: var(--danger);
+}
+
+.removeBtn:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.youBadge {
+  font-size: 12px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.settingsNavItem:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+}
+
+.settingsNavItem.active {
+  background: var(--primary-50);
+  color: var(--primary);
+}
+
+.settingsCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  box-shadow: var(--shadow-lg);
+  padding: 40px;
+}
+
+.settingsSection {
+  margin-bottom: 48px;
+}
+
+.settingsSection:last-child {
+  margin-bottom: 0;
+}
+
+.settingsSection h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 10px;
+  color: var(--text);
+}
+
+.settingsSection p {
+  color: var(--muted);
+  font-size: 14px;
+  margin: 0 0 24px;
+  line-height: 1.5;
+}
+
+.profileEdit {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin-bottom: 32px;
+}
+
+.avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  border: 2px solid var(--border);
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.formGroup label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+}
+
+.formGroup input, .formGroup select {
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.formGroup input:focus, .formGroup select:focus {
+  border-color: var(--primary);
+}
+
+.toggleGroup {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.toggleGroup:last-child { border-bottom: 0; }
+.toggleInfo h4 { font-size: 15px; margin: 0; color: var(--text); }
+.toggleInfo p { font-size: 13px; color: var(--muted); margin: 4px 0 0; }
+
+.subSection {
+  margin-top: 32px;
+  padding-top: 32px;
+  border-top: 1px solid var(--border);
+}
+
+.subSectionLabel {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  margin-bottom: 24px;
+}
+
+.dangerZone {
+  margin-top: 48px;
+  padding: 24px;
+  background: rgba(239, 68, 68, 0.05);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 16px;
+}
+
+.dangerLabel {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--danger);
+  letter-spacing: 0.1em;
+  margin-bottom: 16px;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider {
+  position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(255, 255, 255, 0.1); transition: .3s; border-radius: 34px;
+}
+.slider:before {
+  position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+  background-color: #fff; transition: .3s; border-radius: 50%;
+}
+.switch input:checked + .slider { background-color: var(--primary); }
+.switch input:checked + .slider:before { transform: translateX(20px); }
+
+.tableContainer {
+  margin-top: 20px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.tableMain {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+.tableHead {
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid var(--border);
+}
+
+.thCell {
+  padding: 12px 16px;
+  text-align: left;
+  color: var(--muted);
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.trRow {
+  border-top: 1px solid var(--border);
+}
+
+.tdCell {
+  padding: 16px 20px;
+}
+
+.tdUserInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tdAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.tdName { font-weight: 600; color: var(--text); font-size: 14px; }
+.tdEmail { font-size: 12px; color: var(--muted); }
+
+.settingsFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 900px) {
+  .settingsLayout { 
+    grid-template-columns: 1fr; 
+    padding: 0 20px 60px;
+  }
+  .settingsNav { 
+    flex-direction: row; 
+    overflow-x: auto; 
+    padding-bottom: 12px; 
+    gap: 8px; 
+    margin-bottom: 24px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .settingsNavItem { 
+    white-space: nowrap; 
+    padding: 8px 16px;
+  }
+  .settingsCard {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .profileEdit, .logoEdit {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+  }
+  
+  .tableContainer {
+    overflow-x: auto;
+  }
+  
+  .tableMain {
+    min-width: 500px;
+  }
+  
+  .toggleGroup {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .modal {
+    padding: 24px;
+    width: 90%;
+  }
+}
+
+/* Modal */
+.modalOverlay {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7);
+  display: grid; place-items: center; z-index: 100;
+  backdrop-filter: blur(4px);
+}
+.modal {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 24px;
+  width: 100%; max-width: 480px; padding: 40px; box-shadow: var(--shadow-lg);
+  animation: var(--anim-slide);
+}
+.modal h3 { font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 700; margin: 0 0 8px; }
+.modal p { color: var(--muted); font-size: 14px; margin: 0 0 32px; }
+.modalActions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 32px; }
