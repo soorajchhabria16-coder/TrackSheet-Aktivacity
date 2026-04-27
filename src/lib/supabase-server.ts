@@ -16,9 +16,9 @@ export function createServerSupabase() {
       async setAll(cookiesToSet) {
         try {
           const store = await cookieStore;
-          cookiesToSet.forEach(({ name, value, options }) =>
-            store.set(name, value, options)
-          );
+          for (const { name, value, options } of cookiesToSet) {
+            await store.set(name, value, options);
+          }
         } catch {
           // The `setAll` method was called from a Server Component.
           // This can be ignored if you have middleware refreshing

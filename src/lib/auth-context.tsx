@@ -4,12 +4,13 @@ import { createContext, useContext, useEffect, useState, useCallback } from 'rea
 import { supabase } from '@/lib/supabase';
 
 export interface UserProfile {
-  id: string | number;
+  id: string;
   name: string;
   email: string;
   oi: string;
   role?: string;
   user_role?: string;
+  isAdmin: boolean;
   department?: string;
   status?: string;
   avatar_url?: string;
@@ -42,8 +43,15 @@ async function fetchProfileByEmail(email: string): Promise<UserProfile | null> {
       }
     );
     if (!res.ok) return null;
-    const rows = await res.json();
-    return rows[0] ?? null;
+    const rows = (await res.json()) as UserProfile[];
+    const profile = rows[0] ?? null;
+    if (profile) {
+      return {
+        ...profile,
+        isAdmin: profile.user_role === 'admin' || profile.role === 'admin'
+      };
+    }
+    return null;
   } catch {
     return null;
   }
@@ -80,7 +88,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           name: displayName,
           email: user.email,
           oi,
-          user_role: 'admin',
+          user_role: 'admin', // Default fallback to admin for first user/unlisted
+          isAdmin: true,
         });
       }
     } finally {

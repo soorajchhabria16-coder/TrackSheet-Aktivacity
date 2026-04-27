@@ -4,8 +4,7 @@ import { createServerSupabase } from "@/lib/supabase-server";
 
 export const revalidate = 0;
 
-async function getProfiles() {
-  const supabase = createServerSupabase();
+async function getProfiles(supabase: any) {
   const { data, error } = await supabase
     .from('profiles')
     .select('*')
@@ -19,9 +18,8 @@ async function getProfiles() {
 }
 
 export default async function SettingsPage() {
-  // Fetch all team profiles — the client side will use useAuth()
-  // to identify which one is the currently logged-in user.
-  const profiles = await getProfiles();
+  const supabase = createServerSupabase();
+  const profiles = await getProfiles(supabase);
 
   return (
     <>

@@ -6,7 +6,7 @@ import { useAuth } from '@/lib/auth-context';
 import { supabase } from '@/lib/supabase';
 
 interface User {
-  id: string | number;
+  id: string;
   name: string;
   email: string;
   role?: string;
@@ -139,7 +139,7 @@ export default function SettingsClient({ teamMembers }: { teamMembers: User[] })
     }
   };
 
-  const handleRemoveUser = async (id: string | number) => {
+  const handleRemoveUser = async (id: string) => {
     if (!confirm('Are you sure you want to remove this member?')) return;
     try {
       const { error } = await supabase

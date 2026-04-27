@@ -4,8 +4,7 @@ import { createServerSupabase } from '@/lib/supabase-server';
 
 export const revalidate = 0;
 
-async function getRecentTasks() {
-  const supabase = createServerSupabase();
+async function getRecentTasks(supabase: any) {
   const { data, error } = await supabase
     .from('tasks')
     .select('*')
@@ -19,8 +18,7 @@ async function getRecentTasks() {
   return data || [];
 }
 
-async function getNotifications() {
-  const supabase = createServerSupabase();
+async function getNotifications(supabase: any) {
   const { data, error } = await supabase
     .from('notifications')
     .select('*, tasks(title, name, due_date)')
@@ -35,9 +33,10 @@ async function getNotifications() {
 }
 
 export default async function NotificationsPage() {
+  const supabase = createServerSupabase();
   const [tasks, notifications] = await Promise.all([
-    getRecentTasks(),
-    getNotifications()
+    getRecentTasks(supabase),
+    getNotifications(supabase)
   ]);
 
   return (

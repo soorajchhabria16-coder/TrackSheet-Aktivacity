@@ -5,7 +5,7 @@ import styles from './admin.module.css';
 import { supabase } from '@/lib/supabase';
 
 interface Profile {
-  id: string | number;
+  id: string;
   name?: string;
   email?: string;
   oi?: string;
@@ -39,7 +39,7 @@ export default function AdminClient({ initialProfiles }: { initialProfiles: Prof
   const active = profiles.filter((p) => (p.status || 'active') === 'active');
   const pending = profiles.filter((p) => p.status === 'pending');
 
-  async function handleChangeRole(id: string | number, newRole: string) {
+  async function handleChangeRole(id: string, newRole: string) {
     try {
       const { error } = await supabase
         .from('profiles')
@@ -56,7 +56,7 @@ export default function AdminClient({ initialProfiles }: { initialProfiles: Prof
     }
   }
 
-  async function handleRemoveUser(id: string | number) {
+  async function handleRemoveUser(id: string) {
     if (!confirm('Remove this user? They will lose access immediately.')) return;
     try {
       const { error } = await supabase

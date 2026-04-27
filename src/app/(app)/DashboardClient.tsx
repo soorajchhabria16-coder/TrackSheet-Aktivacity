@@ -5,7 +5,7 @@ import styles from './dashboard.module.css';
 import Link from 'next/link';
 
 interface Task {
-  id: string | number;
+  id: string;
   title?: string;
   name?: string;
   status: string;

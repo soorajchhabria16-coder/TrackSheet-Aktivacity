@@ -7,7 +7,7 @@ import Link from 'next/link';
 import styles from './notifications.module.css';
 
 interface Task {
-  id: string | number;
+  id: string;
   title?: string;
   name?: string;
   status: string;
@@ -85,7 +85,7 @@ export default function NotificationsClient({
 
             const newN: Notification = {
               ...payload.new as Notification,
-              tasks: taskData
+              tasks: taskData as Notification['tasks']
             };
             setNotifications(prev => [newN, ...prev]);
           } else if (payload.eventType === 'UPDATE') {
